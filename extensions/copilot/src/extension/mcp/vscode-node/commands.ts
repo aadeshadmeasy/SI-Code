@@ -215,7 +215,7 @@ export class McpSetupCommands extends Disposable {
 	private async enqueuePendingSetup(validateArgs: IValidatePackageArgs, pendingArgs: IPendingSetupArgs, sw: StopWatch) {
 		const format = validateArgs.targetFormat ?? 'vscode';
 		if (!['vscode', 'workspaceRoot', 'copilotGlobal'].includes(format) || !validateArgs.targetConfig) {
-			throw new Error(vscode.l10n.t("Unsupported MCP setup destination. Update VS Code and the Copilot extension and try again."));
+			throw new Error(vscode.l10n.t("Unsupported MCP setup destination. Update Si Code and the Copilot extension and try again."));
 		}
 		const cts = new CancellationTokenSource();
 		const canPrompt = new DeferredPromise<void>();

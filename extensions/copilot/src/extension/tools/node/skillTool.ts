@@ -122,7 +122,7 @@ ${skillContent}
 
 Task: ${query}`;
 
-		// Delegate to the runSubagent tool which goes through the full VS Code chat
+		// Delegate to the runSubagent tool which goes through the full Si Code chat
 		// pipeline (automatic instructions, hooks, model resolution, nesting depth, etc.)
 		const subagentResult = await this.toolsService.invokeTool(ToolName.CoreRunSubagent, {
 			...options,

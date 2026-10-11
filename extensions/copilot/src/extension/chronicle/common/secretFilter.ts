@@ -47,7 +47,7 @@ const SECRET_PATTERNS: RegExp[] = [
 	// NuGet API keys
 	/\boy2[a-p][0-9a-z]{15}[aq][0-9a-z]{11}[eu][bdfhjlnprtvxz357][a-p][0-9a-z]{11}[aeimquy4]\b/g,
 
-	// ── VS Code-specific patterns ───────────────────────────────────────────
+	// ── Si Code-specific patterns ───────────────────────────────────────────
 	// Private key blocks (RSA, EC, DSA, OPENSSH, PGP, etc.)
 	/-----BEGIN[A-Z\s]*PRIVATE KEY-----[\s\S]*?-----END[A-Z\s]*PRIVATE KEY-----/g,
 	// Connection string URIs with embedded credentials (mongodb, postgres, redis, amqp, mysql)

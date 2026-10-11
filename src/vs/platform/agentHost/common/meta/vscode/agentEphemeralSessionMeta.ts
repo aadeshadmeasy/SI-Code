@@ -21,7 +21,7 @@ export function readEphemeralSessionMeta(source: IHasEphemeralSessionMeta): IEph
 	return typeof value === 'boolean' ? { isEphemeral: value } : {};
 }
 
-/** Adds VS Code's ephemeral-session metadata to an open request metadata bag. */
+/** Adds Si Code's ephemeral-session metadata to an open request metadata bag. */
 export function withEphemeralSessionMeta(meta: Record<string, unknown> | undefined, isEphemeral: boolean | undefined): Record<string, unknown> | undefined {
 	if (isEphemeral === undefined) {
 		return meta;

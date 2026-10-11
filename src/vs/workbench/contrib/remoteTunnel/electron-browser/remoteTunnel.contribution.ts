@@ -634,7 +634,7 @@ export class RemoteTunnelWorkbenchContribution extends Disposable implements IWo
 											key: 'progress.turnOn.finalLinked',
 											comment: ['{0} is a link with the tunnel name, {1} a link to the web UI, {2} a link with an extension name, {3} a configure link, and {4} a turn off link.']
 										},
-										"You can now access this machine anywhere via the secure tunnel {0}. To connect via a different machine, use the generated {1} link or use the {2} extension in the desktop or web. You can {3} or {4} this access via the VS Code Accounts menu."
+										"You can now access this machine anywhere via the secure tunnel {0}. To connect via a different machine, use the generated {1} link or use the {2} extension in the desktop or web. You can {3} or {4} this access via the Si Code Accounts menu."
 									),
 									NotificationText.link(connectionInfo.tunnelName, `command:${RemoteTunnelCommandIds.configure}`),
 									NotificationText.link(connectionInfo.domain, linkToOpen.toString(false)),
@@ -657,7 +657,7 @@ export class RemoteTunnelWorkbenchContribution extends Disposable implements IWo
 							notificationService.notify({
 								severity: Severity.Info,
 								message: NotificationText.format(
-									localize('progress.turnOn.final.noLinkLinked', "Remote Tunnel Access is enabled for {0}. You can {1} or {2} this access via the VS Code Accounts menu."),
+									localize('progress.turnOn.final.noLinkLinked', "Remote Tunnel Access is enabled for {0}. You can {1} or {2} this access via the Si Code Accounts menu."),
 									connectionInfo.tunnelName, NotificationText.link(configureLabel, `command:${RemoteTunnelCommandIds.configure}`), turnOffLink
 								),
 							});

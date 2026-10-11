@@ -355,12 +355,12 @@ export class OutputMonitor extends Disposable implements IOutputMonitor {
 			return { shouldContinuePolling: false, output };
 		}
 
-		// Check for VS Code's task finish messages (like "press any key to close the terminal").
-		// If the execution is a task and the output contains a VS Code task finish message,
+		// Check for Si Code's task finish messages (like "press any key to close the terminal").
+		// If the execution is a task and the output contains a Si Code task finish message,
 		// always treat it as a stop signal regardless of task active state (which can be stale).
 		const isTask = this._execution.task !== undefined;
 		if (isTask && detectsVSCodeTaskFinishMessage(outputTail)) {
-			this._logService.trace('OutputMonitor: Idle -> VS Code task finish message detected, stopping');
+			this._logService.trace('OutputMonitor: Idle -> Si Code task finish message detected, stopping');
 			// Task is finished, ignore the "press any key to close" message
 			return { shouldContinuePolling: false, output };
 		}
@@ -776,7 +776,7 @@ export function detectsNonInteractiveHelpPattern(cursorLine: string): boolean {
 }
 
 /**
- * Localized task finish messages from VS Code's terminalTaskSystem.
+ * Localized task finish messages from Si Code's terminalTaskSystem.
  * These are the same strings used when tasks complete.
  */
 const taskFinishMessages = [
@@ -795,7 +795,7 @@ const normalizedTaskFinishMessages = taskFinishMessages.map(msg =>
 );
 
 /**
- * Detects VS Code's specific task completion messages like:
+ * Detects Si Code's specific task completion messages like:
  * - "Press any key to close the terminal."
  * - "Terminal will be reused by tasks, press any key to close it."
  * These appear when a task finishes and should be ignored if the task is done.
@@ -809,7 +809,7 @@ export function detectsVSCodeTaskFinishMessage(cursorLine: string): boolean {
 }
 
 /**
- * Detects generic "press any key" prompts from scripts (not VS Code task messages).
+ * Detects generic "press any key" prompts from scripts (not Si Code task messages).
  * These should prompt the user to interact with the terminal.
  */
 export function detectsGenericPressAnyKeyPattern(cursorLine: string): boolean {

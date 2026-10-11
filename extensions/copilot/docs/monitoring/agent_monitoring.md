@@ -8,7 +8,7 @@ Standard `gen_ai.*` signals follow the [OTel GenAI Semantic Conventions](https:/
 
 ## User-perceived first progress
 
-The shared VS Code UI timer also emits the content-free metadata span
+The shared Si Code UI timer also emits the content-free metadata span
 `vscode.chat.user_perceived_time_to_first_progress` through this extension's
 OTel pipeline. Its `vscode.chat.user_interaction.timeToFirstProgress` attribute
 is UI submission to meaningful visible text, reasoning, or tool progress plus
@@ -16,7 +16,7 @@ two animation frames, in milliseconds. This is a rendering approximation,
 not model TTFT or exact screen paint. Read the attribute, not the export span's
 duration.
 
-OTel must be enabled, but content capture and VS Code product telemetry need not
+OTel must be enabled, but content capture and Si Code product telemetry need not
 be enabled. The internal `github.copilot.chat.otel.recordUserInteraction` command
 validates and allowlists the shared renderer record. Normal OTel processors
 export it to the configured destination and SQLite store. The command waits for
@@ -38,7 +38,7 @@ The fastest way to see Copilot Chat traces locally — no cloud account required
 ### Prerequisites
 
 - **Docker** installed
-- **VS Code** with the GitHub Copilot Chat extension
+- **Si Code** with the GitHub Copilot Chat extension
 
 ### 1. Start the Aspire Dashboard
 
@@ -52,7 +52,7 @@ docker run --rm -d \
 
 This exposes the dashboard UI on port `18888` and an OTLP (HTTP) endpoint on port `4318`.
 
-### 2. Configure VS Code
+### 2. Configure Si Code
 
 Open **Settings** (`Ctrl+,`) and add:
 
@@ -63,7 +63,7 @@ Open **Settings** (`Ctrl+,`) and add:
 }
 ```
 
-> **Note:** You can also use environment variables instead of VS Code settings (see [Configuration](#configuration)). Environment variables can still override some legacy policy-backed settings; identity capture and managed resource attributes enforce policy precedence. See [governed identity capture](#governed-identity-capture) and the [activation limitations](#activation).
+> **Note:** You can also use environment variables instead of Si Code settings (see [Configuration](#configuration)). Environment variables can still override some legacy policy-backed settings; identity capture and managed resource attributes enforce policy precedence. See [governed identity capture](#governed-identity-capture) and the [activation limitations](#activation).
 
 ### 3. Generate Telemetry
 
@@ -87,7 +87,7 @@ docker stop aspire-dashboard
 
 ## Configuration
 
-### VS Code Settings
+### Si Code Settings
 
 Open **Settings** (`Ctrl+,`) and search for `copilot otel`:
 
@@ -113,7 +113,7 @@ their existing precedence. When enterprise OTel configuration is
 recognized through the application-scoped policy defaults, the entire Copilot OTel settings
 block comes from those policy values and schema defaults. Personal `settings.json` values are
 not used to fill omitted fields: headers and resource attributes default to empty maps, not
-the user's maps. Other VS Code settings are unaffected.
+the user's maps. Other Si Code settings are unaffected.
 
 An identity-only managed block (including `telemetry.capture.identity: false`) is
 recognizable enterprise OTel configuration. It therefore also replaces personally
@@ -273,7 +273,7 @@ OTel is **off by default** with zero overhead. It activates when:
 >
 > - **`gen_ai.*`** — [OTel GenAI Semantic Conventions](https://github.com/open-telemetry/semantic-conventions/blob/main/docs/gen-ai/). Use these whenever a standard key exists.
 > - **`github.copilot.*`** — Canonical Copilot-specific namespace. Prefer this for new dashboards and alerts.
-> - **`copilot_chat.*`** — Original VS Code extension namespace. Several keys (notably `copilot_chat.repo.*` and `gen_ai.usage.reasoning_tokens`) are now **dual-emitted alongside the `github.copilot.*` equivalents**. Tables below mark these rows as **Legacy** with a pointer to the preferred key.
+> - **`copilot_chat.*`** — Original Si Code extension namespace. Several keys (notably `copilot_chat.repo.*` and `gen_ai.usage.reasoning_tokens`) are now **dual-emitted alongside the `github.copilot.*` equivalents**. Tables below mark these rows as **Legacy** with a pointer to the preferred key.
 >
 > Legacy keys continue to emit indefinitely so existing collectors, dashboards, and downstream consumers (Agent Debug Log, Chronicle, SQLite span store) keep working without changes. There is no sunset date.
 
@@ -329,7 +329,7 @@ Inline chat uses the same invocation shape, with `invoke_agent Inline Chat` as t
 | `gen_ai.request.model` | Required | `gpt-4o` |
 | `gen_ai.conversation.id` | Session correlation (when a session is available) | `a1b2c3d4-...` |
 | `copilot_chat.session_id` | Session correlation | `a1b2c3d4-...` |
-| `copilot_chat.chat_session_id` | Session correlation | VS Code chat session ID |
+| `copilot_chat.chat_session_id` | Session correlation | Si Code chat session ID |
 | `gen_ai.request.max_tokens` | Always | `2048` |
 | `gen_ai.request.temperature` | When set | `0.1` |
 | `gen_ai.request.top_p` | When set | `0.95` |
@@ -360,7 +360,7 @@ Inline chat uses the same invocation shape, with `invoke_agent Inline Chat` as t
 | `gen_ai.tool.name` | Required | `readFile` |
 | `gen_ai.conversation.id` | Session correlation | `a1b2c3d4-...` |
 | `copilot_chat.session_id` | Session correlation | `a1b2c3d4-...` |
-| `copilot_chat.chat_session_id` | Session correlation | VS Code chat session ID |
+| `copilot_chat.chat_session_id` | Session correlation | Si Code chat session ID |
 | `gen_ai.tool.type` | Required | `function` or `extension` (MCP tools) |
 | `gen_ai.tool.call.id` | Recommended | `call_abc123` |
 | `gen_ai.tool.description` | When available | `Read the contents of a file` |
@@ -643,7 +643,7 @@ All signals carry:
 |---|---|
 | `service.name` | `copilot-chat` (override via the `github.copilot.chat.otel.serviceName` setting, `OTEL_SERVICE_NAME`, or enterprise policy) |
 | `service.version` | Extension version |
-| `session.id` | Unique per VS Code window |
+| `session.id` | Unique per Si Code window |
 
 Add custom resource attributes with `OTEL_RESOURCE_ATTRIBUTES`:
 
@@ -671,7 +671,7 @@ The `captureContent` setting controls content on individual LLM `chat` spans and
 
 Foreground `invoke_agent`, `execute_tool`, and `execute_hook` spans still retain content needed by the Agent Debug Log and the separate local SQLite exporter, regardless of this setting. Primary file export is not the SQLite debug exporter. Identity filtering applies to both paths independently.
 
-To include these content attributes in primary exports and capture full LLM request and response content, add to your VS Code settings:
+To include these content attributes in primary exports and capture full LLM request and response content, add to your Si Code settings:
 
 ```json
 {
@@ -817,7 +817,7 @@ curl -s -o /dev/null -w "%{http_code}" http://localhost:4328/v1/traces \
   -X POST -H "Content-Type: application/json" -d '{"resourceSpans":[]}'
 ```
 
-**3. Configure VS Code:**
+**3. Configure Si Code:**
 
 Open **Settings** (`Ctrl+,`) and add:
 
@@ -904,7 +904,7 @@ service:
 docker run -d --name jaeger -p 16686:16686 -p 4318:4318 jaegertracing/jaeger:latest
 ```
 
-**2. Configure VS Code:**
+**2. Configure Si Code:**
 
 ```json
 {

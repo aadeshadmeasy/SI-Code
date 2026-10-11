@@ -135,7 +135,7 @@ export interface IAgentHostMcpServer {
 	readonly disabledReason?: CustomizationDisabledReason;
 	readonly status: McpServerStatus;
 	/**
-	 * True while the server is `AuthRequired` but VS Code is silently authenticating it (or has done so
+	 * True while the server is `AuthRequired` but Si Code is silently authenticating it (or has done so
 	 * and is waiting for the host to pick up the token). Clients show progress instead of a sign-in prompt.
 	 */
 	readonly authenticating?: boolean;

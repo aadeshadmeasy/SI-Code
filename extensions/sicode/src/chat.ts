@@ -4,25 +4,34 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
+import { agentTools, readTools } from './tools.js';
 import { LoopMessage, ModelPart, runToolLoop, ToolSpec } from './toolLoop.js';
 
 export type SiCodeMode = 'ask' | 'edit' | 'agent' | 'inline';
 
 export function registerChatParticipants(context: vscode.ExtensionContext): void {
+	const iconPath = vscode.Uri.joinPath(context.extensionUri, 'media', 'icon.svg');
 	for (const mode of ['ask', 'edit', 'agent', 'inline'] as const) {
-		context.subscriptions.push(vscode.chat.createChatParticipant(`sicode.${mode}`, createHandler(mode)));
+		const participant = vscode.chat.createChatParticipant(`sicode.${mode}`, createHandler(mode));
+		participant.iconPath = iconPath;
+		if (mode === 'ask' || mode === 'agent') {
+			participant.additionalWelcomeMessage = new vscode.MarkdownString(mode === 'agent'
+				? 'Agent mode reads and edits files, then runs builds, tests, and linters. Terminal commands ask you before they run.'
+				: 'Ask about the open file, or switch to Agent to let Si Code change the project.');
+		}
+		context.subscriptions.push(participant);
 	}
 }
 
 function createHandler(mode: SiCodeMode): vscode.ChatRequestHandler {
 	return async (request, context, response, token) => {
-		const tools = mode === 'ask' || mode === 'agent' ? enabledTools(request) : [];
+		const tools = toolsFor(mode, request);
 		const messages = buildMessages(mode, request, context);
 		try {
 			const result = await runToolLoop({
 				messages,
 				tools,
-				maxRounds: mode === 'agent' ? 8 : tools.length ? 4 : 1,
+				maxRounds: mode === 'agent' ? 24 : tools.length ? 8 : 1,
 				complete: (next, toolDefs) => completeWithModel(request.model, next, toolDefs, token),
 				invokeTool: (name, input) => invokeChatTool(name, input, request, token),
 			});
@@ -71,6 +80,15 @@ async function invokeChatTool(name: string, input: unknown, request: vscode.Chat
 	return result.content.map(part => part instanceof vscode.LanguageModelTextPart ? part.value : '').join('') || JSON.stringify(result.content);
 }
 
+function toolsFor(mode: SiCodeMode, request: vscode.ChatRequest): ToolSpec[] {
+	if (mode !== 'ask' && mode !== 'agent') {
+		return [];
+	}
+	const own = mode === 'agent' ? agentTools : readTools;
+	const names = new Set(own.map(tool => tool.name));
+	return [...own, ...enabledTools(request).filter(tool => !names.has(tool.name))];
+}
+
 function enabledTools(request: vscode.ChatRequest): ToolSpec[] {
 	const tools: ToolSpec[] = [];
 	for (const [info, enabled] of request.tools) {
@@ -101,12 +119,19 @@ function buildMessages(mode: SiCodeMode, request: vscode.ChatRequest, context: v
 function systemPrompt(mode: SiCodeMode, request: vscode.ChatRequest): string {
 	const lines = [
 		'You are Si Code, a coding assistant inside the editor. Answer using the open file, the selection, and the conversation.',
-		'When tools are listed, call them to read real data instead of guessing. Tools include the user\'s MCP servers.',
+		'When tools are listed, call them to read real data instead of guessing. Tools include the user\'s MCP servers and the built-in editor tools.',
 	];
 	if (mode === 'edit' || mode === 'inline') {
 		lines.push('Rewrite the selected code. Return one fenced code block and nothing else. The block replaces the selection.');
 	} else if (mode === 'agent') {
-		lines.push('Use tools when they help. After the tools finish, answer in markdown. Do not claim a file changed unless a tool result says so.');
+		lines.push([
+			'You are in agent mode. Keep going until the task is done or you are blocked.',
+			'Read the relevant files with sicode_readFile before you edit them. Change as many files as the task needs with sicode_editFile and sicode_writeFile.',
+			'Check sicode_diagnostics. Run the project build, tests, and linters with sicode_runTerminal, and run Python with python3 when the task involves Python.',
+			'If a command fails or diagnostics report errors you introduced, fix them and run the checks again.',
+			'Every terminal command asks the user before it runs. If the user declines, say so and pick another approach.',
+			'Do not claim a file changed or a command succeeded unless a tool result says so.',
+		].join('\n'));
 	}
 	const instructions = request.modeInstructions2?.content || request.modeInstructions;
 	if (instructions) {

@@ -32,8 +32,8 @@ class VSCodeAPITool implements vscode.LanguageModelTool<IVSCodeAPIToolParams> {
 	prepareInvocation(options: vscode.LanguageModelToolInvocationPrepareOptions<IVSCodeAPIToolParams>, token: vscode.CancellationToken): vscode.ProviderResult<vscode.PreparedToolInvocation> {
 		const query = `"${options.input.query}"`;
 		return {
-			invocationMessage: l10n.t`Searching VS Code API for ${query}`,
-			pastTenseMessage: l10n.t`Searched VS Code API for ${query}`
+			invocationMessage: l10n.t`Searching Si Code API for ${query}`,
+			pastTenseMessage: l10n.t`Searched Si Code API for ${query}`
 		};
 	}
 }

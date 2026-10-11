@@ -352,7 +352,7 @@ export class EmbeddedMcpServerDetail extends Disposable {
 
 	/**
 	 * Shows the form for a server from a file shared with other MCP clients: a workspace root
-	 * `.mcp.json` or the Copilot CLI's `mcp-config.json`. VS Code's own `mcp.json` files and other
+	 * `.mcp.json` or the Copilot CLI's `mcp-config.json`. Si Code's own `mcp.json` files and other
 	 * sources, such as extensions or agent host plugins, keep the read-only definition.
 	 */
 	private async resolveSourceFormInput(server: IMcpServerDetailInput, source: URI, renderGeneration: number): Promise<void> {

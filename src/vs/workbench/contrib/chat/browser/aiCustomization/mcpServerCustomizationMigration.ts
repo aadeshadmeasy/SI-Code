@@ -859,7 +859,7 @@ async function resolveVariables(
 }
 
 /**
- * Whether the value of a referenced environment variable contains a variable. VS Code resolves those
+ * Whether the value of a referenced environment variable contains a variable. Si Code resolves those
  * nested variables, while the destination substitutes `${NAME}` once and keeps its value verbatim.
  */
 async function hasVariablesInEnvironmentValues(
@@ -979,7 +979,7 @@ function hasEnvironmentVariableReference(value: string): boolean {
 	return found;
 }
 
-/** Replaces each VS Code variable in `value`, found the same way as {@link ConfigurationResolverExpression} finds them. */
+/** Replaces each Si Code variable in `value`, found the same way as {@link ConfigurationResolverExpression} finds them. */
 function replaceConfigurationVariables(value: string, replace: (variable: Replacement) => string): string {
 	let result = '';
 	let copied = 0;

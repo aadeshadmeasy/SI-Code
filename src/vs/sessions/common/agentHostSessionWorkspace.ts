@@ -62,7 +62,7 @@ export function matchesAnyBranchProtectionPattern(branchName: string, patterns: 
  * The `git.branchProtection` setting is `resource`-scoped, so the value can
  * differ between workspace folders. Pass the session's working directory (or
  * project URI as a fallback) as `resource` so we read the setting in the
- * scope of the folder VS Code actually has loaded rather than the host
+ * scope of the folder Si Code actually has loaded rather than the host
  * window's active workspace.
  */
 export function readBranchProtectionPatterns(configurationService: IConfigurationService, resource?: URI): readonly string[] {
@@ -197,7 +197,7 @@ export function buildAgentHostSessionWorkspace(project: IAgentHostSessionProject
 
 	// The primary (index 0) is the session's process root; it carries the git
 	// state / project association. Additional directories carry no per-folder
-	// git state; a VS Code-created worktree reports its repository as the
+	// git state; a Si Code-created worktree reports its repository as the
 	// folder's project, so a chat working in it shows that project.
 	const primary = workingDirectories?.[0];
 	const additionalFolders: ISessionFolder[] = (workingDirectories ?? []).slice(1).map(dir => {

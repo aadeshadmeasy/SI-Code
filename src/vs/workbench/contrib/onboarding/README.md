@@ -27,7 +27,7 @@ Websites can request an installed tryout with a product-protocol link containing
 vscode://tryout/myFeature.guide
 ```
 
-External launch is allowed by default. Set `allowExternalLaunch: false` on registrations that should remain in-product only. Every accepted external link shows a VS Code confirmation using the installed title and description before the existing tryout runner executes. Unknown IDs, opted-out registrations, malformed paths, query parameters, and fragments fail closed.
+External launch is allowed by default. Set `allowExternalLaunch: false` on registrations that should remain in-product only. Every accepted external link shows a Si Code confirmation using the installed title and description before the existing tryout runner executes. Unknown IDs, opted-out registrations, malformed paths, query parameters, and fragments fail closed.
 
 External links do not carry a trustworthy website origin. Never add commands, arguments, prompts, paths, settings, or other behavior to the URL, and never bypass the in-product confirmation based on an asserted source domain.
 

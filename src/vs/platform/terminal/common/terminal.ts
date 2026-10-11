@@ -526,7 +526,7 @@ export interface IShellLaunchConfig {
 
 	/**
 	 * A custom environment for the terminal, if this is not set the environment will be inherited
-	 * from the VS Code process.
+	 * from the Si Code process.
 	 */
 	env?: ITerminalEnvironment;
 
@@ -620,7 +620,7 @@ export interface IShellLaunchConfig {
 
 	/**
 	 * Whether this terminal is not a terminal that the user directly created and uses, but rather
-	 * a terminal used to drive some VS Code feature.
+	 * a terminal used to drive some Si Code feature.
 	 */
 	isFeatureTerminal?: boolean;
 
@@ -676,7 +676,7 @@ export interface IShellLaunchConfig {
 	 */
 	tabActions?: ITerminalTabAction[];
 	/**
-	 * Report terminal's shell environment variables to VS Code and extensions
+	 * Report terminal's shell environment variables to Si Code and extensions
 	 */
 	shellIntegrationEnvironmentReporting?: boolean;
 
@@ -1026,7 +1026,7 @@ export const enum ShellIntegrationStatus {
 	Off,
 	/** Final term shell integration sequences have been encountered. */
 	FinalTerm,
-	/** VS Code shell integration sequences have been encountered. Supercedes FinalTerm. */
+	/** Si Code shell integration sequences have been encountered. Supercedes FinalTerm. */
 	VSCode
 }
 

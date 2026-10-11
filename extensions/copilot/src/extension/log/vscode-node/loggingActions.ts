@@ -81,7 +81,7 @@ export class LoggingActionsContrib {
 			await appendText(editor, `## GitHub Copilot Chat
 
 - Extension: ${this.envService.getVersion()} (${this.envService.getBuildType()})
-- VS Code: ${vscode.version} (${product.commit || 'out-of-source'})
+- Si Code: ${vscode.version} (${product.commit || 'out-of-source'})
 - OS: ${os.platform()} ${os.release()} ${os.arch()}${vscode.env.remoteName ? `
 - Remote Name: ${vscode.env.remoteName}` : ''}${vscode.env.remoteName && ext ? `
 - Extension Kind: ${vscode.ExtensionKind[ext.extensionKind]}` : ''}
@@ -283,7 +283,7 @@ User Settings:
 			const activeFetcherName = fetchers.find(entry => entry.fetcher?.getUserAgentLibrary() === activeFetcher)?.name ?? activeFetcher;
 			const notes = [`- Active fetcher: ${activeFetcherName}.`];
 			if (currentFetcher.fetcher.getUserAgentLibrary() !== activeFetcher) {
-				notes.push(`- The active fetcher differs from the configured fetcher (${currentFetcher.name}). This can happen after a recent configuration change or an automatic fallback; reload the window or restart VS Code to apply the configured fetcher.`);
+				notes.push(`- The active fetcher differs from the configured fetcher (${currentFetcher.name}). This can happen after a recent configuration change or an automatic fallback; reload the window or restart Si Code to apply the configured fetcher.`);
 			}
 			const proxySupport = vscode.workspace.getConfiguration().get<string>('http.proxySupport');
 			if (proxySupport !== 'override') {

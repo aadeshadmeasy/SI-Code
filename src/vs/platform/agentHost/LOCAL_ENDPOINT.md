@@ -1,6 +1,6 @@
 # Local Agent Host Endpoint Discovery
 
-VS Code's local agent host exposes the Agent Host Protocol (AHP) to other processes running as the same user. The endpoint is a WebSocket server bound to a Unix domain socket on macOS/Linux or a named pipe on Windows.
+Si Code's local agent host exposes the Agent Host Protocol (AHP) to other processes running as the same user. The endpoint is a WebSocket server bound to a Unix domain socket on macOS/Linux or a named pipe on Windows.
 
 The local workbench uses a separate MessagePort transport. This document describes only the discoverable endpoint for external local clients.
 
@@ -14,11 +14,11 @@ The registry is a **directory of per-instance entry files**:
 
 Each locally running agent host process (this editor's own utility process, other editor windows, and the standalone `code agent host` CLI) owns exactly one entry file and writes only that file. `<identity>` is the lowercase SHA-256 hex digest of the UTF-8 string `${type}\0${pid}\0${instanceId}` (NUL-separated), so the filename is cross-language, path-safe, and collision-resistant for the full entry identity. Readers enumerate the directory to discover every live local agent host.
 
-`<userDataPath>` is the active VS Code user data directory. Its value depends on the product quality and any `--user-data-dir` argument. Implementations should resolve the active user data directory rather than assuming the default Stable or Insiders location.
+`<userDataPath>` is the active Si Code user data directory. Its value depends on the product quality and any `--user-data-dir` argument. Implementations should resolve the active user data directory rather than assuming the default Stable or Insiders location.
 
 Because each process writes only its own file, there is no shared read-modify-write and therefore **no lock**. See [Multi-writer safety](#multi-writer-safety).
 
-Entries are optional. If VS Code cannot prepare or publish the external endpoint, it logs the error and continues running the agent host over its internal MessagePort transport.
+Entries are optional. If Si Code cannot prepare or publish the external endpoint, it logs the error and continues running the agent host over its internal MessagePort transport.
 
 ### Legacy `metadata.json` fallback (read-only)
 
@@ -48,7 +48,7 @@ The legacy `metadata.json` fallback holds a JSON **array** of these same entry o
 | Property | Description |
 |---|---|
 | `schemaVersion` | Metadata schema version. Clients must ignore entries whose version they do not understand rather than rejecting the whole file. |
-| `type` | Kind of process that owns the endpoint: `editor` (a VS Code utility process) or `standalone` (the `code agent host` CLI). This controls ownership/default-selection policy on the client; it is not a measure of trust. |
+| `type` | Kind of process that owns the endpoint: `editor` (a Si Code utility process) or `standalone` (the `code agent host` CLI). This controls ownership/default-selection policy on the client; it is not a measure of trust. |
 | `pid` | PID of the process that owns the endpoint. |
 | `instanceId` | Random identity used to distinguish successive endpoint owners. Combined with `type` and `pid`, this forms the entry's identity for dedupe/removal and for naming the entry file, since PIDs can be reused after a process exits. |
 | `protocolVersion` | AHP version spoken by the host. Clients must still perform the normal AHP `initialize` negotiation. |
@@ -72,7 +72,7 @@ Schema version `1` (a flat `{ endpointPath: string }` shape, `type` always `"edi
 
 ## Connecting
 
-Connect to `endpoint.path` (socket endpoints) using WebSocket framing and provide `connectionToken` in the standard VS Code connection-token query parameter:
+Connect to `endpoint.path` (socket endpoints) using WebSocket framing and provide `connectionToken` in the standard Si Code connection-token query parameter:
 
 ```text
 ?tkn=<connectionToken>
@@ -120,7 +120,7 @@ Readers never write under coordination. Each reader:
 - The metadata root and the `entries` directory are restricted to the current user (mode `0700` on POSIX). Entry files are mode `0600`. On Windows, both directories carry an owner-only ACL; `SYSTEM` and Administrators also retain full access.
 - The socket or pipe itself may use platform-default access. Possession of the metadata token is required to complete the WebSocket upgrade.
 - An entry file is written atomically only after the endpoint is listening and the protocol handler is installed.
-- On shutdown, VS Code computes its own `<identity>.json` path and removes only that exact file. The shared `entries` directory is intentionally left in place to avoid racing a concurrent publisher (an `rmdir` could delete the directory between another writer creating it and writing its temp file). Because a process only ever deletes its own file, it can never remove another live writer's entry, and the legacy `metadata.json` is never mutated.
+- On shutdown, Si Code computes its own `<identity>.json` path and removes only that exact file. The shared `entries` directory is intentionally left in place to avoid racing a concurrent publisher (an `rmdir` could delete the directory between another writer creating it and writing its temp file). Because a process only ever deletes its own file, it can never remove another live writer's entry, and the legacy `metadata.json` is never mutated.
 - Clients should handle a missing entry, a stale PID, endpoint closure, and the registry changing while reconnecting.
 
 The implementation and lifecycle wiring live in:

@@ -194,8 +194,8 @@ type AgentHostInvocationFailedClassification = {
 	hasUserSelectedModel: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; isMeasurement: true; comment: 'Whether the workbench request carried a selected language model identifier.' };
 	errorName: { classification: 'CallstackOrException'; purpose: 'PerformanceAndHealth'; comment: 'The name of the exception.' };
 	errorCode: { classification: 'CallstackOrException'; purpose: 'PerformanceAndHealth'; comment: 'The exception or protocol error code, when available.' };
-	msg: { classification: 'CallstackOrException'; purpose: 'PerformanceAndHealth'; comment: 'The error message. VS Code telemetry scrubs file paths and likely secrets before transmission.' };
-	callstack: { classification: 'CallstackOrException'; purpose: 'PerformanceAndHealth'; comment: 'The error stack. VS Code telemetry scrubs file paths and likely secrets before transmission.' };
+	msg: { classification: 'CallstackOrException'; purpose: 'PerformanceAndHealth'; comment: 'The error message. Si Code telemetry scrubs file paths and likely secrets before transmission.' };
+	callstack: { classification: 'CallstackOrException'; purpose: 'PerformanceAndHealth'; comment: 'The error stack. Si Code telemetry scrubs file paths and likely secrets before transmission.' };
 	owner: 'roblourens';
 	comment: 'Captures errors that prevent an agent host request from reaching a terminal host turn.';
 };
@@ -2162,7 +2162,7 @@ export class AgentHostSessionHandler extends Disposable implements IChatSessionC
 		}
 		if (error.errorType === 'CodexThreadInUse') {
 			return {
-				message: localize('agentHost.codexThreadInUse', "{0} Then send your message again in VS Code. Your message has not been sent.", codexWriterLockMessage()),
+				message: localize('agentHost.codexThreadInUse', "{0} Then send your message again in Si Code. Your message has not been sent.", codexWriterLockMessage()),
 				isExpectedError: true,
 			};
 		}

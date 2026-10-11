@@ -27,7 +27,7 @@ import { env, LogOutputChannel } from 'vscode';
  */
 
 /**
- * Checks if the current VS Code installation is a Windows user or system setup.
+ * Checks if the current Si Code installation is a Windows user or system setup.
  * Returns false for archive, portable, or non-Windows installations.
  */
 async function isWindowsUserOrSystemSetup(): Promise<boolean> {

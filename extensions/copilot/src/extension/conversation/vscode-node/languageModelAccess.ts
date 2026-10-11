@@ -561,7 +561,7 @@ export class LanguageModelAccess extends Disposable implements IExtensionContrib
 	): Promise<void> {
 		const isCoreOnlyModel = dictationCleanupAliases.has(model.id) || (model.id === DICTATION_CLEANUP_LUNA_MODEL_ID && this._utilityAliasEndpoints.has(model.id));
 		if (isCoreOnlyModel && options.requestInitiator !== 'core') {
-			throw new Error(`Model ${model.id} is only available to VS Code core.`);
+			throw new Error(`Model ${model.id} is only available to Si Code core.`);
 		}
 		let endpoint = await this._getEndpointForModel(model, buildAutoRoutingContext(messages, options));
 		if (!endpoint) {
@@ -811,7 +811,7 @@ export class CopilotLanguageModelWrapper extends Disposable {
 
 		// Restore CapturingToken context if correlation ID was passed through modelOptions.
 		// This handles BYOK providers where the original AsyncLocalStorage context was lost
-		// when crossing the VS Code IPC boundary.
+		// when crossing the Si Code IPC boundary.
 		const correlationId = internalModelOptions?._capturingTokenCorrelationId;
 		const capturingToken = correlationId ? retrieveCapturingTokenByCorrelation(correlationId) : undefined;
 

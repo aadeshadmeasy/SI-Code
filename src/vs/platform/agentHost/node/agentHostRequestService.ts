@@ -37,7 +37,7 @@ function isTransientError(error: unknown): boolean {
 
 /**
  * Request service implemented on the agent host's `@vscode/proxy-agent`
- * patched fetch, including renderer-backed system/PAC resolution and VS Code's
+ * patched fetch, including renderer-backed system/PAC resolution and Si Code's
  * certificate settings. The base {@link RequestService} remains unchanged for
  * all other Node consumers.
  */

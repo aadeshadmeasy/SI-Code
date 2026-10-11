@@ -96,7 +96,7 @@ function getIssueRuntimeInfo(): { readonly platform: string; readonly vscodeInfo
 function getSessionLoadFailureIssueInfo(invalidSessionMessage: string): { readonly issueBody: string; readonly issueUrl: string } {
 	const runtimeInfo = getIssueRuntimeInfo();
 	const issueTitle = '[Copilot CLI] Failed to load chat session';
-	const issueBody = `## Description\n\nFailed to load a Copilot CLI chat session.\n\n## Environment\n\n- Platform: ${runtimeInfo.platform}\n- VS Code: ${runtimeInfo.vscodeInfo}\n- Chat Extension Version: ${runtimeInfo.extensionVersion}\n\n## Error\n\n\`\`\`\n${invalidSessionMessage}\n\`\`\``;
+	const issueBody = `## Description\n\nFailed to load a Copilot CLI chat session.\n\n## Environment\n\n- Platform: ${runtimeInfo.platform}\n- Si Code: ${runtimeInfo.vscodeInfo}\n- Chat Extension Version: ${runtimeInfo.extensionVersion}\n\n## Error\n\n\`\`\`\n${invalidSessionMessage}\n\`\`\``;
 	const issueUrl = `https://github.com/microsoft/vscode/issues/new?title=${encodeURIComponent(issueTitle)}&body=${encodeURIComponent(issueBody)}`;
 
 	return { issueBody, issueUrl };
@@ -236,7 +236,7 @@ export class CopilotCLIChatSessionContentProvider extends Disposable implements 
 			controller.items.delete(SessionIdForCLI.getResource(e));
 		}));
 		this._register(this.sessionService.onDidChangeSession(async (e) => {
-			// Push path: VS Code uses the item we provide as source of truth and does not
+			// Push path: Si Code uses the item we provide as source of truth and does not
 			// re-invoke `resolveChatSessionItem` for already-visible rows. Include changes
 			// eagerly so the visible row reflects the latest diff info.
 			const item = await this.toChatSessionItem(e, { includeChanges: true });
@@ -697,10 +697,10 @@ export class CopilotCLIChatSessionParticipant extends Disposable {
 	 *
 	 * 1. The user sends a message while the session is already processing a
 	 *    previous request (status is `InProgress` or `NeedsInput`).
-	 * 2. VS Code signals this by setting `context.yieldRequested = true` on the
+	 * 2. Si Code signals this by setting `context.yieldRequested = true` on the
 	 *    *previous* request's context object.
 	 * 3. This handler polls `context.yieldRequested` every 100 ms. Once detected
-	 *    the outer `Promise.race` resolves, returning control to VS Code so it
+	 *    the outer `Promise.race` resolves, returning control to Si Code so it
 	 *    can dispatch the new (steering) request.
 	 * 4. Crucially, the inner `handleRequestImpl` promise is **not** cancelled
 	 *    or disposed – the original SDK session continues running in the
@@ -774,7 +774,7 @@ export class CopilotCLIChatSessionParticipant extends Disposable {
 	/**
 	 * Resolve the input and attachments for the SDK session based on request type.
 	 *
-	 * The VS Code chat API creates the session before firing the request handler,
+	 * The Si Code chat API creates the session before firing the request handler,
 	 * so delegated or remotely-steered requests pre-resolve and cache their prompt metadata
 	 * before the handler runs.
 	 */

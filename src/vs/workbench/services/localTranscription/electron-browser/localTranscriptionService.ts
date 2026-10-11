@@ -164,7 +164,7 @@ export class LocalTranscriptionService extends Disposable {
 	}
 
 	/**
-	 * Read VS Code's `http.proxy`/`http.noProxy`/`http.proxyStrictSSL`/
+	 * Read Si Code's `http.proxy`/`http.noProxy`/`http.proxyStrictSSL`/
 	 * `http.proxyAuthorization` settings so the utility process can honor a proxy
 	 * configured only in VS Code (not in the OS environment). Returns empty values
 	 * when unset, in which case the process's inherited environment proxy still

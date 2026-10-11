@@ -294,7 +294,7 @@ export interface IProductConfiguration {
 	readonly onboardingThemes?: readonly IProductOnboardingTheme[];
 
 	/**
-	 * When running as an embedded app, the parent VS Code's policy
+	 * When running as an embedded app, the parent Si Code's policy
 	 * identity (win32RegValueName / darwinBundleIdentifier) so that
 	 * enterprise policies deployed to the parent also apply here.
 	 */

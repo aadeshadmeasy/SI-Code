@@ -439,11 +439,11 @@ export const AgentHostEditTelemetryEnabledConfigKey = 'editTelemetryEnabled';
 /** Legacy Copilot Chat debug switch that disables `request.repoInfo` collection. */
 export const AgentHostDisableRepoInfoTelemetryConfigKey = 'disableRepoInfoTelemetry';
 
-/** VS Code setting forwarded into {@link AgentHostDisableRepoInfoTelemetryConfigKey}. */
+/** Si Code setting forwarded into {@link AgentHostDisableRepoInfoTelemetryConfigKey}. */
 export const DISABLE_REPO_INFO_TELEMETRY_SETTING_ID = 'chat.advanced.debug.disableRepoInfoTelemetry';
 
 /**
- * Root config key forwarded from the renderer when VS Code's
+ * Root config key forwarded from the renderer when Si Code's
  * `chat.sessionSync.enabled` setting changes. Controls the `remote` flag
  * passed to the copilot-sdk `CopilotClientOptions`.
  */
@@ -482,27 +482,27 @@ export const AgentHostCodexEnabledConfigKey = 'codexAgentEnabled';
 export const AgentHostEditAutoApprovePatternsConfigKey = 'editAutoApprovePatterns';
 
 /**
- * Root config key forwarded from the renderer when VS Code's
+ * Root config key forwarded from the renderer when Si Code's
  * `chat.tools.terminal.enableAutoApprove` setting changes. Controls whether
  * agent-host shell permission checks may apply terminal auto-approve rules.
  */
 export const AgentHostTerminalAutoApproveEnabledConfigKey = 'terminalAutoApproveEnabled';
 
 /**
- * The VS Code setting ID for terminal auto approve enablement. Defined here so
+ * The Si Code setting ID for terminal auto approve enablement. Defined here so
  * renderer-side agent-host clients can forward it without importing from
  * workbench terminal contributions.
  */
 export const TERMINAL_AUTO_APPROVE_ENABLED_SETTING_ID = 'chat.tools.terminal.enableAutoApprove';
 
-/** The VS Code setting ID for global auto approve enablement. */
+/** The Si Code setting ID for global auto approve enablement. */
 export const GLOBAL_AUTO_APPROVE_SETTING_ID = 'chat.tools.global.autoApprove';
 
-/** The VS Code setting ID for per-tool auto-approval eligibility. */
+/** The Si Code setting ID for per-tool auto-approval eligibility. */
 export const ELIGIBLE_FOR_AUTO_APPROVAL_SETTING_ID = 'chat.tools.eligibleForAutoApproval';
 
 /**
- * Root config key forwarded from the renderer when VS Code's
+ * Root config key forwarded from the renderer when Si Code's
  * `chat.tools.global.autoApprove` setting changes. When `true`, the global
  * auto-approve ("approve everything") setting is enabled and the agent host
  * treats every tool call as auto-approved — equivalent to a session running
@@ -513,7 +513,7 @@ export const AgentHostGlobalAutoApproveEnabledConfigKey = 'globalAutoApproveEnab
 export const AgentHostAutoApprovePolicyRestrictedConfigKey = 'autoApprovePolicyRestricted';
 
 /**
- * Root config key forwarded from the renderer when VS Code's `chat.autoReply`
+ * Root config key forwarded from the renderer when Si Code's `chat.autoReply`
  * setting changes. When `true`, the agent host auto-answers `ask_user`
  * questions instead of blocking on the user — the user is treated as
  * unavailable and the agent is told to use its best judgment, mirroring the
@@ -546,7 +546,7 @@ export const AgentHostMcpSamplingAllowedServersConfigKey = 'mcpSamplingAllowedSe
 export const AgentHostMcpConnectorsEnabledConfigKey = 'mcpConnectorsEnabled';
 
 /**
- * Independently synchronized proxy settings retain their VS Code `http.*`
+ * Independently synchronized proxy settings retain their Si Code `http.*`
  * names, matching other flat namespaced root keys such as `agentMerge.*`.
  */
 export const AgentHostProxyConfigKey = {
@@ -647,7 +647,7 @@ export const AgentHostAutoDeleteArchivedMergedSessionsAfterDaysConfigKey = 'auto
  * Root config key forwarded from the renderer that gates multiple-working-directory
  * support for the Copilot provider. When `true`, the Copilot provider advertises
  * the `multipleWorkingDirectories` capability. Mirrors the hidden
- * `chat.agentHost.copilotAgent.multiRootEnabled` VS Code setting.
+ * `chat.agentHost.copilotAgent.multiRootEnabled` Si Code setting.
  */
 export const AgentHostCopilotMultiRootEnabledConfigKey = 'copilotMultiRootEnabled';
 
@@ -655,7 +655,7 @@ export const AgentHostCopilotMultiRootEnabledConfigKey = 'copilotMultiRootEnable
  * Root config key forwarded from the renderer that gates multiple-working-directory
  * support for the Claude provider. When `true`, the Claude provider advertises
  * the `multipleWorkingDirectories` capability. Mirrors the hidden
- * `chat.agentHost.claudeAgent.multiRootEnabled` VS Code setting.
+ * `chat.agentHost.claudeAgent.multiRootEnabled` Si Code setting.
  */
 export const AgentHostClaudeMultiRootEnabledConfigKey = 'claudeMultiRootEnabled';
 
@@ -663,7 +663,7 @@ export const AgentHostClaudeMultiRootEnabledConfigKey = 'claudeMultiRootEnabled'
 export const AgentHostCodexMultiRootEnabledConfigKey = 'codexMultiRootEnabled';
 
 /**
- * Root config key forwarded from the renderer when VS Code's
+ * Root config key forwarded from the renderer when Si Code's
  * `chat.tools.terminal.autoApprove` setting changes. Holds the effective
  * terminal auto-approve rule object for agent-host shell permission checks.
  */
@@ -678,7 +678,7 @@ export type AgentHostTerminalAutoApproveRuleValue = boolean | null | IAgentHostT
 export type AgentHostTerminalAutoApproveRules = Record<string, AgentHostTerminalAutoApproveRuleValue>;
 
 /**
- * The VS Code setting IDs for terminal auto approve rules. Defined here so
+ * The Si Code setting IDs for terminal auto approve rules. Defined here so
  * renderer-side agent-host clients can forward them without importing from
  * workbench terminal contributions.
  */
@@ -912,7 +912,7 @@ export const platformRootSchema = createSchema({
 	[AgentHostGlobalAutoApproveEnabledConfigKey]: schemaProperty<boolean>({
 		type: 'boolean',
 		title: localize('agentHost.config.globalAutoApproveEnabled.title', "Global Auto Approve"),
-		description: localize('agentHost.config.globalAutoApproveEnabled.description', "Whether VS Code's global auto-approve setting is enabled. When `true`, every tool call is auto-approved, equivalent to a session using Allow all."),
+		description: localize('agentHost.config.globalAutoApproveEnabled.description', "Whether Si Code's global auto-approve setting is enabled. When `true`, every tool call is auto-approved, equivalent to a session using Allow all."),
 		default: false,
 	}),
 	[AgentHostAutoApprovePolicyRestrictedConfigKey]: schemaProperty<boolean>({
@@ -938,7 +938,7 @@ export const platformRootSchema = createSchema({
 	[AgentHostAutoReplyEnabledConfigKey]: schemaProperty<boolean>({
 		type: 'boolean',
 		title: localize('agentHost.config.autoReplyEnabled.title', "Auto Reply"),
-		description: localize('agentHost.config.autoReplyEnabled.description', "Whether VS Code's auto-reply setting is enabled. When `true`, `ask_user` questions are auto-answered instead of blocking on the user, mirroring autopilot mode."),
+		description: localize('agentHost.config.autoReplyEnabled.description', "Whether Si Code's auto-reply setting is enabled. When `true`, `ask_user` questions are auto-answered instead of blocking on the user, mirroring autopilot mode."),
 		default: false,
 	}),
 	[AgentHostSystemProxyEnabledConfigKey]: schemaProperty<boolean>({

@@ -313,7 +313,7 @@ export class AgentHostTerminalManager extends Disposable implements IAgentHostTe
 			env['TERM_PROGRAM'] = 'vscode';
 			env['TERM_PROGRAM_VERSION'] = this._productService.version;
 		}
-		// Attribute these commands to VS Code. Already inherited from the agent
+		// Attribute these commands to Si Code. Already inherited from the agent
 		// host process; set here as defense in depth.
 		env[AiAgentEnvVar] = AiAgentEnvValue;
 		if (options?.preventShellHistory) {

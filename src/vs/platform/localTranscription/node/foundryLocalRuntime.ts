@@ -37,7 +37,7 @@ import { Promises } from '../../../base/node/pfs.js';
  * variables (`HTTPS_PROXY`/`HTTP_PROXY`/`ALL_PROXY`, with `NO_PROXY`). VS Code's
  * `http.proxy`/`http.noProxy` settings are applied as these same environment
  * variables before provisioning (see `LocalTranscriptionService.start`), so a
- * proxy configured only in VS Code is honored here and by the native model
+ * proxy configured only in Si Code is honored here and by the native model
  * download too; `http.proxyAuthorization` (Basic) is folded into the proxy URL
  * and `http.proxyStrictSSL === false` disables TLS verification for this leg.
  * TLS-intercepting proxies otherwise rely on the CA being in the OS trust store.
@@ -118,7 +118,7 @@ export async function ensureFoundryLocalRuntime(cacheRoot: string, download: IFo
 async function doEnsure(overrideDir: string, platformKey: string, download: IFoundryLocalRuntimeDownload, token: CancellationToken, onProgress?: FoundryLocalRuntimeProgress): Promise<string> {
 	// The completion marker is per-platform: the shared `<cacheRoot>/<version>`
 	// dir can hold payloads for multiple architectures (e.g. a win32-arm64
-	// machine running x64 VS Code under emulation, then arm64 VS Code). Verify
+	// machine running x64 Si Code under emulation, then arm64 Si Code). Verify
 	// the target-specific payload as well as the marker, so a different arch's
 	// marker never short-circuits this arch's provisioning and a stale/partially
 	// deleted cache is repaired rather than trusted.
@@ -351,7 +351,7 @@ function detectGlibcVersion(): [number, number] | undefined {
  * Download the per-target runtime tarball from `url` and extract it into
  * `stagingDir`, which then contains
  * `prebuilds/<target>/<native files>`. The tarball is published
- * to VS Code's CDN by `build/dictation-runtime/`.
+ * to Si Code's CDN by `build/dictation-runtime/`.
  */
 async function downloadAndExtractTarball(url: string, stagingDir: string, token: CancellationToken): Promise<void> {
 	await fs.promises.mkdir(stagingDir, { recursive: true });

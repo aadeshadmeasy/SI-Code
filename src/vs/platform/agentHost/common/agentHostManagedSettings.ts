@@ -112,7 +112,7 @@ function managedPermissionsCompositeSetting(
 /**
  * Translates VS Code's agent network filter into managed domain rules.
  *
- * Only the blocking half is expressible. VS Code denies any domain outside a
+ * Only the blocking half is expressible. Si Code denies any domain outside a
  * populated allow list, but a managed `allow` entry does not block what it omits
  * — unmatched requests fall through to a prompt the user can approve — so
  * mapping the allow list would quietly downgrade a block into a prompt. The deny
@@ -126,7 +126,7 @@ function contributeNetworkDomainRules(configurationService: IConfigurationServic
 	const allowed = getGlobalConfigurationValue<string[]>(configurationService, AgentNetworkDomainSettingId.AllowedNetworkDomains) ?? [];
 	const denied = getGlobalConfigurationValue<string[]>(configurationService, AgentNetworkDomainSettingId.DeniedNetworkDomains) ?? [];
 
-	// VS Code's restrictive default: with the filter on and neither list
+	// Si Code's restrictive default: with the filter on and neither list
 	// configured, every domain is blocked.
 	if (allowed.length === 0 && denied.length === 0) {
 		return { deny: [buildManagedFamilyRule(ManagedRuleFamily.Domain)] };
@@ -248,7 +248,7 @@ const managedPermissionsSettings: readonly IManagedPermissionsSettingMapping[] =
 	// falls back to the bypass lock (see the transform).
 	managedPermissionsPolicy<Record<string, boolean>>(ELIGIBLE_FOR_AUTO_APPROVAL_SETTING_ID, contributeEligibleForAutoApprovalRestriction),
 	managedPermissionsPolicy<boolean>(TERMINAL_AUTO_APPROVE_ENABLED_SETTING_ID, value => value === false ? { ask: [buildManagedFamilyRule(ManagedRuleFamily.Shell)] } : undefined),
-	// The filter and its lists are evaluated together, and VS Code honors a user
+	// The filter and its lists are evaluated together, and Si Code honors a user
 	// or application value for all three.
 	managedPermissionsCompositeSetting(
 		AgentNetworkDomainSettingId.NetworkFilter,

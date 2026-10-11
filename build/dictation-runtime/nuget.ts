@@ -12,7 +12,7 @@
  * This is a deliberate re-implementation of the download/extract loop in
  * `foundry-local-sdk`'s `script/install-utils.cjs`, whose `runInstall` derives
  * the RID from the RUNNING host (`os.platform()`/`os.arch()`) at module load and
- * exposes no override. VS Code's ARM64 desktop builds run on x64 pools, so the
+ * exposes no override. Si Code's ARM64 desktop builds run on x64 pools, so the
  * host-locked installer can never produce the `linux-arm64`/`win32-arm64`
  * tarballs; extracting `runtimes/<rid>/native/*` from the same `.nupkg` files
  * for an explicit RID is host-independent and fixes that.
@@ -48,7 +48,7 @@ function loadAdmZip(): any {
 	return fromSdk('adm-zip');
 }
 
-/** The authenticated VS Code NuGet feed used for native runtime packages. */
+/** The authenticated Si Code NuGet feed used for native runtime packages. */
 const FEEDS: readonly string[] = [
 	VSCODE_NUGET_FEED,
 ];
@@ -59,7 +59,7 @@ function getRequestOptions(url: string): https.RequestOptions {
 	}
 	const token = process.env[VSS_NUGET_ACCESSTOKEN];
 	if (!token) {
-		throw new Error(`${VSS_NUGET_ACCESSTOKEN} is required to access the VS Code NuGet feed.`);
+		throw new Error(`${VSS_NUGET_ACCESSTOKEN} is required to access the Si Code NuGet feed.`);
 	}
 	return {
 		headers: {

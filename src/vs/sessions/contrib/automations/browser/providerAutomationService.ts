@@ -174,7 +174,7 @@ export class ProviderAutomationService extends Disposable implements IAutomation
 	async stopRun(run: IAutomationRun): Promise<void> {
 		const store = this.requireAutomationStore(run.automationId);
 		if (!store.stopRun || !store.canStopRun?.(run)) {
-			throw new AutomationUnavailableError(localize('automationStopUnavailable', "This automation run cannot be stopped from VS Code."));
+			throw new AutomationUnavailableError(localize('automationStopUnavailable', "This automation run cannot be stopped from Si Code."));
 		}
 		await store.stopRun(run);
 	}

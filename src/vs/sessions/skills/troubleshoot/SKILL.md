@@ -65,7 +65,7 @@ Iterate records in order and rebuild the logical tree from context:
 
 ## Secondary Source — Agent Host Wire Log (protocol communication)
 
-`events.jsonl` is the **primary** source and answers almost every question on its own. A *separate* log captures the **transport/protocol** between VS Code and the agent host process — the JSON-RPC-style frames that drive sessions.
+`events.jsonl` is the **primary** source and answers almost every question on its own. A *separate* log captures the **transport/protocol** between Si Code and the agent host process — the JSON-RPC-style frames that drive sessions.
 
 **Use the wire log only when the symptom points at the agent host / transport itself, not the model or a tool.** Reach for it when:
 - the agent host won't start, or the session never begins;
@@ -75,24 +75,24 @@ Iterate records in order and rebuild the logical tree from context:
 
 **Do not** open it for ordinary "why did the model/tool do X" questions — `events.jsonl` already answers those. If `events.jsonl` fully explains the behavior, stop there and don't read the wire log.
 
-**It is written by VS Code on the _client_ machine, so it is only reachable for a _local_ agent host** (VS Code and the agent on the same machine). For a remote agent host it lives on the client, not the host this skill runs on — skip it there.
+**It is written by Si Code on the _client_ machine, so it is only reachable for a _local_ agent host** (Si Code and the agent on the same machine). For a remote agent host it lives on the client, not the host this skill runs on — skip it there.
 
 ### Location
 
 ```
-<VS Code user-data dir>/logs/<session-timestamp>/ahp/ahp-<timestamp>-<connectionId>.jsonl
+<Si Code user-data dir>/logs/<session-timestamp>/ahp/ahp-<timestamp>-<connectionId>.jsonl
 ```
 
-The VS Code user-data dir depends on the build:
+The Si Code user-data dir depends on the build:
 - Windows: `%APPDATA%\Code` (Insiders: `Code - Insiders`; OSS/dev may use `Code - OSS` or a custom `--user-data-dir`)
 - macOS: `~/Library/Application Support/Code`
 - Linux: `~/.config/Code`
 
-A new `logs/<timestamp>/` folder is created per VS Code session — pick the **most recently modified** `ahp/ahp-*.jsonl`.
+A new `logs/<timestamp>/` folder is created per Si Code session — pick the **most recently modified** `ahp/ahp-*.jsonl`.
 
 **Named by _connection_ id, not session id** — one log **multiplexes all sessions on that connection** (no per-session file). Long connections rotate into `ahp-….1.jsonl`, `.2.jsonl`, … (max 5); the active one is the **most recently modified** (the locate commands pick it). Read the newest log for connection-level health; to isolate one session, filter by its id (the `session-state/<sessionId>/` folder name, which appears in frames' `params`/`result`).
 
-**If no `ahp/` folder exists, the wire log is disabled** (it is off by default). Tell the user to set `"chat.agentHost.ahpJsonlLoggingEnabled": true`, restart VS Code, reproduce the issue, then re-run.
+**If no `ahp/` folder exists, the wire log is disabled** (it is off by default). Tell the user to set `"chat.agentHost.ahpJsonlLoggingEnabled": true`, restart Si Code, reproduce the issue, then re-run.
 
 ### Format
 
@@ -102,7 +102,7 @@ Each line is a JSON-RPC frame plus an `_ahpLog` envelope:
 { "jsonrpc": "2.0", "id": 12, "method": "createSession", "params": {}, "_ahpLog": { "ts": "ISO-8601", "dir": "c2s", "connectionId": "…", "transport": "local" } }
 ```
 
-- `_ahpLog.dir` — direction: `c2s` = VS Code → host (requests/notifications), `s2c` = host → VS Code (results/errors/actions/notifications).
+- `_ahpLog.dir` — direction: `c2s` = Si Code → host (requests/notifications), `s2c` = host → Si Code (results/errors/actions/notifications).
 - `_ahpLog.transport` — `local` / `websocket` / `ssh` / `wsl`.
 - Requests/notifications carry `method` + `params`; responses carry `result` or `error` — pair a response to its request by `id`.
 - `_ahpLog.truncated: true` marks frames whose large payloads were elided.

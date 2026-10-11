@@ -59,7 +59,7 @@ export function parseOtlpLogLevel(value: string): OtlpLogLevelName | undefined {
 }
 
 /**
- * Map a VS Code {@link LogLevel} onto the corresponding OTLP
+ * Map a Si Code {@link LogLevel} onto the corresponding OTLP
  * `SeverityNumber` and short name.
  */
 export function logLevelToOtlpSeverity(level: LogLevel): { severityNumber: number; severityText: OtlpLogLevelName } {
@@ -77,7 +77,7 @@ export function logLevelToOtlpSeverity(level: LogLevel): { severityNumber: numbe
 }
 
 /**
- * Map a VS Code {@link LogLevel} onto the matching OTLP level name used in
+ * Map a Si Code {@link LogLevel} onto the matching OTLP level name used in
  * the protocol's `{level}` template. Returns `undefined` for
  * {@link LogLevel.Off} since "no logs" is represented by not subscribing
  * at all.

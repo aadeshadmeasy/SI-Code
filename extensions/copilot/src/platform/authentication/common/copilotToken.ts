@@ -605,7 +605,7 @@ export type TokenErrorReason =
 	'RequestFailed' |
 	/** Server response could not be parsed as JSON (malformed or unexpected response format). */
 	'ParseFailed' |
-	/** User not authenticated with GitHub through VS Code. Only returned from VS Code integration layer, not from platform token minting. */
+	/** User not authenticated with GitHub through Si Code. Only returned from Si Code integration layer, not from platform token minting. */
 	'GitHubLoginFailed' |
 	/** Server returned 401 Unauthorized HTTP status. */
 	'HTTP401' |

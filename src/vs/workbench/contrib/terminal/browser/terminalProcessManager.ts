@@ -707,7 +707,7 @@ export class TerminalProcessManager extends Disposable implements ITerminalProce
 		}
 
 		// If TerminalInstance did not know about the process exit then it was
-		// triggered by the process, not on VS Code's side.
+		// triggered by the process, not on Si Code's side.
 		if (this.processState === ProcessState.Running) {
 			this._setProcessState(ProcessState.KilledByProcess);
 		}

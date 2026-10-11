@@ -88,9 +88,9 @@ function parseArgs() {
 					'  --iterations <n>    Number of open→work→reset cycles (default: 3)',
 					'  --messages <n>      Messages to send per iteration (default: 5)',
 					'  --ci                CI mode: write Markdown summary to ci-summary.md',
-					'  --build <path|ver>  Path to VS Code build or version to download',
+					'  --build <path|ver>  Path to Si Code build or version to download',
 					'  --threshold <MB>    Max total residual heap growth in MB (default: 5)',
-					'  --setting <k=v>     Set a VS Code setting override (repeatable)',
+					'  --setting <k=v>     Set a Si Code setting override (repeatable)',
 					'  --verbose           Print per-step details',
 				].join('\n'));
 				process.exit(0);

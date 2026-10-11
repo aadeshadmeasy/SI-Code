@@ -1,9 +1,9 @@
 # Mission Control environments
 
-Mission Control exposes VS Code's existing native Agent Host utility process as a user-local environment over Azure Web PubSub. Local sessions continue using local IPC; remote clients use the same authoritative session state and protocol handler, not a separate daemon.
+Mission Control exposes Si Code's existing native Agent Host utility process as a user-local environment over Azure Web PubSub. Local sessions continue using local IPC; remote clients use the same authoritative session state and protocol handler, not a separate daemon.
 
 ```text
-Local VS Code ------ local IPC ------+
+Local Si Code ------ local IPC ------+
                                     +--- one native Agent Host and session state
 Other clients ----- MC / WPS --------+
 ```
@@ -12,7 +12,7 @@ Registration is opt-in and default-off. The activation path is available to buil
 
 ## Enable the real service
 
-1. Sign in to GitHub in the owning VS Code window.
+1. Sign in to GitHub in the owning Si Code window.
 2. Set `chat.agentHost.remoteConnections` to `githubEnvironment` (the default is `devTunnel`).
 3. Enable **Allow Remote Connections** in the Agents Window title bar or the local Agent Host chat toolbar. Selecting GitHub environment in settings does not register the environment.
 4. Wait for `Mission Control ready; environmentId=...` in the Agent Host log.
@@ -30,7 +30,7 @@ The backend setting's experimental feature tag does not restrict availability to
 
 ## Environment identity, name and ownership
 
-The registered name is `VS Code`, `VS Code Insiders`, or `VS Code OSS`; other product variants use their product short name. The same host-owned name is sent on registration and every heartbeat. This display label is not identity.
+The registered name is `Si Code`, `Si Code Insiders`, or `Si Code OSS`; other product variants use their product short name. The same host-owned name is sent on registration and every heartbeat. This display label is not identity.
 
 A random stable compute UUID is persisted in `agent-host-mission-control-id` under the user-data directory. It is not derived from hardware. The versioned record retains its canonical directory only locally, so a migrated profile copied to another directory receives a different identity without changing the original. Legacy plain UUIDs migrate in place; copies made before migration remain an explicit edge case. Restarting the same profile reuses its identity. Separate user-data directories intentionally represent separate hosts and may have identical display names.
 
@@ -46,9 +46,9 @@ New native allocations negotiate standard `ahp-session` resources with a separat
 
 ### Web PubSub receive capabilities
 
-VS Code clients publish the transport control `{"kind":"capabilities","accepts":["batch"]}` to the configured `to_host` group after joining their receive groups, and wait for its relay acknowledgement before initializing AHP. The socket/group-join timeout ends when the joins complete; capability publication then has its own 30-second acknowledgement deadline. They re-advertise after each successful AHP initialization or reconnect response, before delivering that response to the protocol client, so a replacement host lane can establish receive support. Rejected, timed-out, or unwritable capability publications fail the connection through normal relay error handling.
+Si Code clients publish the transport control `{"kind":"capabilities","accepts":["batch"]}` to the configured `to_host` group after joining their receive groups, and wait for its relay acknowledgement before initializing AHP. The socket/group-join timeout ends when the joins complete; capability publication then has its own 30-second acknowledgement deadline. They re-advertise after each successful AHP initialization or reconnect response, before delivering that response to the protocol client, so a replacement host lane can establish receive support. Rejected, timed-out, or unwritable capability publications fail the connection through normal relay error handling.
 
-The declaration permits a supporting peer to send bounded, ordered transport batches toward VS Code; it does not enable client outbound batching or prove that the peer has processed the declaration. Individual messages and chunks remain supported. These controls are not AHP messages or JSON-RPC batches and are not emitted on direct WebSocket or local IPC connections.
+The declaration permits a supporting peer to send bounded, ordered transport batches toward Si Code; it does not enable client outbound batching or prove that the peer has processed the declaration. Individual messages and chunks remain supported. These controls are not AHP messages or JSON-RPC batches and are not emitted on direct WebSocket or local IPC connections.
 
 ### Model advertisements
 
@@ -98,7 +98,7 @@ Delegation does not extend the remote lane's identity deadline. The forwarded lo
 
 Changing this setting, rotating the local registration credential, signing out, or withdrawing registration closes the affected relay lanes. Reconnect the mobile client after changes. A missing, rejected, foreign-owner, or concurrently changed local credential fails authentication instead of borrowing a previous credential. Ongoing provider credential retention and per-session sponsorship remain subject to S03's shared-store limitations.
 
-This explicit host-owner delegation is a VS Code testing exception to the user-local sponsorship and control-plane separation contract (S03/S05), not the normal client-token mode or a managed-sandbox principal. Existing enterprise remote-control checks, workspace grants, and tool permissions still apply. Remove the setting or set it to `false` to restore client credentials.
+This explicit host-owner delegation is a Si Code testing exception to the user-local sponsorship and control-plane separation contract (S03/S05), not the normal client-token mode or a managed-sandbox principal. Existing enterprise remote-control checks, workspace grants, and tool permissions still apply. Remove the setting or set it to `false` to restore client credentials.
 
 ## Lifecycle and mirroring
 
@@ -123,7 +123,7 @@ Usage telemetry uses the existing telemetry service and consent:
 - `agentHost.missionControlOperation` reports host configuration, registration, token/key refresh and relay outcomes, plus failed heartbeats/check-ins. `relayDisconnected` reports only unexpected loss of a ready relay, with its ready duration; explicit withdrawal and credential rotation are excluded. Operation failures at different boundaries may describe the same underlying failure and must not be summed as distinct outages.
 - `missionControlConnectionAttempt` reports user-local connection success, failure, caller cancellation and timeout across inventory validation and relay establishment. This distinguishes the retained-host service's end-to-end deadline from the cancellation it sends to the shared relay service.
 - `cloudSandboxConnectionOutcome`, `cloudSandboxFirstSessionRequest` and `cloudSandboxConnectionHealth` distinguish `environmentKind=user-local` from `cloud`. Outcomes cover logical connects and recovery, including failure and cancellation. Health aggregates ready connection time and unexpected disconnects separately for each kind, excluding initial retries and intentional teardown.
-- `agentHost.clientConnection`, `agentHost.sessionCreated` and existing action/turn events identify user-local relay traffic with the bounded connection kind `mission_control`, alongside `ssh` and `dev_tunnel`. The host knows its relay route even when another conforming client omits VS Code metadata. Session creation is counted after successful AHP allocation, not discovery or restoration.
+- `agentHost.clientConnection`, `agentHost.sessionCreated` and existing action/turn events identify user-local relay traffic with the bounded connection kind `mission_control`, alongside `ssh` and `dev_tunnel`. The host knows its relay route even when another conforming client omits Si Code metadata. Session creation is counted after successful AHP allocation, not discovery or restoration.
 
 No server messages, response bodies, credentials, environment names or addresses are added to these telemetry events. Server error messages remain local. Host-wide logs are not exposed over Mission Control ingress.
 

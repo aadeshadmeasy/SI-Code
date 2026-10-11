@@ -753,7 +753,7 @@ document.addEventListener('click', event => {
 				}
 			}
 
-			// If original link doesn't look like a url, delegate back to VS Code to resolve
+			// If original link doesn't look like a url, delegate back to Si Code to resolve
 			if (hrefText && !/^[a-z\-]+:/i.test(hrefText)) {
 				messaging.postMessage('openLink', { href: hrefText });
 				event.preventDefault();

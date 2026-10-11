@@ -1,25 +1,25 @@
 ---
 name: launch
-description: "Launch and automate VS Code Insiders with the Copilot Chat extension using @playwright/cli via Chrome DevTools Protocol. Use when you need to interact with the VS Code UI, automate the chat panel, test the extension UI, or take screenshots. Triggers include 'automate VS Code', 'interact with chat', 'test the UI', 'take a screenshot', 'launch with debugging'."
+description: "Launch and automate Si Code Insiders with the Copilot Chat extension using @playwright/cli via Chrome DevTools Protocol. Use when you need to interact with the Si Code UI, automate the chat panel, test the extension UI, or take screenshots. Triggers include 'automate Si Code', 'interact with chat', 'test the UI', 'take a screenshot', 'launch with debugging'."
 metadata:
   allowed-tools: Bash(npx @playwright/cli:*)
 ---
 
-# VS Code Extension Automation
+# Si Code Extension Automation
 
-Automate VS Code Insiders with the Copilot Chat extension using `@playwright/cli`. VS Code is built on Electron/Chromium and exposes a Chrome DevTools Protocol (CDP) port that `@playwright/cli` can attach to, enabling the same snapshot-interact workflow used for web pages.
+Automate Si Code Insiders with the Copilot Chat extension using `@playwright/cli`. Si Code is built on Electron/Chromium and exposes a Chrome DevTools Protocol (CDP) port that `@playwright/cli` can attach to, enabling the same snapshot-interact workflow used for web pages.
 
 ## Prerequisites
 
 - **`@playwright/cli` is available via devDependencies.** Run `npm install` at the repo root, then use `npx @playwright/cli` to invoke commands. Alternatively, install globally with `npm install -g @playwright/cli`.
-- **`code-insiders` is required.** This extension uses 58 proposed VS Code APIs and targets `vscode ^1.110.0-20260223`. VS Code Stable will **not** activate it — you must use VS Code Insiders.
+- **`code-insiders` is required.** This extension uses 58 proposed Si Code APIs and targets `vscode ^1.110.0-20260223`. Si Code Stable will **not** activate it — you must use Si Code Insiders.
 - **The extension must be compiled first.** Use `npm run compile` for a one-shot build, or `npm run watch` for iterative development.
-- **CSS selectors are internal implementation details.** Selectors like `.interactive-input-part`, `.monaco-editor`, and `.view-line` are VS Code internals that may change across versions. If automation breaks after a VS Code update, re-snapshot and check for selector changes.
+- **CSS selectors are internal implementation details.** Selectors like `.interactive-input-part`, `.monaco-editor`, and `.view-line` are Si Code internals that may change across versions. If automation breaks after a Si Code update, re-snapshot and check for selector changes.
 
 ## Core Workflow
 
 1. **Build** the extension
-2. **Launch** VS Code Insiders with the extension and remote debugging enabled
+2. **Launch** Si Code Insiders with the extension and remote debugging enabled
 3. **Attach** npx @playwright/cli to the CDP port
 4. **Snapshot** to discover interactive elements
 5. **Interact** using element refs
@@ -51,7 +51,7 @@ code-insiders --extensionDevelopmentPath="$PWD" --remote-debugging-port=9223 --u
 # On Windows (PowerShell):
 # code-insiders --extensionDevelopmentPath="$PWD" --remote-debugging-port=9223 --user-data-dir="$PWD\.vscode-ext-debug"
 
-# Wait for VS Code to start, retry until attached
+# Wait for Si Code to start, retry until attached
 for i in 1 2 3 4 5; do npx @playwright/cli attach --cdp=http://127.0.0.1:9223 2>/dev/null && break || sleep 3; done
 
 # Verify you're connected to the right target (not about:blank)
@@ -71,7 +71,7 @@ After `attach`, all subsequent commands target the connected app without needing
 
 ## Tab Management
 
-VS Code uses multiple webviews internally. Use tab commands to list and switch between them:
+Si Code uses multiple webviews internally. Use tab commands to list and switch between them:
 
 ```bash
 # List all available targets (windows, webviews, etc.)
@@ -81,15 +81,15 @@ npx @playwright/cli tab-list
 npx @playwright/cli tab-select 2
 ```
 
-## Launching VS Code Extensions for Debugging
+## Launching Si Code Extensions for Debugging
 
-To debug a VS Code extension via npx @playwright/cli, launch VS Code Insiders with `--extensionDevelopmentPath` pointing to your extension source and `--remote-debugging-port` for CDP. Use `--user-data-dir` to avoid conflicting with an already-running VS Code instance.
+To debug a Si Code extension via npx @playwright/cli, launch Si Code Insiders with `--extensionDevelopmentPath` pointing to your extension source and `--remote-debugging-port` for CDP. Use `--user-data-dir` to avoid conflicting with an already-running Si Code instance.
 
 ```bash
 # Build the extension first (from the repo root)
 npm run compile
 
-# Launch VS Code Insiders with the extension and CDP
+# Launch Si Code Insiders with the extension and CDP
 # IMPORTANT: Use a persistent directory (not /tmp) so auth state is preserved.
 # .vscode-ext-debug is relative to the project root — works in worktrees and is gitignored.
 code-insiders \
@@ -97,7 +97,7 @@ code-insiders \
   --remote-debugging-port=9223 \
   --user-data-dir="$PWD/.vscode-ext-debug"
 
-# Wait for VS Code to start, retry until attached
+# Wait for Si Code to start, retry until attached
 for i in 1 2 3 4 5; do npx @playwright/cli attach --cdp=http://127.0.0.1:9223 2>/dev/null && break || sleep 3; done
 
 # Verify you're connected to the right target (not about:blank)
@@ -109,7 +109,7 @@ npx @playwright/cli snapshot
 **Key flags:**
 - `--extensionDevelopmentPath=<path>` — loads your extension from source (must be compiled first). Use `$PWD` when running from the repo root.
 - `--remote-debugging-port=9223` — enables CDP (use 9223 to avoid conflicts with other apps on 9222)
-- `--user-data-dir=<path>` — uses a separate profile so it starts a new process instead of sending to an existing VS Code instance. **Always use a persistent path** (e.g., `$PWD/.vscode-ext-debug`) rather than `/tmp/...` so authentication, settings, and extension state survive across sessions.
+- `--user-data-dir=<path>` — uses a separate profile so it starts a new process instead of sending to an existing Si Code instance. **Always use a persistent path** (e.g., `$PWD/.vscode-ext-debug`) rather than `/tmp/...` so authentication, settings, and extension state survive across sessions.
 
 **Without `--user-data-dir`**, VS Code detects the running instance, forwards the args to it, and exits immediately — you'll see "Sent env to running instance. Terminating..." and CDP never starts.
 
@@ -124,14 +124,14 @@ npx @playwright/cli snapshot
 ### Restart Workflow
 
 1. **Recompile** the extension
-2. **Kill** the running VS Code instance (the one using your debug user-data-dir)
-3. **Relaunch** VS Code with the same flags
+2. **Kill** the running Si Code instance (the one using your debug user-data-dir)
+3. **Relaunch** Si Code with the same flags
 
 ```bash
 # 1. Recompile
 npm run compile
 
-# 2. Kill the VS Code instance tied to this project's debug profile, then relaunch
+# 2. Kill the Si Code instance tied to this project's debug profile, then relaunch
 # macOS / Linux:
 kill $(ps ax -ww -o pid,command | grep "$PWD/.vscode-ext-debug" | grep -v grep | awk '{print $1}' | head -1)
 
@@ -149,11 +149,11 @@ for i in 1 2 3 4 5; do npx @playwright/cli attach --cdp=http://127.0.0.1:9223 2>
 npx @playwright/cli snapshot
 ```
 
-> **Tip:** If you're iterating frequently, run `npm run watch` in a separate terminal so compilation happens automatically. You still need to kill and relaunch VS Code to load the new bundle.
+> **Tip:** If you're iterating frequently, run `npm run watch` in a separate terminal so compilation happens automatically. You still need to kill and relaunch Si Code to load the new bundle.
 
 ## Interacting with Monaco Editor (Chat Input, Code Editors)
 
-VS Code uses Monaco Editor for all text inputs including the Copilot Chat input. Monaco editors appear as textboxes in the accessibility snapshot but require specific npx @playwright/cli commands to interact with.
+Si Code uses Monaco Editor for all text inputs including the Copilot Chat input. Monaco editors appear as textboxes in the accessibility snapshot but require specific npx @playwright/cli commands to interact with.
 
 ### What Works
 
@@ -254,7 +254,7 @@ npx @playwright/cli eval '
 npx @playwright/cli type "Text after JS focus"
 ```
 
-After JS mouse events, `document.activeElement` becomes a `DIV` with class `native-edit-context` — this is VS Code's native text editing surface.
+After JS mouse events, `document.activeElement` becomes a `DIV` with class `native-edit-context` — this is Si Code's native text editing surface.
 
 ### Verifying Text in Monaco
 
@@ -283,15 +283,15 @@ npx @playwright/cli press Backspace
 
 ### "Connection refused" or "Cannot connect"
 
-- Make sure VS Code Insiders was launched with `--remote-debugging-port=9223`
-- If VS Code was already running, quit and relaunch with the flag
+- Make sure Si Code Insiders was launched with `--remote-debugging-port=9223`
+- If Si Code was already running, quit and relaunch with the flag
 - Check that the port isn't in use by another process:
   - macOS / Linux: `lsof -i :9223`
   - Windows: `netstat -ano | findstr 9223`
 
 ### Elements not appearing in snapshot
 
-- VS Code uses multiple webviews. Use `npx @playwright/cli tab-list` to list targets and switch to the right one with `npx @playwright/cli tab-select <index>`
+- Si Code uses multiple webviews. Use `npx @playwright/cli tab-list` to list targets and switch to the right one with `npx @playwright/cli tab-select <index>`
 
 ### Cannot type in Monaco inputs
 
@@ -310,7 +310,7 @@ If `npx @playwright/cli screenshot` returns "Permission denied", your terminal n
 # Disconnect npx @playwright/cli
 npx @playwright/cli close
 
-# Kill the debug VS Code instance
+# Kill the debug Si Code instance
 # macOS / Linux:
 kill $(ps ax -ww -o pid,command | grep "$PWD/.vscode-ext-debug" | grep -v grep | awk '{print $1}' | head -1)
 

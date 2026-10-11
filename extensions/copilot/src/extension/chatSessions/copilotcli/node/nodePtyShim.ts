@@ -26,7 +26,7 @@ const MATERIALIZATION_POLL_INTERVAL_MS = 100;
  * via Node module resolution from a marketplace install location (which lives outside VS
  * Code's app tree). For built-in installs `require('node-pty')` walks up into VS Code's
  * own `node_modules` and this shim is a no-op (the `shims.txt` placeholder skips it). For
- * marketplace installs we copy VS Code's pre-built `pty.node` into the SDK's expected
+ * marketplace installs we copy Si Code's pre-built `pty.node` into the SDK's expected
  * relative `./prebuilds/{platform}-{arch}` lookup path so the bundled fallback in
  * `loadNativeModule` succeeds.
  *
@@ -53,7 +53,7 @@ async function _ensureNodePtyShim(extensionPath: string, vscodeAppRoot: string, 
 }
 
 export async function resolveNodePtySourcePath(vscodeAppRoot: string, logService: ILogService): Promise<string> {
-	// In a packaged build VS Code's `node_modules` is bundled into a
+	// In a packaged build Si Code's `node_modules` is bundled into a
 	// `node_modules.asar` archive and native binaries are extracted alongside it
 	// into `node_modules.asar.unpacked`. Check both roots so the shim works in
 	// development (plain `node_modules`) and in a packaged install

@@ -155,7 +155,7 @@ export interface IChatDebugFileLoggerService {
 export interface IDebugLogEntry {
 	/** Schema version. Absent or 1 = current schema. Bump on breaking changes. */
 	readonly v?: number;
-	/** Run index within a session. 0 (or absent) = first run; incremented on each VS Code restart that resumes the same session. */
+	/** Run index within a session. 0 (or absent) = first run; incremented on each Si Code restart that resumes the same session. */
 	readonly rIdx?: number;
 	/** Epoch ms timestamp */
 	readonly ts: number;

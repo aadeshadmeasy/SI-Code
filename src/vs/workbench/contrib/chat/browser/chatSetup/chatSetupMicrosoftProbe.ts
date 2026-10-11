@@ -28,7 +28,7 @@ const MICROSOFT_PROVIDER_ID = 'microsoft';
 /**
  * The Entra audience GitHub accepts as the subject token of the Entra-to-GitHub token exchange.
  * Must match `ENTRA_GITHUB_AUDIENCE_SCOPE` in `extensions/github-authentication`, so the probe
- * receives the same token a real "Continue with Microsoft" sign-in would.
+ * receives the same token a real "Continue with a work or school account" sign-in would.
  */
 const ENTRA_GITHUB_AUDIENCE_SCOPE = '12f6db80-0741-4a7e-b9c5-b85d737b3a31/.default';
 
@@ -103,7 +103,7 @@ export async function probeMicrosoftSignIn(authenticationService: IAuthenticatio
 export const IChatMicrosoftSignInProbeService = createDecorator<IChatMicrosoftSignInProbeService>('chatMicrosoftSignInProbeService');
 
 /**
- * Decides whether sign-in surfaces offer "Continue with Microsoft", according to
+ * Decides whether sign-in surfaces offer "Continue with a work or school account", according to
  * {@link ChatMicrosoftAuthenticationEnabledSettingId}. In {@link ChatMicrosoftAuthenticationMode.Auto},
  * the option is offered once {@link probeMicrosoftSignIn} finds a linked account for the GitHub
  * host sign-in would use. Probing starts in the background as soon as this service exists, whether
@@ -118,13 +118,13 @@ export interface IChatMicrosoftSignInProbeService {
 	readonly _serviceBrand: undefined;
 
 	/**
-	 * Whether sign-in surfaces should offer "Continue with Microsoft". Can turn on while a surface is
+	 * Whether sign-in surfaces should offer "Continue with a work or school account". Can turn on while a surface is
 	 * showing, when a probe finds a linked account, so a surface that stays open should follow it.
 	 */
 	readonly offerMicrosoftSignIn: IObservable<boolean>;
 
 	/**
-	 * Call whenever a surface that could offer "Continue with Microsoft" is shown. Logs the experiment
+	 * Call whenever a surface that could offer "Continue with a work or school account" is shown. Logs the experiment
 	 * trigger, and never waits: when Microsoft is not offered yet, it probes again in the background.
 	 */
 	notifySignInShown(): void;
@@ -138,8 +138,8 @@ type MicrosoftSignInProbeEvent = {
 
 type MicrosoftSignInProbeClassification = {
 	owner: 'TylerLeonhardt';
-	comment: 'Reports whether the silent check for a Microsoft account linked to GitHub found one, to judge whether offering "Continue with Microsoft" automatically works.';
-	outcome: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'Whether a linked account was found, none was, there were no Microsoft accounts, or the check failed.' };
+	comment: 'Reports whether the silent check for a work or school account linked to GitHub found one, to judge whether offering "Continue with a work or school account" automatically works.';
+	outcome: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'Whether a linked account was found, none was, there were no work or school accounts, or the check failed.' };
 	microsoftAccounts: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; isMeasurement: true; comment: 'How many Microsoft work or school accounts were checked.' };
 	durationMs: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; isMeasurement: true; comment: 'How long the check took, in milliseconds.' };
 };
@@ -165,7 +165,7 @@ export class ChatMicrosoftSignInProbeService extends Disposable implements IChat
 	/** Stops a running probe from asking GitHub, and so from minting a token, once this service is gone. */
 	private readonly disposed = cancelOnDispose(this._store);
 	/**
-	 * Cancelled, and replaced, whenever a Microsoft account is added or removed: a probe still running
+	 * Cancelled, and replaced, whenever a work or school account is added or removed: a probe still running
 	 * then answers for accounts that may be gone, so its answer is discarded.
 	 */
 	private accountsCancellation = new CancellationTokenSource(this.disposed);
@@ -193,7 +193,7 @@ export class ChatMicrosoftSignInProbeService extends Disposable implements IChat
 		});
 		this.offerMicrosoftSignIn = derived(this, reader => this.isProbeRelevant(reader) && this.offered.read(reader));
 
-		// Adding or removing a Microsoft account can change the answer either way, so whatever was found
+		// Adding or removing a work or school account can change the answer either way, so whatever was found
 		// is forgotten and the accounts are probed again. Token refreshes only fire `changed` and are
 		// ignored, because probing mints a GitHub token.
 		const microsoftAccountsChanged = observableSignal(this);
@@ -234,7 +234,7 @@ export class ChatMicrosoftSignInProbeService extends Disposable implements IChat
 		}
 	}
 
-	/** Whether "Continue with Microsoft" can matter at all, in any mode: independent of the experiment arm. */
+	/** Whether "Continue with a work or school account" can matter at all, in any mode: independent of the experiment arm. */
 	private isProbeRelevant(reader: IReader | undefined): boolean {
 		return !this.chatEntitlementService.sentimentObs.read(reader).hidden
 			&& !!this.productService.defaultChatAgent?.provider.microsoft?.id;

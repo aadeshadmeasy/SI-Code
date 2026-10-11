@@ -134,7 +134,7 @@ Fork support (Phase 6.5) is explicitly *not* a Phase 13 concern. The earlier pla
   - SDK throw → returns `[]` and logs a warning.
 - **Hygiene** (per [.github/copilot-instructions.md](../../../../../../.github/copilot-instructions.md)): `typecheck-client` clean, `valid-layers-check` clean, `npm run eslint` clean, `npm run gulp hygiene` clean.
 
-Run via VS Code's `runTests` tool against the test files, or fall back to `scripts/test.sh --grep "Phase 13|getSessionMessages|claudeReplayMapper"`.
+Run via Si Code's `runTests` tool against the test files, or fall back to `scripts/test.sh --grep "Phase 13|getSessionMessages|claudeReplayMapper"`.
 
 ### E2E
 

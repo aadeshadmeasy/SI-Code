@@ -206,7 +206,7 @@ const CONTENT_SCENARIOS = {
 					'}\n\n',
 				], 5);
 			}
-			b.emit('```\n\nThis defines 40 service classes following the standard VS Code pattern.\n');
+			b.emit('```\n\nThis defines 40 service classes following the standard Si Code pattern.\n');
 			return b.build();
 		})(),
 	},
@@ -306,7 +306,7 @@ const TOOL_CALL_SCENARIOS = {
 					{
 						kind: 'content',
 						chunks: new ScenarioBuilder()
-							.wait(20, '## Analysis of VS Code Base Utilities\n\n')
+							.wait(20, '## Analysis of Si Code Base Utilities\n\n')
 							.stream([
 								'I read 8 core utility files from `src/vs/base/common/`. Here is a summary:\n\n',
 								'### lifecycle.ts\n',
@@ -390,7 +390,7 @@ const TOOL_CALL_SCENARIOS = {
 								'### Edits applied:\n',
 								'1. **lifecycle.ts** — Updated the benchmark marker comment\n',
 								'2. **event.ts** — Updated the benchmark marker comment\n\n',
-								'Both files follow the standard VS Code pattern of using `Disposable` as a base class ',
+								'Both files follow the standard Si Code pattern of using `Disposable` as a base class ',
 								'with `_register()` for lifecycle management. The edits were minimal and localized.\n',
 							], 20)
 							.build(),
@@ -521,7 +521,7 @@ const MULTI_TURN_SCENARIOS = {
 					thinkingChunks: new ScenarioBuilder()
 						.stream([
 							'Let me analyze this code carefully. ',
-							'The user is asking about the lifecycle pattern in VS Code. ',
+							'The user is asking about the lifecycle pattern in Si Code. ',
 							'I should look at the Disposable base class and how it manages cleanup. ',
 							'The key methods are _register(), dispose(), and the DisposableStore pattern. ',
 							'I need to read the file first to give an accurate explanation.',

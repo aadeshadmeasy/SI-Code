@@ -110,20 +110,20 @@ const promptFilesMigrationCategory: ICustomizationMigrationCategory = {
 		if (workspaceCount > 0 && userCount > 0) {
 			return localize(
 				'promptMigrationCardDescriptionWorkspaceAndUser',
-				"Prompt files are deprecated for this harness. Found {0} prompt files ({1} workspace, {2} global) that local VS Code can still run, but {3} ignores. Convert them to skills to keep them available.",
+				"Prompt files are deprecated for this harness. Found {0} prompt files ({1} workspace, {2} global) that local Si Code can still run, but {3} ignores. Convert them to skills to keep them available.",
 				totalCount, workspaceCount, userCount, harnessLabel,
 			);
 		}
 		if (workspaceCount > 0) {
 			return localize(
 				'promptMigrationCardDescriptionWorkspace',
-				"Prompt files are deprecated for this harness. Found {0} workspace prompt files that local VS Code can still run, but {1} ignores. Convert them to skills to keep them available.",
+				"Prompt files are deprecated for this harness. Found {0} workspace prompt files that local Si Code can still run, but {1} ignores. Convert them to skills to keep them available.",
 				workspaceCount, harnessLabel,
 			);
 		}
 		return localize(
 			'promptMigrationCardDescriptionUser',
-			"Prompt files are deprecated for this harness. Found {0} global prompt files that local VS Code can still run, but {1} ignores. Convert them to skills to keep them available.",
+			"Prompt files are deprecated for this harness. Found {0} global prompt files that local Si Code can still run, but {1} ignores. Convert them to skills to keep them available.",
 			userCount, harnessLabel,
 		);
 	},
@@ -197,7 +197,7 @@ const userDataMigrationCategory: ICustomizationMigrationCategory = {
 		if (agentCount > 0 && instructionsCount > 0) {
 			return localize(
 				'userDataMigrationCardDescriptionMixed',
-				"User data customizations are only used by VS Code. Found {0} customizations that {1} ignores. Move them to keep them available.",
+				"User data customizations are only used by Si Code. Found {0} customizations that {1} ignores. Move them to keep them available.",
 				totalCount, harnessLabel,
 			);
 		}
@@ -205,24 +205,24 @@ const userDataMigrationCategory: ICustomizationMigrationCategory = {
 			return agentCount === 1
 				? localize(
 					'userDataMigrationCardDescriptionAgent',
-					"User data customizations are only used by VS Code. Found 1 agent that {0} ignores. Move it to keep it available.",
+					"User data customizations are only used by Si Code. Found 1 agent that {0} ignores. Move it to keep it available.",
 					harnessLabel,
 				)
 				: localize(
 					'userDataMigrationCardDescriptionAgents',
-					"User data customizations are only used by VS Code. Found {0} agents that {1} ignores. Move them to keep them available.",
+					"User data customizations are only used by Si Code. Found {0} agents that {1} ignores. Move them to keep them available.",
 					agentCount, harnessLabel,
 				);
 		}
 		return instructionsCount === 1
 			? localize(
 				'userDataMigrationCardDescriptionInstruction',
-				"User data customizations are only used by VS Code. Found 1 instruction file that {0} ignores. Move it to keep it available.",
+				"User data customizations are only used by Si Code. Found 1 instruction file that {0} ignores. Move it to keep it available.",
 				harnessLabel,
 			)
 			: localize(
 				'userDataMigrationCardDescriptionInstructions',
-				"User data customizations are only used by VS Code. Found {0} instruction files that {1} ignores. Move them to keep them available.",
+				"User data customizations are only used by Si Code. Found {0} instruction files that {1} ignores. Move them to keep them available.",
 				instructionsCount, harnessLabel,
 			);
 	},
@@ -277,10 +277,10 @@ const configuredLocationsMigrationCategory: ICustomizationMigrationCategory = {
 	enablementSetting: ChatConfiguration.ChatCustomizationsMigrationEnabled,
 	configurationSettingIds: CONFIGURED_LOCATION_SETTING_IDS,
 	shortcutLabel: localize('configuredLocationsMigrationShortcutLabel', "Migrate Location Settings"),
-	shortcutTooltip: localize('configuredLocationsMigrationShortcutTooltip', "Move customizations from VS Code-configured locations to locations supported by the active harness"),
+	shortcutTooltip: localize('configuredLocationsMigrationShortcutTooltip', "Move customizations from Si Code-configured locations to locations supported by the active harness"),
 	cardLabel: localize('configuredLocationsMigrationCardLabel', "Migrate Location Settings"),
 	cardActionLabel: localize('configuredLocationsMigrationCardAction', "Migrate..."),
-	cardActionAriaLabel: localize('configuredLocationsMigrationCardActionAriaLabel', "Migrate customizations from VS Code-configured locations"),
+	cardActionAriaLabel: localize('configuredLocationsMigrationCardActionAriaLabel', "Migrate customizations from Si Code-configured locations"),
 	noFilesMigratedMessage: localize('configuredLocationsMigrationNoFilesMigrated', "No customizations from configured locations were migrated."),
 
 	isCandidate: isConfiguredLocationMigrationCandidate,
@@ -302,8 +302,8 @@ const configuredLocationsMigrationCategory: ICustomizationMigrationCategory = {
 
 	getCardDescription(customizations, harnessLabel) {
 		return customizations.length === 1
-			? localize('configuredLocationsMigrationCardDescriptionSingle', "Found 1 customization in a location observed only by the Local agent harness. {0} picks it up when running in VS Code. Move it to a supported location for use outside VS Code.", harnessLabel)
-			: localize('configuredLocationsMigrationCardDescription', "Found {0} customizations in locations observed only by the Local agent harness. {1} picks them up when running in VS Code. Move them to supported locations for use outside VS Code.", customizations.length, harnessLabel);
+			? localize('configuredLocationsMigrationCardDescriptionSingle', "Found 1 customization in a location observed only by the Local agent harness. {0} picks it up when running in Si Code. Move it to a supported location for use outside Si Code.", harnessLabel)
+			: localize('configuredLocationsMigrationCardDescription', "Found {0} customizations in locations observed only by the Local agent harness. {1} picks them up when running in Si Code. Move them to supported locations for use outside Si Code.", customizations.length, harnessLabel);
 	},
 
 	getConfirmation(customizations, harnessLabel, destinationLabel) {
@@ -312,8 +312,8 @@ const configuredLocationsMigrationCategory: ICustomizationMigrationCategory = {
 				? localize('configuredLocationsMigrationConfirmMessageWithDestination', "Migrate customizations to '{0}'?", destinationLabel)
 				: localize('configuredLocationsMigrationConfirmMessage', "Migrate customizations to {0}?", harnessLabel),
 			detail: customizations.length === 1
-				? localize('configuredLocationsMigrationConfirmDetailSingle', "This moves 1 customization out of a VS Code-configured location. If all customizations that use the affected location setting migrate successfully, that setting is cleared.")
-				: localize('configuredLocationsMigrationConfirmDetail', "This moves {0} customizations out of VS Code-configured locations. If all customizations that use the affected location settings migrate successfully, those settings are cleared.", customizations.length),
+				? localize('configuredLocationsMigrationConfirmDetailSingle', "This moves 1 customization out of a Si Code-configured location. If all customizations that use the affected location setting migrate successfully, that setting is cleared.")
+				: localize('configuredLocationsMigrationConfirmDetail', "This moves {0} customizations out of Si Code-configured locations. If all customizations that use the affected location settings migrate successfully, those settings are cleared.", customizations.length),
 			primaryButton: localize('configuredLocationsMigrationConfirmButton', "Migrate"),
 			deleteOriginalsLabel: localize('configuredLocationsMigrationDeleteOriginalFilesCheckbox', "Delete the original files after migration"),
 		};

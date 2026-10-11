@@ -4,7 +4,7 @@ This workspace extension demonstrates a Markdown code block editor whose UI is
 loaded from external HTML, CSS, and TypeScript modules. The iframe communicates
 with this extension through `WebEditorClient.hostTransport`.
 
-From the VS Code repository:
+From the Si Code repository:
 
 1. Build `@vscode/markdown-editor` and `@vscode/web-editors` in the adjacent
    `vscode-packages` checkout.

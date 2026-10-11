@@ -83,7 +83,7 @@ const EXCLUDE_DIR_NAMES = new Set([
 const EXCLUDE_FILE_NAMES = new Set([
 	'tsconfig.json',
 	'message-checks.ts',
-	'index.ts', // protocol's public entry point — VS Code has its own re-export layout
+	'index.ts', // protocol's public entry point — Si Code has its own re-export layout
 ]);
 
 /**
@@ -248,7 +248,7 @@ function processFile(src: string, dest: string): void {
 function main() {
 	if (!fs.existsSync(TYPES_DIR)) {
 		console.error(`ERROR: Cannot find ${TYPES_DIR}`);
-		console.error('Clone agent-host-protocol as a sibling of the VS Code repo:');
+		console.error('Clone agent-host-protocol as a sibling of the Si Code repo:');
 		console.error('  git clone git@github.com:microsoft/agent-host-protocol.git ../agent-host-protocol');
 		process.exit(1);
 	}

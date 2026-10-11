@@ -122,7 +122,7 @@ export interface ILocalTranscriptionService {
 	 *
 	 * `proxyStrictSSL === false` (VS Code's `http.proxyStrictSSL`) disables TLS
 	 * certificate verification for the JavaScript download legs. `proxyAuthorization`
-	 * (VS Code's `http.proxyAuthorization`, a `Basic <base64>` value) is folded into
+	 * (Si Code's `http.proxyAuthorization`, a `Basic <base64>` value) is folded into
 	 * the proxy URL's credentials so both our fetches and the native model download
 	 * authenticate to the proxy. TLS-intercepting proxies otherwise rely on the CA
 	 * being in the OS trust store (matching `@vscode/proxy-agent` and the desktop

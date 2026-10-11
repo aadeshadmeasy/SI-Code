@@ -2218,7 +2218,7 @@ export class AgentHostProtocolClient extends Disposable implements IAgentConnect
 			}
 			switch (msg.method) {
 				case 'action': {
-					// Protocol envelope → VS Code envelope (superset of action types)
+					// Protocol envelope → Si Code envelope (superset of action types)
 					const envelope = msg.params;
 					this._serverSeq = Math.max(this._serverSeq, envelope.serverSeq);
 					this._onDidAction.fire(normalizeLegacyActionEnvelope(envelope));
@@ -2536,7 +2536,7 @@ export class AgentHostProtocolClient extends Disposable implements IAgentConnect
 		return this._dispatchRequest<CommandMap[M]['result']>(method, params);
 	}
 
-	/** Send a JSON-RPC request for a VS Code extension method (not in the protocol spec). */
+	/** Send a JSON-RPC request for a Si Code extension method (not in the protocol spec). */
 	private _sendExtensionRequest<M extends keyof IAgentHostExtensionCommandMap>(method: M, params?: IAgentHostExtensionCommandMap[M]['params']): Promise<IAgentHostExtensionCommandMap[M]['result']> {
 		return this._dispatchRequest<IAgentHostExtensionCommandMap[M]['result']>(method, params);
 	}

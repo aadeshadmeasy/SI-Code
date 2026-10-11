@@ -15,6 +15,8 @@ export interface VendorSpec {
 	defaultBaseUrl: string;
 	baseSetting?: string;
 	extraHeaders?: Record<string, string>;
+	maxInputTokens?: number;
+	subscriptionKeyHeader?: boolean;
 }
 
 export const vendors: readonly VendorSpec[] = [
@@ -44,6 +46,17 @@ export const vendors: readonly VendorSpec[] = [
 		defaultModel: 'gemini-2.0-flash',
 		kind: 'gemini',
 		defaultBaseUrl: 'https://generativelanguage.googleapis.com/v1beta',
+	},
+	{
+		vendor: 'sicode-sarvam',
+		label: 'Sarvam',
+		secretKey: 'sicode.sarvam.apiKey',
+		modelSetting: 'sarvam.model',
+		defaultModel: 'sarvam-105b',
+		kind: 'openai',
+		defaultBaseUrl: 'https://api.sarvam.ai/v1',
+		maxInputTokens: 64_000,
+		subscriptionKeyHeader: true,
 	},
 	{
 		vendor: 'sicode-openrouter',

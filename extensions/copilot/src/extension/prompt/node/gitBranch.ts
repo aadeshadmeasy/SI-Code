@@ -37,7 +37,7 @@ export class GitBranchNameGenerator {
 			return '';
 		}
 
-		// Extract the parent session ID from the context's sessionResource (provided by VS Code)
+		// Extract the parent session ID from the context's sessionResource (provided by Si Code)
 		const sessionResource = context.sessionResource;
 		const parentChatSessionId = sessionResource ? sessionResourceToId(URI.from(sessionResource)) : undefined;
 

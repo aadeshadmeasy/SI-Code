@@ -322,10 +322,10 @@ export class LocalTranscriptionService extends Disposable implements ILocalTrans
 	}
 
 	async start(options: { cacheDir: string; model?: string; language?: string; proxyUrl?: string; noProxy?: string; proxyStrictSSL?: boolean; proxyAuthorization?: string; runtimeUrlTemplate?: string; runtimeVersion?: string }): Promise<void> {
-		// Bridge VS Code's proxy settings into this process's environment before any
+		// Bridge Si Code's proxy settings into this process's environment before any
 		// first-use download, so both our own fetches and the native Foundry Local
 		// model download route through the configured proxy (they read the OS/env
-		// proxy, not VS Code settings directly).
+		// proxy, not Si Code settings directly).
 		this._applyProxyEnv(options.proxyUrl, options.noProxy, options.proxyStrictSSL, options.proxyAuthorization);
 
 		// Record where the native runtime is published (from product.json). When
@@ -353,9 +353,9 @@ export class LocalTranscriptionService extends Disposable implements ILocalTrans
 	}
 
 	/**
-	 * Apply VS Code's proxy settings as environment variables for this process, so
+	 * Apply Si Code's proxy settings as environment variables for this process, so
 	 * every download leg (our fetches and the native model download) honors a proxy
-	 * configured only in VS Code (not in the OS environment):
+	 * configured only in Si Code (not in the OS environment):
 	 * - `http.proxy`/`http.noProxy` → `HTTPS_PROXY`/`HTTP_PROXY`/`NO_PROXY`.
 	 * - `http.proxyAuthorization` (a `Basic <base64>` value) → folded into the proxy
 	 *   URL's userinfo so both our `HttpsProxyAgent` and the native HTTP stack send
@@ -527,7 +527,7 @@ export class LocalTranscriptionService extends Disposable implements ILocalTrans
 
 				// Ensure the Foundry Local native files are available before
 				// loading the SDK. Packaged builds download the addons and shared
-				// libraries on demand from VS Code's CDN into a per-user cache and
+				// libraries on demand from Si Code's CDN into a per-user cache and
 				// point the SDK loader at it via libraryPath.
 				// This is a no-op once cached. In dev builds (no product config)
 				// the SDK resolves its native files from node_modules, so we skip
@@ -541,7 +541,7 @@ export class LocalTranscriptionService extends Disposable implements ILocalTrans
 					this._sdk = await import('foundry-local-sdk');
 				}
 				if (!this._manager) {
-					// Store downloaded model files under VS Code's cache dir so
+					// Store downloaded model files under Si Code's cache dir so
 					// subsequent sessions load without re-downloading ("model
 					// management"). `createAsync` avoids blocking the event loop
 					// during native init.

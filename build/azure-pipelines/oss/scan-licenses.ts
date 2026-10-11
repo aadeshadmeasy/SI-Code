@@ -564,7 +564,7 @@ export function isArchPackageName(name: string): boolean {
 }
 
 /**
- * Platforms and architectures VS Code actually ships. Used by Section 5 to
+ * Platforms and architectures Si Code actually ships. Used by Section 5 to
  * skip arch packages for platforms we don't target (android, freebsd, etc.).
  *
  * Source of truth: build/azure-pipelines/product-build.yml build matrix +
@@ -575,7 +575,7 @@ const VSCODE_SHIPPED_PLATFORMS = new Set(['darwin', 'linux', 'linuxmusl', 'win32
 const VSCODE_SHIPPED_ARCHS = new Set(['x64', 'arm64', 'arm']);
 
 /**
- * npm `os` values for the platforms VS Code ships, spelled the way npm package
+ * npm `os` values for the platforms Si Code ships, spelled the way npm package
  * manifests do. VSCODE_SHIPPED_PLATFORMS uses the build-config name "linuxmusl",
  * but an npm `os` field only ever says "linux" (musl is a libc variant, not an
  * os value), so the npm-spelled shipped set collapses linuxmusl into linux.
@@ -613,7 +613,7 @@ export function osAllows(osList: string[], platform: string): boolean {
 
 /**
  * True when a package's `os` constraint means it will NOT install on the build
- * host yet WILL ship on at least one platform VS Code targets. These packages
+ * host yet WILL ship on at least one platform Si Code targets. These packages
  * are invisible to the on-disk scanner on a single-platform NOTICE agent, so
  * Section 6 seeds them into the presence index from the lockfile instead.
  */
@@ -634,7 +634,7 @@ export function isOsGatedShippedElsewhere(osList: string[], hostPlatform: string
 
 /**
  * The built-in extension names declared in product.json. These are PRE-BUILT
- * extensions (js-debug, js-debug-companion, js-profile-table, ...) that VS Code
+ * extensions (js-debug, js-debug-companion, js-profile-table, ...) that Si Code
  * downloads as finished VSIXs rather than building from source, so their bundled
  * dependencies never land in this repo's node_modules and are invisible to CG.
  * Section 7 reads each one's package-lock.json (downloaded into extensionsCG/ by
@@ -770,7 +770,7 @@ function _buildShippedSuffixes(): Set<string> {
 }
 
 /**
- * True when the arch suffix matches a platform+arch VS Code ships.
+ * True when the arch suffix matches a platform+arch Si Code ships.
  * Strips ABI qualifiers (-gnu, -musl, -msvc, -glibc, -gnueabihf) before matching.
  */
 export function isShippedArch(name: string): boolean {
@@ -1074,8 +1074,8 @@ async function main(): Promise<void> {
 	// "engines": { "vscode": "..." }. This is hardcoded in CG's NpmComponentDetector
 	// (microsoft/component-detection, NpmComponentDetector.cs lines 85-97).
 	//
-	// CG does this because for most repos, VS Code extensions are dev tools --
-	// not shipping code. But we ARE VS Code. Our built-in extensions ship in
+	// CG does this because for most repos, Si Code extensions are dev tools --
+	// not shipping code. But we ARE Si Code. Our built-in extensions ship in
 	// the installer, and their transitive dependencies get webpack-bundled into
 	// the extension JS. CG skips them all, so we scan them here.
 	// =========================================================================
@@ -1083,8 +1083,8 @@ async function main(): Promise<void> {
 	console.log('=========================================================================');
 	console.log('SECTION 1: Scanning built-in extension dependencies');
 	console.log('  Why: CG skips all packages with engines.vscode in their package.json.');
-	console.log('  This is a CG workaround for consumers of VS Code extensions, but we');
-	console.log('  ARE VS Code -- our built-in extensions ship in the product.');
+	console.log('  This is a CG workaround for consumers of Si Code extensions, but we');
+	console.log('  ARE Si Code -- our built-in extensions ship in the product.');
 	console.log('=========================================================================');
 	console.log('');
 
@@ -1255,7 +1255,7 @@ async function main(): Promise<void> {
 	console.log('SECTION 3: Extracting licenses from cgmanifest.json licenseDetail');
 	console.log('  Why: Language grammars, vendored code, and other manually declared');
 	console.log('  components have license text inline in cgmanifest.json. CG ignores');
-	console.log('  this field -- it is a VS Code custom extension.');
+	console.log('  this field -- it is a Si Code custom extension.');
 	console.log('=========================================================================');
 	console.log('');
 
@@ -1583,7 +1583,7 @@ async function main(): Promise<void> {
 	// installed on disk, so the scanner above misses every other arch. Legacy
 	// enumerated EVERY arch from the parent's optionalDependencies and resolved
 	// EACH arch's OWN license. We do the same here: enumerate all arches (even
-	// ones VS Code does not ship - deliberate, harmless over-inclusion), resolve
+	// ones Si Code does not ship - deliberate, harmless over-inclusion), resolve
 	// each arch child's own license id + url + text, and recurse into nested
 	// arch-specific optionalDependencies (sharp -> @img/sharp-<arch> ->
 	// @img/sharp-libvips-<arch>). Every fetch is wrapped so a registry/network
@@ -1902,7 +1902,7 @@ async function main(): Promise<void> {
 	// SECTION 7: Built-in (pre-built) extension dependency enumeration
 	//
 	// js-debug, js-debug-companion and js-profile-table are PRE-BUILT extensions:
-	// VS Code downloads them as finished VSIXs (product.json `builtInExtensions`)
+	// Si Code downloads them as finished VSIXs (product.json `builtInExtensions`)
 	// rather than building them from source. Their bundled npm dependencies are
 	// therefore never installed into this repo's node_modules and never scanned by
 	// CG, so ~14 of js-debug's runtime deps (acorn-loose, astring, preact, signale,

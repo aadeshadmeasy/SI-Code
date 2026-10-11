@@ -102,7 +102,7 @@ export function getCurrentExtensionTarget(): string | undefined {
 
 /**
  * Derives the GitHub release asset name for a platform-specific extension from its name and
- * marketplace target platform. Platform-specific VS Code extensions are conventionally named
+ * marketplace target platform. Platform-specific Si Code extensions are conventionally named
  * `<name>-<target>.vsix` where `<target>` is the marketplace target platform (e.g.
  * `my-ext-win32-x64.vsix`, `my-ext-linux-armhf.vsix`, `my-ext-darwin-arm64.vsix`).
  *

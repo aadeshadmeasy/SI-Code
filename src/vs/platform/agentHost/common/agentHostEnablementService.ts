@@ -18,7 +18,7 @@ export const AGENT_HOST_ENABLED_CONTEXT_KEY = new RawContextKey<boolean>('agentH
 export const AgentHostExistingSessionHarnessPickerEnabledSettingId = 'chat.editor.agentHost.existingSessionHarnessPicker.enabled';
 
 /** Effective setting or experiment value for the existing-session harness indicator in the main VS Code window. */
-export const AGENT_HOST_EXISTING_SESSION_HARNESS_PICKER_ENABLED_CONTEXT_KEY = new RawContextKey<boolean>('agentHostExistingSessionHarnessPickerEnabled', false, { type: 'boolean', description: nls.localize('agentHostExistingSessionHarnessPickerEnabled', "Whether existing Agent Host sessions in the main VS Code window show the current harness as a disabled picker.") });
+export const AGENT_HOST_EXISTING_SESSION_HARNESS_PICKER_ENABLED_CONTEXT_KEY = new RawContextKey<boolean>('agentHostExistingSessionHarnessPickerEnabled', false, { type: 'boolean', description: nls.localize('agentHostExistingSessionHarnessPickerEnabled', "Whether existing Agent Host sessions in the main Si Code window show the current harness as a disabled picker.") });
 
 export const IAgentHostEnablementService = createDecorator<IAgentHostEnablementService>('agentHostEnablementService');
 
@@ -58,7 +58,7 @@ configurationRegistry.registerConfiguration({
 				localization: {
 					description: {
 						key: 'chat.editor.preferCopilotHarness.policy',
-						value: nls.localize('chat.editor.preferCopilotHarness.policy', "Configure whether VS Code uses the Agent Host Copilot SDK instead of the local harness for new editor chat sessions."),
+						value: nls.localize('chat.editor.preferCopilotHarness.policy', "Configure whether Si Code uses the Agent Host Copilot SDK instead of the local harness for new editor chat sessions."),
 					},
 				},
 			},
@@ -72,14 +72,14 @@ configurationRegistry.registerConfiguration({
 		},
 		'chat.editor.localAgent.enabled': {
 			type: 'boolean',
-			description: nls.localize('chat.editor.localAgent.enabled', "When enabled, shows the VS Code local chat harness in the chat picker. This setting is ignored in virtual workspaces, where the local chat harness is always available."),
+			description: nls.localize('chat.editor.localAgent.enabled', "When enabled, shows the Si Code local chat harness in the chat picker. This setting is ignored in virtual workspaces, where the local chat harness is always available."),
 			default: true,
 			tags: ['experimental'],
 			experiment: { mode: 'startup' },
 		},
 		[AgentHostExistingSessionHarnessPickerEnabledSettingId]: {
 			type: 'boolean',
-			description: nls.localize('chat.editor.agentHost.existingSessionHarnessPicker.enabled', "When enabled, existing Agent Host sessions in the main VS Code window show the current harness as a disabled picker."),
+			description: nls.localize('chat.editor.agentHost.existingSessionHarnessPicker.enabled', "When enabled, existing Agent Host sessions in the main Si Code window show the current harness as a disabled picker."),
 			default: false,
 			included: false,
 			tags: ['experimental'],

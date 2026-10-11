@@ -149,7 +149,7 @@ export class AutoV2Fetcher {
 				"owner": "lramos15",
 				"comment": "Reports the model selection made by the single-call Auto endpoint (POST /auto)",
 				"conversationId": { "classification": "SystemMetaData", "purpose": "FeatureInsight", "comment": "The conversation ID in which the selection was made." },
-				"vscodeRequestId": { "classification": "SystemMetaData", "purpose": "FeatureInsight", "comment": "The VS Code chat request id in which the selection was made." },
+				"vscodeRequestId": { "classification": "SystemMetaData", "purpose": "FeatureInsight", "comment": "The Si Code chat request id in which the selection was made." },
 				"selectedModel": { "classification": "SystemMetaData", "purpose": "FeatureInsight", "comment": "The model the server selected for this prompt." },
 				"tier": { "classification": "SystemMetaData", "purpose": "FeatureInsight", "comment": "The routing profile requested for this selection, e.g. efficiency, balance, intelligence, fast. Empty when none was requested." },
 				"e2eLatencyMs": { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth", "isMeasurement": true, "comment": "The end-to-end latency of the auto request in milliseconds, including network overhead." },

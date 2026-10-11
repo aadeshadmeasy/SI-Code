@@ -1564,7 +1564,7 @@ export class ChatPetWidget extends Disposable {
 				this._wake();
 			}
 			if (wasSleeping || this._transientState.get() === 'waking') {
-				status(localize('chatPet.wokeUp', "The VS Code pet woke up"));
+				status(localize('chatPet.wokeUp', "The Si Code pet woke up"));
 				return;
 			}
 			const interaction = getChatPetClickInteraction(Math.random(), this._lastClickInteraction);
@@ -1572,28 +1572,28 @@ export class ChatPetWidget extends Disposable {
 			this._showTransientState(interaction);
 			switch (interaction) {
 				case 'buttonPress':
-					status(localize('chatPet.pressedButton', "The VS Code pet pressed its button"));
+					status(localize('chatPet.pressedButton', "The Si Code pet pressed its button"));
 					break;
 				case 'complete':
-					status(localize('chatPet.spun', "The VS Code pet did a rare spin"));
+					status(localize('chatPet.spun', "The Si Code pet did a rare spin"));
 					break;
 				case 'love':
-					status(localize('chatPet.loved', "The VS Code pet feels loved"));
+					status(localize('chatPet.loved', "The Si Code pet feels loved"));
 					break;
 				case 'cool':
-					status(localize('chatPet.cool', "The VS Code pet put on sunglasses"));
+					status(localize('chatPet.cool', "The Si Code pet put on sunglasses"));
 					break;
 				case 'yapping':
-					status(localize('chatPet.yapping', "The VS Code pet is yapping"));
+					status(localize('chatPet.yapping', "The Si Code pet is yapping"));
 					break;
 				case 'sing':
-					status(localize('chatPet.singing', "The VS Code pet is singing"));
+					status(localize('chatPet.singing', "The Si Code pet is singing"));
 					break;
 				case 'speechless':
-					status(localize('chatPet.speechless', "The VS Code pet is speechless"));
+					status(localize('chatPet.speechless', "The Si Code pet is speechless"));
 					break;
 				case 'worry':
-					status(localize('chatPet.worried', "The VS Code pet is worried"));
+					status(localize('chatPet.worried', "The Si Code pet is worried"));
 					break;
 			}
 		}));
@@ -1602,7 +1602,7 @@ export class ChatPetWidget extends Disposable {
 				return;
 			}
 			this._showTransientState('achievementUnlocked', false);
-			status(localize('chatPet.achievement.unlockedStatus', "Achievement unlocked: {0}. Activate the VS Code pet to view achievements.", getChatPetAchievement(id).title));
+			status(localize('chatPet.achievement.unlockedStatus', "Achievement unlocked: {0}. Activate the Si Code pet to view achievements.", getChatPetAchievement(id).title));
 		}));
 
 		const motionReduced = observableFromEvent(this, this.accessibilityService.onDidChangeReducedMotion, () => this.accessibilityService.isMotionReduced());
@@ -2479,15 +2479,15 @@ export class ChatPetWidget extends Disposable {
 			if (announce) {
 				this._showTransientState('splat');
 				if (respawned) {
-					status(localize('chatPet.respawned', "The VS Code pet respawned"));
+					status(localize('chatPet.respawned', "The Si Code pet respawned"));
 				} else if (shouldCelebrateChatPetBounceScore(this._bounceCount)) {
-					status(localize('chatPet.bounceMilestone', "The VS Code pet landed with a {0}-bounce streak", this._bounceCount));
+					status(localize('chatPet.bounceMilestone', "The Si Code pet landed with a {0}-bounce streak", this._bounceCount));
 				} else if (wallImpact === 'left') {
-					status(localize('chatPet.bouncedOffLeftWall', "The VS Code pet bounced off the left wall and landed on the chat input"));
+					status(localize('chatPet.bouncedOffLeftWall', "The Si Code pet bounced off the left wall and landed on the chat input"));
 				} else if (wallImpact === 'right') {
-					status(localize('chatPet.bouncedOffRightWall', "The VS Code pet bounced off the right wall and landed on the chat input"));
+					status(localize('chatPet.bouncedOffRightWall', "The Si Code pet bounced off the right wall and landed on the chat input"));
 				} else {
-					status(localize('chatPet.landed', "The VS Code pet landed on the chat input"));
+					status(localize('chatPet.landed', "The Si Code pet landed on the chat input"));
 				}
 			}
 			this._showBounceResult();
@@ -2507,11 +2507,11 @@ export class ChatPetWidget extends Disposable {
 		this._isDead.set(true, undefined);
 		if (announce) {
 			if (wallImpact === 'left') {
-				status(localize('chatPet.bouncedOffLeftWallAndFell', "The VS Code pet bounced off the left wall, fell off, and will respawn automatically"));
+				status(localize('chatPet.bouncedOffLeftWallAndFell', "The Si Code pet bounced off the left wall, fell off, and will respawn automatically"));
 			} else if (wallImpact === 'right') {
-				status(localize('chatPet.bouncedOffRightWallAndFell', "The VS Code pet bounced off the right wall, fell off, and will respawn automatically"));
+				status(localize('chatPet.bouncedOffRightWallAndFell', "The Si Code pet bounced off the right wall, fell off, and will respawn automatically"));
 			} else {
-				status(localize('chatPet.fellOff', "The VS Code pet fell off and will respawn automatically"));
+				status(localize('chatPet.fellOff', "The Si Code pet fell off and will respawn automatically"));
 			}
 		}
 	}
@@ -2538,16 +2538,16 @@ export class ChatPetWidget extends Disposable {
 		const grow = actions.add(new Action('chat.pet.grow', localize('chatPet.grow.action', "Grow"), undefined, true, () => {
 			const scale = getChatPetScale(this._scale, CHAT_PET_SCALE_STEP);
 			this.chatPetService.setScale(scale);
-			status(localize('chatPet.grew', "VS Code pet size: {0} percent", Math.round(scale * 100)));
+			status(localize('chatPet.grew', "Si Code pet size: {0} percent", Math.round(scale * 100)));
 		}));
 		const shrink = actions.add(new Action('chat.pet.shrink', localize('chatPet.shrink.action', "Shrink"), undefined, this._scale > CHAT_PET_MIN_SCALE, () => {
 			const scale = getChatPetScale(this._scale, -CHAT_PET_SCALE_STEP);
 			this.chatPetService.setScale(scale);
-			status(localize('chatPet.shrank', "VS Code pet size: {0} percent", Math.round(scale * 100)));
+			status(localize('chatPet.shrank', "Si Code pet size: {0} percent", Math.round(scale * 100)));
 		}));
 		const resetSize = actions.add(new Action('chat.pet.resetSize', localize('chatPet.resetSize.action', "Reset Size"), undefined, this._scale !== CHAT_PET_DEFAULT_SCALE, () => {
 			this.chatPetService.resetScale();
-			status(localize('chatPet.sizeReset', "VS Code pet size: {0} percent", CHAT_PET_DEFAULT_SCALE * 100));
+			status(localize('chatPet.sizeReset', "Si Code pet size: {0} percent", CHAT_PET_DEFAULT_SCALE * 100));
 		}));
 		const onTheRunAction = actions.add(new Action(
 			'chat.pet.onTheRun',
@@ -2621,14 +2621,14 @@ export class ChatPetWidget extends Disposable {
 				y: -THROW_KEYBOARD_UPWARD_VELOCITY,
 			});
 			status(direction < 0
-				? localize('chatPet.thrownLeft', "The VS Code pet was thrown toward the left wall")
-				: localize('chatPet.thrownRight', "The VS Code pet was thrown toward the right wall"));
+				? localize('chatPet.thrownLeft', "The Si Code pet was thrown toward the left wall")
+				: localize('chatPet.thrownRight', "The Si Code pet was thrown toward the right wall"));
 			return;
 		}
 		this._hopController.request(direction, this._motionReduced);
 		status(direction < 0
-			? localize('chatPet.movedLeft', "VS Code pet moved left")
-			: localize('chatPet.movedRight', "VS Code pet moved right"));
+			? localize('chatPet.movedLeft', "Si Code pet moved left")
+			: localize('chatPet.movedRight', "Si Code pet moved right"));
 	}
 
 	private _getAriaLabel(onTheRun: boolean, achievementUnlocked: boolean, isGeneratingImage = false): string {
@@ -2636,9 +2636,9 @@ export class ChatPetWidget extends Disposable {
 			return localize('chatPet.openAchievements', "Open pet achievements. A new achievement is unlocked.");
 		}
 		if (onTheRun) {
-			return localize('chatPet.restore', "Bring back the VS Code pet");
+			return localize('chatPet.restore', "Bring back the Si Code pet");
 		}
-		const label = localize('chatPet.interact', "Interact with the VS Code pet. Drag it around the chat, or flick it toward either side to throw it. While it is falling, catch it with the pointer to bounce it; while it is airborne, press Enter or Space to bounce it. Use the left and right arrow keys to make it hop, or hold Shift to throw it toward a wall. Use the context menu to put it on the run.");
+		const label = localize('chatPet.interact', "Interact with the Si Code pet. Drag it around the chat, or flick it toward either side to throw it. While it is falling, catch it with the pointer to bounce it; while it is airborne, press Enter or Space to bounce it. Use the left and right arrow keys to make it hop, or hold Shift to throw it toward a wall. Use the context menu to put it on the run.");
 		return isGeneratingImage ? localize('chatPet.painting', "Painting an image. {0}", label) : label;
 	}
 
@@ -2843,7 +2843,7 @@ export class ChatPetWidget extends Disposable {
 		this._updateRespawnEffectPosition();
 		this._startRespawnEffectAnimation();
 		this._respawnFallScheduler.schedule(this._motionReduced ? RESPAWN_EFFECT_REDUCED_MOTION_DURATION : RESPAWN_EFFECT_DURATION);
-		status(localize('chatPet.respawning', "The VS Code pet is respawning"));
+		status(localize('chatPet.respawning', "The Si Code pet is respawning"));
 	}
 
 	private _startRespawnEffectAnimation(): void {
@@ -2998,7 +2998,7 @@ export class ChatPetWidget extends Disposable {
 			this._bounceCounter.textContent = String(this._bounceCount);
 			this._bounceCounter.classList.remove('hidden');
 			this._updateBounceCounterPosition();
-			status(localize('chatPet.bounceCount', "VS Code pet bounce count: {0}", this._bounceCount));
+			status(localize('chatPet.bounceCount', "Si Code pet bounce count: {0}", this._bounceCount));
 		}
 		return bounced;
 	}
@@ -3110,7 +3110,7 @@ export class ChatPetWidget extends Disposable {
 
 		this._setFacingDirection(direction);
 		this._showTransientState('dizzy', false);
-		status(localize('chatPet.dizzy', "The VS Code pet got dizzy"));
+		status(localize('chatPet.dizzy', "The Si Code pet got dizzy"));
 		return true;
 	}
 

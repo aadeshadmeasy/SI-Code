@@ -221,7 +221,7 @@ export class AgentHostAutomationStore extends Disposable implements ISessionsPro
 					id: plugin.id,
 					label: this._customizationLabel(plugin),
 					description: URI.parse(plugin.uri).scheme === SYNCED_CUSTOMIZATION_SCHEME
-						? localize('agentHostAutomation.syncedCustomizationDescription', "Customizations synced from VS Code.")
+						? localize('agentHostAutomation.syncedCustomizationDescription', "Customizations synced from Si Code.")
 						: plugin.version ? localize('agentHostAutomation.customizationVersion', "Version {0}", plugin.version) : undefined,
 					selected: !sameTarget || saved.has(plugin.id),
 					outdated: sameTarget && saved.has(plugin.id)
@@ -243,7 +243,7 @@ export class AgentHostAutomationStore extends Disposable implements ISessionsPro
 	private _customizationLabel(plugin: ClientPluginCustomization): string {
 		const uri = URI.parse(plugin.uri);
 		return uri.scheme === SYNCED_CUSTOMIZATION_SCHEME
-			? localize('agentHostAutomation.syncedCustomizations', "VS Code Customizations")
+			? localize('agentHostAutomation.syncedCustomizations', "Si Code Customizations")
 			: plugin.name || basename(uri);
 	}
 
@@ -367,7 +367,7 @@ export class AgentHostAutomationStore extends Disposable implements ISessionsPro
 			name: state.definition.title,
 			prompt: state.definition.message.text,
 			schedule,
-			...(schedule.interval === 'custom' ? { readOnlyReason: localize('agentHostAutomation.customSchedule', "This automation uses a schedule that cannot be edited in VS Code.") } : {}),
+			...(schedule.interval === 'custom' ? { readOnlyReason: localize('agentHostAutomation.customSchedule', "This automation uses a schedule that cannot be edited in Si Code.") } : {}),
 			target,
 			sessionTemplate: projectAutomationSessionTemplate(state.definition, modelId),
 			enabled: state.definition.enabled,

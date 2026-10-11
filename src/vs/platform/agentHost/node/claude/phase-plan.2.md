@@ -745,7 +745,7 @@ tests before the next begins.
 Captured here so they aren't lost. None of these block Phase 2.
 
 - **HTTP proxy support** (`HTTP_PROXY` / `HTTPS_PROXY` env vars,
-  VS Code's `http.proxy` setting, PAC files, proxy auth). The Phase 2
+  Si Code's `http.proxy` setting, PAC files, proxy auth). The Phase 2
   proxy talks to CAPI through `ICopilotApiService`, so any outbound
   proxying is inherited from whatever HTTP client that service uses.
   If the agent host needs to honor user proxy configuration we'll

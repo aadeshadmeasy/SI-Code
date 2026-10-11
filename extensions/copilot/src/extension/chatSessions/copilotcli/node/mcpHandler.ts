@@ -185,7 +185,7 @@ export class CopilotCLIMCPHandler implements ICopilotCLIMCPHandler {
 
 /**
  * Builds a mapping from friendly MCP server names (as defined in custom agent files)
- * to VS Code MCP server labels.
+ * to Si Code MCP server labels.
  *
  * Iterates through tools that have an MCP source (detected via structural typing using
  * {@link hasKey}) and a `fullReferenceName` in the format `<server name>/<tool name>`,
@@ -216,7 +216,7 @@ export function buildMcpServerMappings(tools: ReadonlyMap<LanguageModelToolInfor
  * server config.
  *
  * @param customAgents The list of custom agents whose tools will be remapped in place.
- * @param mcpServerMappings Maps friendly server names (from agent files) → VS Code MCP display labels.
+ * @param mcpServerMappings Maps friendly server names (from agent files) → Si Code MCP display labels.
  * @param mcpServers The MCP server config, keyed by gateway name.
  * @param selectedAgent Optional selected agent to also remap.
  */

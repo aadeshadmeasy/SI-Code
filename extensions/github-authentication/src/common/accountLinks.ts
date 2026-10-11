@@ -27,7 +27,7 @@ export interface IAccountLink {
 }
 
 /**
- * Which Microsoft account each GitHub account was reached through, for every mapping the user has
+ * Which work or school account each GitHub account was reached through, for every mapping the user has
  * agreed to sign in as.
  *
  * A row is only written once the user has confirmed the GitHub identity discovery resolved, so a

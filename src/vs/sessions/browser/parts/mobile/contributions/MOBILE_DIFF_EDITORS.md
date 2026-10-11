@@ -47,7 +47,7 @@ This supports added, deleted, modified, and no-op files without importing deskto
 - File content is read from `ITextFileService`, with `IFileService` as a fallback in the multi-file view.
 - The multi-file view keeps persistent per-file state, reserves virtual height from known diff stats, and only mounts file sections that intersect the viewport overscan range.
 - File content is read, diffed, tokenized, and mounted incrementally as virtualized items become visible.
-- Test/demo hosts can pass an async `computeDiff` hook; the Vite mobile multi-diff page uses this to compute diffs in a worker and better mimic VS Code's worker-backed diff environment.
+- Test/demo hosts can pass an async `computeDiff` hook; the Vite mobile multi-diff page uses this to compute diffs in a worker and better mimic Si Code's worker-backed diff environment.
 - Virtualization owns mounted range and deterministic height accounting; native CSS owns sticky file-header behavior.
 - Keep file sections anchored at their virtual top so headers can use `position: sticky`; do not emulate sticky headers by moving sections on every scroll frame.
 - Lazy loading may defer file work, but visible file bodies must never be blank; unloaded or loading bodies need a stable placeholder that remains visible during native scrolling.

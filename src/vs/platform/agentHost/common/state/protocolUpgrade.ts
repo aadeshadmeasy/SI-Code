@@ -54,7 +54,7 @@ export interface IVscodeUpgradeResult {
 
 /**
  * Optional `_meta` side-channel on the `UnsupportedProtocolVersion` error
- * data payload. Servers that are spawned by the VS Code CLI populate this
+ * data payload. Servers that are spawned by the Si Code CLI populate this
  * to let the renderer offer a one-click upgrade flow; servers without a
  * managing CLI omit it.
  *
@@ -72,7 +72,7 @@ export interface UnsupportedProtocolVersionErrorMeta {
 
 /**
  * `UnsupportedProtocolVersionErrorData` augmented with the local `_meta`
- * extension used by VS Code-hosted agent hosts.
+ * extension used by Si Code-hosted agent hosts.
  *
  * Kept out of the auto-generated `errors.ts` so the synced types stay
  * untouched. Read at runtime as a best-effort field — older servers

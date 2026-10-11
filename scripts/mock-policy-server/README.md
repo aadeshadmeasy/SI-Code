@@ -2,7 +2,7 @@
 
 Local Node server and web GUI for the four Copilot policy endpoints used by
 `DefaultAccountService`. Mock selected endpoints while forwarding the rest to
-the real API. It has no runtime dependencies and is not shipped with VS Code.
+the real API. It has no runtime dependencies and is not shipped with Si Code.
 
 ## Start
 
@@ -39,7 +39,7 @@ open a modal that guides you through any of these connection methods:
   server-managed response. Local clients only. See
   [Deploying file-based settings](https://docs.github.com/en/copilot/how-tos/administer-copilot/manage-for-enterprise/manage-agents/configure-enterprise-managed-settings#deploying-file-based-settings).
 
-After connecting, open the VS Code Command Palette and run **> Developer: Sync
+After connecting, open the Si Code Command Palette and run **> Developer: Sync
 Account Policy**. To refresh the policy used by Local Agent Host, also run
 **> Developer: Restart Local Agent Host**.
 
@@ -77,7 +77,7 @@ query parameter and excludes those requests from **Live Requests**.
 If no real request appears in **Live Requests**, open **Troubleshooting** in the
 right sidebar, expand the client platform under **Clear SDK policy cache**, and run
 the copied command in a terminal. The Copilot SDK maintains this cache outside of
-VS Code; these commands delete the SDK cache file for the selected platform so a
+Si Code; these commands delete the SDK cache file for the selected platform so a
 fresh managed-settings request can be made. Without clearing it, a fresh cache
 entry can prevent the client from making a request for up to one hour. Then run
 the commands above again.
@@ -185,7 +185,7 @@ each route's `sideEffects` value in `GET /api` before invoking it.
 ### Test fail-closed managed-settings refresh
 
 First serve a successful policy that enables the forced-refresh requirement and
-sync it into VS Code. Then configure an HTTP error preset or a failing response
+sync it into Si Code. Then configure an HTTP error preset or a failing response
 behavior and sync again. Seeding the requirement first mirrors a real deployment
 where the cached control self-perpetuates through an outage.
 
@@ -194,7 +194,7 @@ curl -X POST "$BASE/api/state" \
   -H 'Content-Type: application/json' \
   -d '{"endpoint":"managedSettings","preset":"customization-lockdown"}'
 
-# Run "Developer: Sync Account Policy" in VS Code, then choose one:
+# Run "Developer: Sync Account Policy" in Si Code, then choose one:
 curl -X POST "$BASE/api/state" -H 'Content-Type: application/json' \
   -d '{"endpoint":"managedSettings","preset":"server-error"}'
 curl -X POST "$BASE/api/state" -H 'Content-Type: application/json' \
@@ -225,7 +225,7 @@ request does not appear in **Live Requests**.
 
 The server auto-detects
 `copilot-agent-runtime/schema/managed-settings-schema.json` beside the primary
-VS Code checkout, including from a Git worktree. Override it at startup with
+Si Code checkout, including from a Git worktree. Override it at startup with
 `--schema` or `MANAGED_SETTINGS_SCHEMA`, or edit **Schema source** in the GUI
 and select **Load Schema**. GUI changes apply to the current server process and
 reset to the startup source when the server restarts. Changing the schema source

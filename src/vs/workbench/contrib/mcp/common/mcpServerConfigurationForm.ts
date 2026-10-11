@@ -65,7 +65,7 @@ export interface IMcpServerFormCapabilities {
 	readonly kinds: readonly McpServerFormKind[];
 	readonly envFile: boolean;
 	readonly cwd: boolean;
-	/** Whether VS Code `${input:...}` variables are resolved for this file. */
+	/** Whether Si Code `${input:...}` variables are resolved for this file. */
 	readonly inputVariables: boolean;
 }
 

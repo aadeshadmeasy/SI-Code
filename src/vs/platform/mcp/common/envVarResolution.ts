@@ -27,7 +27,7 @@
  * - Strings longer than {@link MAX_ENV_VAR_RESOLVE_LENGTH} UTF-16 code units
  *   are returned unchanged, bounding the work any single value can cost
  *
- * VS Code variables with an argument, such as `${env:X}` or `${input:x}`, do
+ * Si Code variables with an argument, such as `${env:X}` or `${input:x}`, do
  * not match this grammar and are left untouched.
  */
 

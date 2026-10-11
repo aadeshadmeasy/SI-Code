@@ -56,7 +56,7 @@ export function getMcpGenerationSchema(format: McpResourceFormat): IJSONSchema {
 	};
 	return {
 		description: format === McpResourceFormat.WorkspaceRoot
-			? 'Prefer portable command/args/env or HTTP url/headers. Preserve any required VS Code inputs, cwd, envFile, OAuth or SSE transport: these require explicit approval to use .vscode/mcp.json instead of .mcp.json.'
+			? 'Prefer portable command/args/env or HTTP url/headers. Preserve any required Si Code inputs, cwd, envFile, OAuth or SSE transport: these require explicit approval to use .vscode/mcp.json instead of .mcp.json.'
 			: undefined,
 		oneOf: [stdio, http].map((schema, index) => ({
 			...schema,
@@ -84,7 +84,7 @@ export function normalizeMcpGeneratedConfiguration(result: McpGeneratedConfigura
 	if (!normalized) {
 		throw new Error(localize('mcp.generation.invalid', "The generated MCP server configuration is invalid. Try again or add the server manually."));
 	}
-	// Preserve VS Code-only fields; the shared normalizer handles transport and OAuth dialects.
+	// Preserve Si Code-only fields; the shared normalizer handles transport and OAuth dialects.
 	return format === McpResourceFormat.CopilotGlobal ? normalized : {
 		...result.server,
 		...normalized,

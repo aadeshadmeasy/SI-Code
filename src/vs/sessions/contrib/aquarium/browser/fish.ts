@@ -182,7 +182,7 @@ const BODY_X_END = 90;
 
 /**
  * Lazily-built shared SVG element holding both the strip clipPath defs AND
- * a single `<symbol>` containing the VS Code logo path. All fish reference
+ * a single `<symbol>` containing the Si Code logo path. All fish reference
  * these via `clip-path: url(#…)` and `<use href="#…">` instead of duplicating
  * the path data per strip per fish (which previously caused 50 fish * 10
  * strips = 500 path parses on every aquarium activation).
@@ -253,7 +253,7 @@ function createVSCodeLogoSymbol(): SVGSymbolElement {
 
 /**
  * Build the inline SVG element tree for a fish:
- *   - VS Code logo body, sliced into N vertical strips that each oscillate in
+ *   - Si Code logo body, sliced into N vertical strips that each oscillate in
  *     Y with a phase-offset CSS animation (the "swimming" sine wave)
  *
  * Colors come from `currentColor` on the parent element. Built without
@@ -268,7 +268,7 @@ function buildFishSvg(targetDocument: Document): SVGSVGElement {
 	const svg = $.SVG<SVGSVGElement>('svg');
 	svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
 	svg.setAttribute('focusable', 'false');
-	// viewBox 0..96 matches the original VS Code icon.
+	// viewBox 0..96 matches the original Si Code icon.
 	svg.setAttribute('viewBox', '0 0 96 96');
 	svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
 	// Tell the rasterizer to optimize for visual quality, not speed: smoother

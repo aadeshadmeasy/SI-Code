@@ -168,7 +168,7 @@ locally, or use file/HTTP JSON. Console export remains a summary, not a
 structured measurement sink. Export destination/resource configuration is
 user-owned; the diagnostics add no workspace paths, content or credentials.
 
-### VS Code provider preparation and progress diagnostics
+### Si Code provider preparation and progress diagnostics
 
 Copilot sends also export `vscode.agent_host.provider_timing` metadata spans
 and `agentHost.providerTiming` product events. They use the existing independent
@@ -210,7 +210,7 @@ OTel spans and Debug logs retain the following row-based version-1 contract:
 | `schemaVersion` | Numeric `1` |
 | `kind`, `name` | `operation` aggregate or first-observation `milestone`, and an allowlisted name |
 | `startMs`, `endMs` | First admission and last settlement offsets on the host turn clock; equal for a milestone |
-| `queueMs`, `executionMs` | Cumulative wait for the VS Code sequencer and admitted execution time |
+| `queueMs`, `executionMs` | Cumulative wait for the Si Code sequencer and admitted execution time |
 | `queueBeforeProgressMs`, `executionBeforeProgressMs` | The same intervals clipped at first host progress, or terminal observation when no progress occurs |
 | `count`, `errorCount` | Invocation count and observed thrown/rejected operation count; an RPC returning an unsuccessful value is not necessarily a rejection |
 | `incompleteCount` | Invocations still queued/executing at terminal observation; their durations are partial, not successful completion |
@@ -222,7 +222,7 @@ retry wait; sandbox queue, RPC and diagnostics; shell queue, file materializatio
 and RPC; MCP queue, listing and enable/disable work; execution admission and
 the persistence marker; SDK send; and permission, input, elicitation, MCP-auth,
 exit-plan and unsandboxed-confirmation callbacks. Callback durations include
-VS Code handling and user waiting, not just CPU execution. Repeated operations aggregate,
+Si Code handling and user waiting, not just CPU execution. Repeated operations aggregate,
 including retries. Parent operations include their children: **never sum nested
 operation rows**. No-op queue callbacks can have zero execution time; individual
 RPC rows distinguish them from actual SDK calls.
@@ -243,7 +243,7 @@ these separately timed executions.
 
 The SDK send promise is an API acknowledgement, **not model-request dispatch or
 first token**. An assistant-turn-start callback is likewise not a network
-dispatch timestamp. SDK text/reasoning observations precede VS Code processing
+dispatch timestamp. SDK text/reasoning observations precede Si Code processing
 and can differ from host progress (for example, provisional output). Host
 progress is not renderer receipt or paint. Join the existing renderer/UI events
 for those separately defined measurements; never subtract independent clocks.
@@ -266,7 +266,7 @@ contains `requestId`, `provider`, `connectionKind`, optional backend `agentSessi
 `firstResponseTextMs`, and `totalElapsedMs`. The log additionally retains
 `sessionId`, identical to `agentSessionId`, for compatibility, and includes
 `turnId`, identical to `requestId`, for AHP joins. The telemetry property uses
-`agentSessionId` to avoid colliding with the common VS Code `sessionID` property.
+`agentSessionId` to avoid colliding with the common Si Code `sessionID` property.
 Durations use a local monotonic clock starting at agent invocation, before
 trust/authentication/session preparation.
 `invocationKind` is `newTurn`, `existingTurn`, `subagent`, or `unknown` before
@@ -360,7 +360,7 @@ not interchangeable with renderer first-response-text latency.
 ## Sandbox Connection Product Scorecard
 
 The renderer's [cloud sandbox telemetry owner](../../workbench/contrib/chat/browser/remoteAgentHost/cloudSandboxTelemetry.ts)
-uses ordinary VS Code product telemetry, not provider OTel. Existing telemetry-level
+uses ordinary Si Code product telemetry, not provider OTel. Existing telemetry-level
 and administrator controls apply; no additional setting or exporter is needed.
 
 - `cloudSandboxConnectionOutcome`: one `connect` or `recover` outcome (`success`,
@@ -456,7 +456,7 @@ Agent Host owns transport routing, optional interception and persistence, resour
 - **Claude:** the Claude runtime's native OTel implementation and launch environment.
 - **Codex:** the Codex app-server's native OTel implementation and launch overrides.
 
-Do not copy provider-native span, event, metric, or environment-variable catalogs into this document. Keep this reference focused on the VS Code-owned integration boundary. The extension-host Copilot CLI bridge under `extensions/copilot/src/extension/chatSessions/copilotcli/` is a deprecated compatibility path and is not the Agent Host architecture.
+Do not copy provider-native span, event, metric, or environment-variable catalogs into this document. Keep this reference focused on the Si Code-owned integration boundary. The extension-host Copilot CLI bridge under `extensions/copilot/src/extension/chatSessions/copilotcli/` is a deprecated compatibility path and is not the Agent Host architecture.
 
 ## Two Modes
 
@@ -521,7 +521,7 @@ Agent Host is one logical system with several native OTel producers. Agent Host-
 | Claude runtime | `claude-code` |
 | Codex app-server | `codex-app-server` |
 
-Unrelated inherited resource attributes are preserved. A conflicting inherited `service.namespace` is replaced only inside Agent Host-owned telemetry and provider launch environments; no global VS Code namespace is set. Provider launch environments do not inherit a host `OTEL_SERVICE_NAME`.
+Unrelated inherited resource attributes are preserved. A conflicting inherited `service.namespace` is replaced only inside Agent Host-owned telemetry and provider launch environments; no global Si Code namespace is set. Provider launch environments do not inherit a host `OTEL_SERVICE_NAME`.
 
 Claude honors these standard resource variables for traces, logs, and metrics while retaining its native `claude-code` service name. The current Codex app-server hardcodes `codex-app-server` and does not consume standard resource overrides; Agent Host preserves that native name and adds the shared namespace to intercepted traces. Direct Codex logs/metrics cannot carry the namespace until Codex adds standard resource-attribute support.
 
@@ -533,12 +533,12 @@ Sessions created by Run Multiple Agents add bounded correlation attributes to th
 
 | Attribute | Description |
 |---|---|
-| `vscode.agent_host.comparison.id` | Hashed random comparison identifier, matching the correlation key in the VS Code comparison telemetry events. |
+| `vscode.agent_host.comparison.id` | Hashed random comparison identifier, matching the correlation key in the Si Code comparison telemetry events. |
 | `vscode.agent_host.comparison.role` | `attempt`, `judge`, or `synthesis`. |
 | `vscode.agent_host.comparison.attempt_index` | Zero-based attempt ordinal; present only for attempts. |
 | `vscode.agent_host.comparison.attempt_count` | Number of implementation attempts in the comparison. |
 
-These attributes contain no prompt, title, path, model label, or tool content and do not require content capture. They are emitted only when Agent Host OTel is already enabled; comparisons do not enable or reconfigure OTel. Token consumption comes from the provider-native chat spans in the same trace (`gen_ai.usage.input_tokens` and `gen_ai.usage.output_tokens`) rather than VS Code telemetry.
+These attributes contain no prompt, title, path, model label, or tool content and do not require content capture. They are emitted only when Agent Host OTel is already enabled; comparisons do not enable or reconfigure OTel. Token consumption comes from the provider-native chat spans in the same trace (`gen_ai.usage.input_tokens` and `gen_ai.usage.output_tokens`) rather than Si Code telemetry.
 
 ## Session Title Metadata
 
@@ -553,7 +553,7 @@ When content capture is enabled, the agent host emits a zero-duration `vscode.ag
 Title text is user-derived content, so these spans are emitted only when `chat.agentHost.otel.captureContent` is enabled. Host-produced title spans copy `OTEL_SERVICE_NAME` and `OTEL_RESOURCE_ATTRIBUTES` so collectors group them with the SDK telemetry. They are persisted in DB mode and use the configured OTLP, file, or console forwarder. Synthetic OTLP forwarding currently uses OTLP/HTTP JSON; when `http/protobuf` or gRPC is configured, title spans remain available in DB mode but are not sent to that external endpoint.
 
 
-## VS Code Settings
+## Si Code Settings
 
 Open **Settings** (`Ctrl+,`) and search for `agentHost otel`:
 
@@ -586,9 +586,9 @@ The workbench-side starter translates the settings above into the following env 
 | `OTEL_RESOURCE_ATTRIBUTES` | (inherited or enterprise policy) | Extra resource attributes (`k=v,k2=v2`); set from the managed `telemetry.resourceAttributes`. |
 | `OTEL_EXPORTER_OTLP_HEADERS` | (inherited) | Auth headers (for example, `Authorization=<value>`). **Not** delivered from managed settings — env delivery would leak the secret to tool subprocesses; managed headers apply to the Copilot Chat extension only. |
 
-Inside Agent Host, OTel activates when `COPILOT_OTEL_ENABLED` or `COPILOT_OTEL_DB_SPAN_EXPORTER_ENABLED` is truthy, or when an OTLP endpoint or file-exporter path is non-empty. This allows inherited environment configuration to enable OTel without a local VS Code setting.
+Inside Agent Host, OTel activates when `COPILOT_OTEL_ENABLED` or `COPILOT_OTEL_DB_SPAN_EXPORTER_ENABLED` is truthy, or when an OTLP endpoint or file-exporter path is non-empty. This allows inherited environment configuration to enable OTel without a local Si Code setting.
 
-> **Activation timing.** Env vars are bound at agent host **spawn time**. When settled enterprise OTel policy changes after startup, VS Code automatically respawns the local agent host with the new policy. Temporary policy-refresh values and windows still resolving their initial account do not restart an existing host. Changes to personal settings still require a manual agent host or window restart.
+> **Activation timing.** Env vars are bound at agent host **spawn time**. When settled enterprise OTel policy changes after startup, Si Code automatically respawns the local agent host with the new policy. Temporary policy-refresh values and windows still resolving their initial account do not restart an existing host. Changes to personal settings still require a manual agent host or window restart.
 
 ## Local SQLite Span Store
 

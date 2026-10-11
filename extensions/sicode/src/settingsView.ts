@@ -63,16 +63,21 @@ async function render(context: vscode.ExtensionContext, nonce: string): Promise<
 	<meta charset="UTF-8">
 	<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'nonce-${nonce}'">
 	<style>
-		body { font-family: var(--vscode-font-family); color: var(--vscode-foreground); background: var(--vscode-editor-background); padding: 16px; }
-		section { margin: 0 0 20px; }
-		label { display: block; margin: 8px 0; }
-		input { width: min(520px, 100%); margin-top: 4px; }
-		button { margin-right: 8px; }
+		body { font-family: var(--vscode-font-family); color: var(--vscode-foreground); background: var(--vscode-editor-background); margin: 0; padding: 28px 32px 48px; line-height: 1.5; }
+		h1 { font-weight: 600; letter-spacing: -0.02em; margin: 0 0 8px; }
+		.lede { max-width: 640px; color: var(--vscode-descriptionForeground); margin: 0 0 24px; }
+		section { max-width: 640px; margin: 0 0 16px; padding: 16px 18px; border: 1px solid var(--vscode-widget-border, #2a3a38); border-radius: 12px; background: var(--vscode-sideBar-background, #141c1b); }
+		h2 { margin: 0; font-size: 15px; }
+		label { display: block; margin: 10px 0; font-size: 13px; }
+		input { width: 100%; box-sizing: border-box; margin-top: 4px; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--vscode-input-border, #3c3c3c); background: var(--vscode-input-background); color: var(--vscode-input-foreground); }
+		button { background: #1F6F6A; color: #F4F7F6; border: 0; border-radius: 8px; padding: 8px 14px; cursor: pointer; }
+		button[data-clear] { background: transparent; color: var(--vscode-foreground); border: 1px solid var(--vscode-widget-border, #3c3c3c); margin-top: 4px; }
+		#save { margin-top: 8px; }
 	</style>
 </head>
 <body>
 	<h1>Si Code AI</h1>
-	<p>Keys stay in secret storage. Chat, inline edit, and completions use the model you select in the chat picker.</p>
+	<p class="lede">Keys stay in secret storage. Chat, inline edit, agent mode, and completions use the model you select in the chat picker. Sarvam uses its OpenAI-compatible chat completions endpoint.</p>
 	${fields}
 	<p><button id="save" type="button">Save</button></p>
 	<script nonce="${nonce}">

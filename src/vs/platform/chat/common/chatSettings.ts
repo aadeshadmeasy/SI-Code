@@ -6,13 +6,13 @@
 export const ChatAIDisabledSettingId = 'chat.disableAIFeatures';
 
 /**
- * Configuration key for the "Continue with Microsoft" sign-in choice. Choosing it exchanges a
+ * Configuration key for the "Continue with a work or school account" sign-in choice. Choosing it exchanges a
  * Microsoft Entra sign-in for a GitHub token that is published as a process-lifetime GitHub
  * authentication session. See {@link ChatMicrosoftAuthenticationMode} for its values.
  */
 export const ChatMicrosoftAuthenticationEnabledSettingId = 'chat.microsoftAuthentication.enabled';
 
-/** When sign-in dialogs offer "Continue with Microsoft". */
+/** When sign-in dialogs offer "Continue with a work or school account". */
 export const enum ChatMicrosoftAuthenticationMode {
 	/** Only when a Microsoft work or school account on this device is linked to a GitHub account. */
 	Auto = 'auto',

@@ -15,6 +15,7 @@ interface Credentials {
 	kind: VendorSpec['kind'];
 	extraHeaders?: Record<string, string>;
 	model: string;
+	subscriptionKeyHeader?: boolean;
 }
 
 interface ToolCallState {
@@ -51,7 +52,7 @@ export class SicodeProvider implements vscode.LanguageModelChatProvider {
 			version: '1',
 			tooltip: `${this.spec.label} via Si Code`,
 			detail: 'Bring your own key',
-			maxInputTokens: 128_000,
+			maxInputTokens: this.spec.maxInputTokens ?? 128_000,
 			maxOutputTokens: 4096,
 			capabilities: { toolCalling: true },
 			isDefault: this.spec.vendor === 'sicode-openai',
@@ -65,6 +66,7 @@ export class SicodeProvider implements vscode.LanguageModelChatProvider {
 				kind: this.spec.kind,
 				extraHeaders: this.spec.extraHeaders,
 				model: modelId,
+				subscriptionKeyHeader: this.spec.subscriptionKeyHeader,
 			} satisfies Credentials,
 		});
 		return [model];
@@ -109,10 +111,14 @@ export class SicodeProvider implements vscode.LanguageModelChatProvider {
 
 	private async completeOpenAI(credentials: Credentials, messages: readonly RequestMessage[], tools: readonly vscode.LanguageModelChatTool[], progress: vscode.Progress<vscode.LanguageModelResponsePart>, signal: AbortSignal): Promise<void> {
 		const pending = new Map<number, ToolCallState>();
-		const response = await postJson(`${credentials.baseUrl}/chat/completions`, {
+		const headers: Record<string, string> = {
 			Authorization: `Bearer ${credentials.apiKey}`,
 			...credentials.extraHeaders,
-		}, {
+		};
+		if (credentials.subscriptionKeyHeader) {
+			headers['api-subscription-key'] = credentials.apiKey;
+		}
+		const response = await postJson(`${credentials.baseUrl}/chat/completions`, headers, {
 			model: credentials.model,
 			messages: toOpenAIMessages(messages),
 			stream: true,

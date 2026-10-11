@@ -197,7 +197,7 @@ export class PromptFileContextContribution extends Disposable {
 							``,
 							'```md',
 							`---`,
-							`description: This custom agent researches and plans new features for VS Code extensions.`,
+							`description: This custom agent researches and plans new features for Si Code extensions.`,
 							`model: GPT-4.1`,
 							`tools: [${toolNamesList}]`,
 							`handoffs:`,

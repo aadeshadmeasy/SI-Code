@@ -596,14 +596,14 @@ function capitalize(s: string): string {
 // ── IDebugLogEntry → ChatDebugEvent converters ──
 
 /**
- * Convert a JSONL debug log entry into a VS Code debug panel event.
+ * Convert a JSONL debug log entry into a Si Code debug panel event.
  * Returns undefined for entry types that are not displayed in the panel
  * (session_start, turn boundaries, errors) and for filtered child session
  * references (categorization, title). Non-filtered child_session_ref entries
  * are converted into generic events with category 'subagent'.
  *
  * @param skipCoreEvents When true, skip `discovery` and core-sourced `generic`
- *   entries because VS Code core is already displaying them for live sessions.
+ *   entries because Si Code core is already displaying them for live sessions.
  *   Set to false for historical sessions where core won't fire those events.
  */
 export function debugLogEntryToDebugEvent(entry: IDebugLogEntry, skipCoreEvents = true): vscode.ChatDebugEvent | undefined {
@@ -624,11 +624,11 @@ export function debugLogEntryToDebugEvent(entry: IDebugLogEntry, skipCoreEvents 
 			return entryToChildSessionRefEvent(entry);
 		case 'discovery':
 			// Discovery events (Load Agents, Load Skills, etc.) are already displayed
-			// by VS Code core via onDidReceiveChatDebugEvent for live sessions.
+			// by Si Code core via onDidReceiveChatDebugEvent for live sessions.
 			return skipCoreEvents ? undefined : entryToGenericEvent(entry);
 		case 'generic':
 			// Generic events from core (e.g. Resolve Customizations) are also displayed
-			// by VS Code core directly for live sessions.
+			// by Si Code core directly for live sessions.
 			if (skipCoreEvents && entry.attrs.source === 'core') {
 				return undefined;
 			}
@@ -645,7 +645,7 @@ export function debugLogEntryToDebugEvent(entry: IDebugLogEntry, skipCoreEvents 
 
 /**
  * Generate dedup key for an entry. Uses type + spanId + timestamp to handle
- * spanId collisions from OTel counter resets across VS Code restarts.
+ * spanId collisions from OTel counter resets across Si Code restarts.
  */
 export function entryDedupKey(entry: IDebugLogEntry): string {
 	return `${entry.type}:${entry.spanId}:${entry.ts}`;

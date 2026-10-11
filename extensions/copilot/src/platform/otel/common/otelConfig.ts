@@ -104,15 +104,15 @@ export interface OTelConfigInput {
 	policyOutfile?: string;
 	/** Enterprise-managed OTLP wire protocol (raw `telemetry.protocol`). */
 	policyProtocol?: string;
-	/** Service name from VS Code setting (`github.copilot.chat.otel.serviceName`). */
+	/** Service name from Si Code setting (`github.copilot.chat.otel.serviceName`). */
 	settingServiceName?: string;
 	/** Enterprise-managed `service.name` (raw `telemetry.serviceName`). */
 	policyServiceName?: string;
-	/** Resource attributes from VS Code setting (`github.copilot.chat.otel.resourceAttributes`). */
+	/** Resource attributes from Si Code setting (`github.copilot.chat.otel.resourceAttributes`). */
 	settingResourceAttributes?: Record<string, string>;
 	/** Enterprise-managed resource attributes (raw `telemetry.resourceAttributes`). */
 	policyResourceAttributes?: Record<string, string>;
-	/** OTLP headers from VS Code setting (`github.copilot.chat.otel.headers`). */
+	/** OTLP headers from Si Code setting (`github.copilot.chat.otel.headers`). */
 	settingHeaders?: Record<string, string>;
 	/** Enterprise-managed OTLP headers (raw `telemetry.headers`). */
 	policyHeaders?: Record<string, string>;
@@ -126,13 +126,13 @@ export interface OTelConfigInput {
  * 1. Enterprise policy values from managed settings (highest)
  * 2. COPILOT_OTEL_* env vars
  * 3. OTEL_EXPORTER_OTLP_* standard env vars
- * 4. VS Code settings
+ * 4. Si Code settings
  * 5. Defaults (lowest)
  */
 export function resolveOTelConfig(input: OTelConfigInput): OTelConfig {
 	const { env } = input;
 
-	// Kill switch: respect VS Code telemetry level
+	// Kill switch: respect Si Code telemetry level
 	if (input.vscodeTelemetryLevel === 'off') {
 		return createDisabledConfig(input);
 	}

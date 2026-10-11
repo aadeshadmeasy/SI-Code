@@ -301,7 +301,7 @@ export async function collectAgentHostDebugLogs(
 		}
 	};
 
-	// 1. Local VS Code process and forwarded Agent Host logs.
+	// 1. Local Si Code process and forwarded Agent Host logs.
 	const processLogs = [
 		{ folder: 'Window', resource: environmentService.logFile },
 		{ folder: 'Shared', resource: joinPath(environmentService.logsHome, SHARED_PROCESS_LOG_FILE_NAME) },

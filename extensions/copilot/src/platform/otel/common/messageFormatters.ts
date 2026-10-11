@@ -423,7 +423,7 @@ function normalizeResponsesReasoning(msg: Record<string, unknown>): OTelChatMess
  * - OpenAI Chat Completions: `{ type: 'function', function: { name, description, parameters } }`
  * - OpenAI Responses API:    `{ type: 'function', name, description, parameters }`
  * - Anthropic Messages API:  `{ name, description, input_schema }`
- * - VS Code tool info:       `{ name, description, inputSchema }`
+ * - Si Code tool info:       `{ name, description, inputSchema }`
  *
  * Tools without a name (e.g. OpenAI client-side `tool_search`) are skipped
  * because OTel `gen_ai.tool.definitions` requires a name per entry.

@@ -168,7 +168,7 @@ export const agentHostPolicySupport: Readonly<Record<string, IAgentHostPolicySup
 	DictationEnabled: { status: 'enforced' },
 	DictationLLMCleanup: { status: 'enforced' },
 	DictationModel: { status: 'enforced' },
-	// Governs VS Code extensions, their updater and gallery, not SDK runtime extensions/plugins.
+	// Governs Si Code extensions, their updater and gallery, not SDK runtime extensions/plugins.
 	AllowedExtensions: { status: 'enforced' },
 	ExtensionsAutoUpdate: { status: 'enforced' },
 	ExtensionsAutoUpdateDelay: { status: 'enforced' },

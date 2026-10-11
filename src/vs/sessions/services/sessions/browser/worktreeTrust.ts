@@ -38,7 +38,7 @@ export async function ensureSessionWorktreesTrusted(
 	await Promise.all(workspace.folders.map(async folder => {
 		const gitRepository = folder.gitRepository;
 		// `workTreeUri` is only set for a worktree (working directory !== repository
-		// root), but on its own it does not prove VS Code created that worktree.
+		// root), but on its own it does not prove Si Code created that worktree.
 		// Require the working directory to be a strict descendant of the repository's
 		// `.worktrees` sibling before inheriting trust from the (trusted) base repo.
 		if (!gitRepository?.workTreeUri || !isWorktreeUnderRepository(folder.workingDirectory, gitRepository.uri)) {

@@ -11,7 +11,7 @@ import { cloneAndChange } from '../../../util/vs/base/common/objects';
 export enum ToolCategory {
 	JupyterNotebook = 'Jupyter Notebook Tools',
 	WebInteraction = 'Web Interaction',
-	VSCodeInteraction = 'VS Code Interaction',
+	VSCodeInteraction = 'Si Code Interaction',
 	Testing = 'Testing',
 	RedundantButSpecific = 'Redundant but Specific',
 	// Core tools that should not be grouped

@@ -1,6 +1,6 @@
 # build/agent-sdk
 
-Per-platform agent SDK production. Each VS Code build (`darwin-arm64`,
+Per-platform agent SDK production. Each Si Code build (`darwin-arm64`,
 `linux-x64`, Alpine REH, etc.) uploads its own platform's SDK tarballs
 to `main.vscode-cdn.net` and stamps `agentSdks` into the shipped
 `product.json` with a `{version, urlTemplate}` per SDK. Every platform
@@ -71,7 +71,7 @@ Local `gulp vscode-darwin-arm64` invocations don't set
 
 ## Why two steps, not inline-in-gulp
 
-The agent SDK work is a distinct concern from the VS Code packaging
+The agent SDK work is a distinct concern from the Si Code packaging
 gulp graph. As its own pipeline step:
 
 - Visible in the build log — operators see a discrete "Agent SDK: build
@@ -124,9 +124,9 @@ publish time. `sdk.mjs` statically imports node builtins and nothing else, and
 the one external module it resolves at runtime is its own native binary
 package.
 
-On the VS Code side, `@modelcontextprotocol/sdk` is only ever `import type`, so
+On the Si Code side, `@modelcontextprotocol/sdk` is only ever `import type`, so
 TypeScript erases it. `zod` is not: `claudeJsonSchemaToZod.ts` imports `z` at
-runtime to build the raw shapes it hands to `sdk.tool()`. That zod is VS Code's
+runtime to build the raw shapes it hands to `sdk.tool()`. That zod is Si Code's
 own dependency (root `package.json`, shipped in the product), and the objects
 flow *into* the SDK. Nothing resolves zod out of the downloaded tree. That is
 the invariant `--omit=peer` needs, and it is weaker than "unused".

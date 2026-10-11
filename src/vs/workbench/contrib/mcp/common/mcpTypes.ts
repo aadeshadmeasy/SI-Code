@@ -60,7 +60,7 @@ export const enum McpCollectionProvenance {
 	Plugin = 'plugin', // An agent plugin's `.mcp.json`.
 }
 
-/** Returns the collection provenance represented by a VS Code configuration target. */
+/** Returns the collection provenance represented by a Si Code configuration target. */
 export function getMcpCollectionProvenance(target: ConfigurationTarget | undefined): McpCollectionProvenance | undefined {
 	switch (target) {
 		case ConfigurationTarget.USER:
@@ -536,11 +536,11 @@ export interface IMcpServer extends IDisposable {
 }
 
 /**
- * A representation of an MCP resource. The `uri` is namespaced to VS Code and
+ * A representation of an MCP resource. The `uri` is namespaced to Si Code and
  * can be used in filesystem APIs.
  */
 export interface IMcpResource {
-	/** Identifier for the file in VS Code and operable with filesystem API */
+	/** Identifier for the file in Si Code and operable with filesystem API */
 	readonly uri: URI;
 	/** Identifier of the file as given from the MCP server. */
 	readonly mcpUri: string;
@@ -1068,7 +1068,7 @@ export interface IMcpWorkbenchService {
 	readonly local: readonly IWorkbenchMcpServer[];
 	/** Resolves after the initial installed MCP server query attempt completes. Never rejects. */
 	readonly whenInitialLocalMcpServersLoaded: Promise<void>;
-	/** Returns enabled VS Code-format servers after name precedence; root files are discovered independently. */
+	/** Returns enabled Si Code-format servers after name precedence; root files are discovered independently. */
 	getEnabledLocalMcpServers(): IWorkbenchLocalMcpServer[];
 	queryLocal(): Promise<IWorkbenchMcpServer[]>;
 	queryGallery(options?: IQueryOptions, token?: CancellationToken, manifest?: IMcpGalleryManifest): Promise<IIterativePager<IWorkbenchMcpServer>>;
@@ -1079,7 +1079,7 @@ export interface IMcpWorkbenchService {
 	/**
 	 * Resolves the configuration of server {@link name} for editing when {@link source} is a file
 	 * shared with other MCP clients: a workspace root `.mcp.json` or the Copilot CLI's global
-	 * `mcp-config.json`. Returns undefined for any other source, including VS Code's own `mcp.json`.
+	 * `mcp-config.json`. Returns undefined for any other source, including Si Code's own `mcp.json`.
 	 */
 	resolveEditableMcpServerConfiguration(source: URI, name: string): Promise<IEditableMcpServerConfiguration | undefined>;
 	getMcpConfigPath(arg: IWorkbenchLocalMcpServer): IMcpConfigPath | undefined;

@@ -596,7 +596,7 @@ export class McpAddConfigurationCommand {
 
 		if (installTarget.kind === 'agentHost') {
 			if (Object.hasOwn(AssistedTypes, serverType) && (inputs?.length || JSON.stringify(config).includes('${input:'))) {
-				throw new Error(localize('mcp.agentHost.inputsUnsupported', "This server requires VS Code input variables. Add it to a VS Code configuration file instead of the current agent session."));
+				throw new Error(localize('mcp.agentHost.inputsUnsupported', "This server requires Si Code input variables. Add it to a Si Code configuration file instead of the current agent session."));
 			}
 			this._agentHostCustomizations.addMcpServer(installTarget.session, name, config);
 			return;
@@ -614,7 +614,7 @@ export class McpAddConfigurationCommand {
 				const fallback = await this._quickInputService.pick([{
 					label: localize('mcp.target.userConfigurationDeprecated', "User Configuration (deprecated)"),
 					detail: error,
-				}], { placeHolder: localize('mcp.target.vscodeRequired', "This server requires VS Code configuration"), ignoreFocusLost: true });
+				}], { placeHolder: localize('mcp.target.vscodeRequired', "This server requires Si Code configuration"), ignoreFocusLost: true });
 				if (!fallback) {
 					return;
 				}
@@ -625,7 +625,7 @@ export class McpAddConfigurationCommand {
 				}
 				await this._mcpResourceScannerService.addMcpServers([installable], resource, undefined, McpResourceFormat.CopilotGlobal);
 				await this._editorService.openEditor({ resource });
-				this._notificationService.info(localize('mcp.copilotGlobal.added', "Added MCP server '{0}' to {1}. Set any referenced environment variables on the agent-host machine before starting a new Copilot session. VS Code input variables are not supported in this file.", name, this._label.getUriLabel(resource)));
+				this._notificationService.info(localize('mcp.copilotGlobal.added', "Added MCP server '{0}' to {1}. Set any referenced environment variables on the agent-host machine before starting a new Copilot session. Si Code input variables are not supported in this file.", name, this._label.getUriLabel(resource)));
 				return;
 			}
 		}

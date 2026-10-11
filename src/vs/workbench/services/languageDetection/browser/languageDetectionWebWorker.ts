@@ -172,7 +172,7 @@ export class LanguageDetectionWorker implements ILanguageDetectionWorker {
 	private adjustLanguageConfidence(modelResult: ModelResult): ModelResult {
 		switch (modelResult.languageId) {
 			// For the following languages, we increase the confidence because
-			// these are commonly used languages in VS Code and supported
+			// these are commonly used languages in Si Code and supported
 			// by the model.
 			case 'js':
 			case 'html':
@@ -197,7 +197,7 @@ export class LanguageDetectionWorker implements ILanguageDetectionWorker {
 			// we've had issues like #131912 that caused incorrect guesses. To enforce this, we subtract the
 			// negativeConfidenceCorrection from the confidence.
 
-			// languages that are provided by default in VS Code
+			// languages that are provided by default in Si Code
 			case 'bat':
 			case 'ini':
 			case 'makefile':

@@ -722,13 +722,13 @@ export class AgentHostStateManager extends Disposable {
 		return entry ? this._isIdleProvisional(session, entry.state.lifecycle) : false;
 	}
 
-	/** Whether the session is owned by a throwaway VS Code chat surface. */
+	/** Whether the session is owned by a throwaway Si Code chat surface. */
 	isEphemeralSession(session: string): boolean {
 		const entry = this._sessionStates.get(session);
 		return entry ? readEphemeralSessionMeta(entry.state).isEphemeral === true : false;
 	}
 
-	/** Returns the typed VS Code surface metadata for a tracked session, when present. */
+	/** Returns the typed Si Code surface metadata for a tracked session, when present. */
 	getSessionSurfaceMeta(session: string): IChatSurfaceMeta | undefined {
 		const entry = this._sessionStates.get(session);
 		return entry ? readChatSurfaceMeta(entry.state) : undefined;
@@ -1250,7 +1250,7 @@ export class AgentHostStateManager extends Disposable {
 
 	/**
 	 * Creates the default {@link ChatState} for a session and records it as
-	 * the session's single chat. VS Code models every session as having
+	 * the session's single chat. Si Code models every session as having
 	 * exactly one chat — its default chat — whose URI is derived
 	 * deterministically from the session URI. The chat is seeded with any
 	 * pre-populated `turns` (used by {@link restoreSession}).
@@ -1791,7 +1791,7 @@ export class AgentHostStateManager extends Disposable {
 	 * producer to re-create the changeset on next subscribe.
 	 *
 	 * Per the spec, the server SHOULD also unsubscribe its clients after
-	 * dispatching this action; for VS Code-internal clients that happens
+	 * dispatching this action; for Si Code-internal clients that happens
 	 * via the `notify/sessionRemoved` notification, which the workbench-side
 	 * provider correlates to release any held subscriptions.
 	 *

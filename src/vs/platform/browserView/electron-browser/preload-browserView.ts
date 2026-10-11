@@ -383,8 +383,8 @@ class ElementPicker {
 	private static readonly _COMMENT_PREVIEW_HIDE_DELAY = 80;
 	private static readonly _COMMENT_SURFACE_ANIMATION_DURATION = 140;
 	private static readonly _COMMENT_SUPPORTING_FADE_DURATION = 120;
-	private static readonly _CURSOR_DEFAULT = '/* VS Code injected style */ * { cursor: default !important; }';
-	private static readonly _CURSOR_CROSSHAIR = '/* VS Code injected style */ * { cursor: crosshair !important; }';
+	private static readonly _CURSOR_DEFAULT = '/* Si Code injected style */ * { cursor: default !important; }';
+	private static readonly _CURSOR_CROSSHAIR = '/* Si Code injected style */ * { cursor: crosshair !important; }';
 
 	private _selectionActive = false;
 	private _continuous = false;
@@ -2090,7 +2090,7 @@ class ElementPicker {
  */
 class AreaPicker {
 	private static readonly _MIN_AREA_PX = 4;
-	private static readonly _CURSOR_CROSSHAIR = '/* VS Code injected style */ * { cursor: crosshair !important; }';
+	private static readonly _CURSOR_CROSSHAIR = '/* Si Code injected style */ * { cursor: crosshair !important; }';
 
 	private _selectionActive = false;
 

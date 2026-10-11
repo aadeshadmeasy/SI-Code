@@ -643,7 +643,7 @@ export class CustomizationMarketplaceInstallService extends Disposable implement
 		}
 		if (source?.kind === 'configuredPlugin') {
 			if (isWeb) {
-				return { kind: 'unavailable', message: localize('customizationMarketplace.pluginWebUnsupported', "Installing configured marketplace plugins is not available in VS Code for the Web.") };
+				return { kind: 'unavailable', message: localize('customizationMarketplace.pluginWebUnsupported', "Installing configured marketplace plugins is not available in Si Code for the Web.") };
 			}
 			if (!this.configurationService.getValue<boolean>(ChatConfiguration.PluginsEnabled)) {
 				return { kind: 'unavailable', message: localize('customizationMarketplace.pluginsDisabled', "Enable agent plugins to install this resource.") };
@@ -661,7 +661,7 @@ export class CustomizationMarketplaceInstallService extends Disposable implement
 			return {
 				kind: 'unavailable',
 				message: resource.mediaType === CustomizationMarketplaceMediaType.CursorPlugin
-					? localize('customizationMarketplace.cursorUnsupported', "Cursor plugins cannot be installed in VS Code. Open the resource to view its installation instructions.")
+					? localize('customizationMarketplace.cursorUnsupported', "Cursor plugins cannot be installed in Si Code. Open the resource to view its installation instructions.")
 					: localize('customizationMarketplace.sourceUnavailable', "This resource does not provide a supported installation source."),
 			};
 		}

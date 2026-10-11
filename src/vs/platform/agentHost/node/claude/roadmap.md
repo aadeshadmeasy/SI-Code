@@ -166,7 +166,7 @@ interface ICopilotApiService {
 
 **Learnings from implementation:**
 
-1. **VS Code DI constructor ordering:** `GetLeadingNonServiceArgs` strips
+1. **Si Code DI constructor ordering:** `GetLeadingNonServiceArgs` strips
    `BrandedService`-decorated params from the **end** of the tuple, so
    non-service params (like `fetchFn`) must come **first** in the constructor.
    Putting them after service params causes `createInstance` to select the
@@ -2274,7 +2274,7 @@ pattern:
   workbench preference that has to be marshalled across the process
   boundary. `ClaudeAgent` already injects `IAgentConfigurationService`
   and reads other root values; it reads this one the same way — **no new
-  VS Code setting, no `VSCODE_AGENT_HOST_*` env var, no
+  Si Code setting, no `VSCODE_AGENT_HOST_*` env var, no
   `nodeAgentHostStarter` forwarding.**
 - **It works identically for local and remote/headless hosts.** A remote
   operator edits `agent-host-config.json` (or any AHP client writes it via

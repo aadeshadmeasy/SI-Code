@@ -326,7 +326,7 @@ export class CloudAutomationStore extends Disposable implements ISessionsProvide
 		const current = this.getAutomation(id)!;
 		assertAutomationSessionTemplateAuthority(current, patch);
 		if (cloudAutomationSchedule(definition.triggers).interval === 'custom') {
-			throw new Error(localize('cloudAutomations.unsupportedEdit', "This automation uses triggers that cannot be edited in VS Code."));
+			throw new Error(localize('cloudAutomations.unsupportedEdit', "This automation uses triggers that cannot be edited in Si Code."));
 		}
 		if (patch.target) {
 			this.validateTarget(patch.target);
@@ -399,7 +399,7 @@ export class CloudAutomationStore extends Disposable implements ISessionsProvide
 				config: { ...(definition.tools ? { tools: definition.tools } : {}), ...(definition.reasoning_effort ? { reasoningEffort: definition.reasoning_effort } : {}) },
 			},
 			enabled: definition.disabled !== true, createdAt: definition.created_at, updatedAt: definition.updated_at,
-			...(schedule.interval === 'custom' ? { readOnlyReason: localize('cloudAutomations.customSchedule', "This automation uses triggers that cannot be edited in VS Code.") } : {}),
+			...(schedule.interval === 'custom' ? { readOnlyReason: localize('cloudAutomations.customSchedule', "This automation uses triggers that cannot be edited in Si Code.") } : {}),
 		};
 	}
 

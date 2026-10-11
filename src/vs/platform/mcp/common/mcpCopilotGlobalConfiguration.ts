@@ -44,7 +44,7 @@ export function getCopilotGlobalMcpConfigurationError({ config, inputs }: IInsta
 		return localize('invalidCopilotGlobalMcpServer', "The MCP server configuration is invalid.");
 	}
 	if (JSON.stringify(config).includes('${input:')) {
-		return localize('unsupportedCopilotGlobalMcpInputVariable', "VS Code input variables are not supported in Copilot Global MCP configuration. Use environment variable references instead.");
+		return localize('unsupportedCopilotGlobalMcpInputVariable', "Si Code input variables are not supported in Copilot Global MCP configuration. Use environment variable references instead.");
 	}
 	return undefined;
 }

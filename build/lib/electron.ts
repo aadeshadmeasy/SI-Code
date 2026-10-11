@@ -143,7 +143,7 @@ const electronAssetResolver = electronFeed
 export const config = {
 	version: electronVersion,
 	productAppName: product.nameLong,
-	companyName: 'Microsoft Corporation',
+	companyName: 'Si Code',
 	copyright: 'Copyright (C) 2026 Microsoft. All rights reserved',
 	darwinExecutable: product.nameShort,
 	darwinIcon: 'resources/darwin/code.icns',
@@ -191,7 +191,7 @@ export const config = {
 		// Default icon with specified names
 		...darwinBundleDocumentTypes({
 			'Clojure source code': ['clj', 'cljs', 'cljx', 'clojure'],
-			'VS Code workspace file': 'code-workspace',
+			'Si Code workspace file': 'code-workspace',
 			'CoffeeScript source code': 'coffee',
 			'Comma Separated Values': 'csv',
 			'CMake script': 'cmake',

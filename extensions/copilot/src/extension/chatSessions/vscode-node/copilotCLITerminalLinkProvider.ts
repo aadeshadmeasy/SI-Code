@@ -107,7 +107,7 @@ export class CopilotCLITerminalLinkProvider implements TerminalLinkProvider<Copi
 		}
 		const links: CopilotCLITerminalLink[] = [];
 		for (const candidate of this._detectLinkCandidates(line)) {
-			// Match VS Code's built-in MaxResolvedLinksInLine (terminalLocalLinkDetector.ts).
+			// Match Si Code's built-in MaxResolvedLinksInLine (terminalLocalLinkDetector.ts).
 			if (token.isCancellationRequested || links.length >= 10) {
 				break;
 			}

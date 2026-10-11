@@ -47,7 +47,7 @@ interface ITransientSession {
 const TOKEN_RENEWAL_WINDOW_MS = 60 * 60 * 1000;
 
 /**
- * A session option only the workbench can set: VS Code strips every `_workbench` option from
+ * A session option only the workbench can set: Si Code strips every `_workbench` option from
  * extension requests before they reach a provider. Its value, `{ subjectTokens: string[] }`, carries
  * Microsoft Entra access tokens for the GitHub audience, and asks whether GitHub links any of those
  * identities to a GitHub account. The workbench uses it to decide whether to offer "Continue with
@@ -205,9 +205,9 @@ export class GitHubSessionEngine implements vscode.AuthenticationProvider, vscod
 	 */
 	private readonly _restoresTried = new Set<string>();
 	/**
-	 * Bumped every time the Microsoft account list moves.
+	 * Bumped every time the work or school account list moves.
 	 *
-	 * A mint reads the Microsoft account list, spends two round trips, and then publishes. Signing
+	 * A mint reads the work or school account list, spends two round trips, and then publishes. Signing
 	 * out of Microsoft in the middle of that window evicts sessions that do not exist yet, so
 	 * without this the mint would land afterwards and put back the session the user had just
 	 * removed the only way in to. See {@link microsoftAccountStillSignedIn}.
@@ -259,7 +259,7 @@ export class GitHubSessionEngine implements vscode.AuthenticationProvider, vscod
 			this._sessionChangeEmitter,
 			this._logger,
 			this.context.secrets.onDidChange(() => this.checkForUpdates()),
-			// The two sides of the Microsoft account list moving. Signing in makes a restore that was
+			// The two sides of the work or school account list moving. Signing in makes a restore that was
 			// impossible a moment ago possible, so whatever we gave up on is worth another try.
 			// Signing out leaves sessions that cannot renew, so they go.
 			vscode.authentication.onDidChangeSessions(async e => {
@@ -476,7 +476,7 @@ export class GitHubSessionEngine implements vscode.AuthenticationProvider, vscod
 	 * Expiry is settled here rather than on a timer, because `getSession` is what guarantees a fresh
 	 * token everywhere else in the product and a token running out is not the user signing out.
 	 * Anything that cannot be renewed is dropped on the way through and reported as removed, which
-	 * is what makes VS Code ask the user again.
+	 * is what makes Si Code ask the user again.
 	 *
 	 * Only transient sessions can go stale, and every one of those was brokered through Microsoft.
 	 * When persisted tokens start expiring too, they will need an expiry of their own here and
@@ -527,7 +527,7 @@ export class GitHubSessionEngine implements vscode.AuthenticationProvider, vscod
 	}
 
 	/**
-	 * Drops sessions there is no longer any way to keep, and tells VS Code they are gone. Only the
+	 * Drops sessions there is no longer any way to keep, and tells Si Code they are gone. Only the
 	 * in-memory ones: a read must not rewrite the Keychain, and no persisted session carries an
 	 * expiry today anyway.
 	 */
@@ -545,11 +545,11 @@ export class GitHubSessionEngine implements vscode.AuthenticationProvider, vscod
 	}
 
 	/**
-	 * Drops every session whose Microsoft account the user is no longer signed in to. The token
+	 * Drops every session whose work or school account the user is no longer signed in to. The token
 	 * still works until it runs out, but nothing can renew it, and leaving it published shows a
 	 * GitHub account in the account menu that the user has just signed out of the only way in to.
 	 *
-	 * Only the sessions. The account links stay put, because this reads the Microsoft account list,
+	 * Only the sessions. The account links stay put, because this reads the work or school account list,
 	 * and that list is a cache which reads empty for a moment while it repopulates. Getting it wrong
 	 * here costs this window one round trip on the next read, since {@link restore} mints the
 	 * session again from the row that is still there. Getting it wrong in the link table would sign
@@ -563,13 +563,13 @@ export class GitHubSessionEngine implements vscode.AuthenticationProvider, vscod
 				const microsoftAccountLabel = rows.get(this.accountName(session.account.label))?.microsoftAccountLabel;
 				return !microsoftAccountLabel || !reachable.has(microsoftAccountLabel);
 			}),
-			'their Microsoft account is no longer signed in');
+			'their work or school account is no longer signed in');
 	}
 
 	/**
 	 * Mints a fresh token for a session whose own has run out, without the user in front of it.
 	 * Resolves to `undefined` when that cannot be done, which leaves the caller with nothing and
-	 * VS Code asking the user to sign in again.
+	 * Si Code asking the user to sign in again.
 	 *
 	 * Concurrent calls for one session share a single exchange. `getSessions` is called often, and
 	 * by more than one caller at a time, and two exchanges would mint two tokens where one is wanted.
@@ -623,7 +623,7 @@ export class GitHubSessionEngine implements vscode.AuthenticationProvider, vscod
 	}
 
 	/**
-	 * Whether the Microsoft account a mint was made against is still signed in, asked just before
+	 * Whether the work or school account a mint was made against is still signed in, asked just before
 	 * the mint publishes.
 	 *
 	 * {@link evictUnreachable} only removes sessions that exist when it runs, so a mint that started
@@ -922,7 +922,7 @@ export class GitHubSessionEngine implements vscode.AuthenticationProvider, vscod
 	}
 
 	/**
-	 * The Microsoft account a GitHub account was last reached through, when the user is still
+	 * The work or school account a GitHub account was last reached through, when the user is still
 	 * signed in to it.
 	 *
 	 * A hint to {@link createSession}, which runs discovery regardless and rewrites the row if it
@@ -946,7 +946,7 @@ export class GitHubSessionEngine implements vscode.AuthenticationProvider, vscod
 	}
 
 	/**
-	 * Forgets which Microsoft account a GitHub account was reached through, once the user has no
+	 * Forgets which work or school account a GitHub account was reached through, once the user has no
 	 * sessions left for it. One session going away is not signing out of the account: two sessions
 	 * can share a row, and a token running out has to leave the row behind so that the next sign in
 	 * still knows where to look.

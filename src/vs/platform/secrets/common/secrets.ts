@@ -75,9 +75,9 @@ export async function writeEncryptedSecret(
 }
 
 /**
- * Secret keys that should be shared between the VS Code app and the agents app.
+ * Secret keys that should be shared between the Si Code app and the agents app.
  * When the agents app starts and doesn't have these secrets, it requests them
- * from VS Code via crossAppIPC.
+ * from Si Code via crossAppIPC.
  */
 export const CROSS_APP_SHARED_SECRET_KEYS: readonly string[] = [
 	'{"extensionId":"vscode.github-authentication","key":"github.auth"}',

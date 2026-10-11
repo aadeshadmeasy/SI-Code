@@ -12,7 +12,7 @@ import { hasRawManagedSettings, normalizeManagedSettings } from '../../../../pla
 /**
  * Client identity VS Code reports to the managed settings service. It names this codebase's own
  * managed settings implementation, which is distinct from the `copilot-runtime` implementation
- * VS Code relays a subset of these settings into.
+ * Si Code relays a subset of these settings into.
  */
 const MANAGED_SETTINGS_CLIENT_ID = 'vscode';
 

@@ -118,7 +118,7 @@ function computeChecksum(filename: string): string {
 
 // foundry-local-sdk (on-device chat dictation) loads its N-API addons and shared
 // libraries from the per-user runtime cache. Exclude the package's native files,
-// which may require a newer glibc than VS Code's supported maximum.
+// which may require a newer glibc than Si Code's supported maximum.
 function getFoundryLocalExcludeFilter(): string[] {
 	return [
 		'**',
@@ -345,7 +345,7 @@ function packageTask(platform: string, arch: string, sourceFolderName: string, d
 			const shortcut = gulp.src('resources/darwin/bin/code.sh')
 				.pipe(replace('@@APPNAME@@', product.applicationName))
 				.pipe(replace('@@NAME@@', product.nameShort))
-				.pipe(rename('bin/code'));
+				.pipe(rename('bin/' + product.applicationName));
 			const policyDest = gulp.src('.build/policies/darwin/**', { base: '.build/policies/darwin' })
 				.pipe(rename(f => f.dirname = `policies/${f.dirname}`));
 			all = es.merge(all, shortcut, policyDest);

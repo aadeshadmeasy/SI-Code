@@ -15,7 +15,7 @@ import { unificationStateObservable } from '../../completions/vscode-node/comple
  * completions provider is suppressed and NES answers for ghost text as well.
  *
  * Two independent signals say so: the capability baked into the selected model's prompting strategy
- * (which `chat.advanced.inlineEdits.unification` can still override), and VS Code's own
+ * (which `chat.advanced.inlineEdits.unification` can still override), and Si Code's own
  * `modelUnification` deployment toggle.
  *
  * Every consumer must resolve through this one function. Provider registration turns the answer into

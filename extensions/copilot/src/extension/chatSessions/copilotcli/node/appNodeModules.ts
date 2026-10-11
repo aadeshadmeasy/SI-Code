@@ -10,7 +10,7 @@ import * as path from 'path';
  * Roots under VS Code's app root that may hold its bundled `node_modules`, in
  * priority order.
  *
- * In a packaged build VS Code's `node_modules` is bundled into a
+ * In a packaged build Si Code's `node_modules` is bundled into a
  * `node_modules.asar` archive and any native binaries are extracted alongside it
  * into `node_modules.asar.unpacked`. In development they live in a plain
  * `node_modules`. Consumers that reach into VS Code's own modules for native

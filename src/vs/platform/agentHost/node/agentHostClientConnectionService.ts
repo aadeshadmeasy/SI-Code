@@ -20,7 +20,7 @@ export interface IAgentHostClientConnectionSource {
 	isClientConnected(clientId: string): boolean;
 	/** Whether an active connection is local and uses the server's MessagePort transport. */
 	isLocalClient(clientId: string): boolean;
-	/** Compatibility addressing for a positively identified legacy VS Code connection. */
+	/** Compatibility addressing for a positively identified legacy Si Code connection. */
 	usesLegacySessionUris?(clientId: string): boolean;
 	getConnectedClientTransportCounts(): ReadonlyMap<string, number>;
 	requestWorkspaceTrust(clientId: string, request: IAgentHostWorkspaceTrustRequest): Promise<boolean>;

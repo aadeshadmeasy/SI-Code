@@ -324,7 +324,7 @@
         "displayName": "%copilot.tools.getVSCodeAPI.name%",
         "icon": "$(references)",
         "userDescription": "%copilot.vscode.tool.description%",
-        "modelDescription": "Get comprehensive VS Code API documentation and references for extension development. This tool provides authoritative documentation for VS Code's extensive API surface, including proposed APIs, contribution points, and best practices. Use this tool for understanding complex VS Code API interactions.\n\nWhen to use this tool:\n- User asks about specific VS Code APIs, interfaces, or extension capabilities\n- Need documentation for VS Code extension contribution points (commands, views, settings, etc.)\n- Questions about proposed APIs and their usage patterns\n- Understanding VS Code extension lifecycle, activation events, and packaging\n- Best practices for VS Code extension development architecture\n- API examples and code patterns for extension features\n- Troubleshooting extension-specific issues or API limitations\n\nWhen NOT to use this tool:\n- Creating simple standalone files or scripts unrelated to VS Code extensions\n- General programming questions not specific to VS Code extension development\n- Questions about using VS Code as an editor (user-facing features)\n- Non-extension related development tasks\n- File creation or editing that doesn't involve VS Code extension APIs\n\nCRITICAL usage guidelines:\n1. Always include specific API names, interfaces, or concepts in your query\n2. Mention the extension feature you're trying to implement\n3. Include context about proposed vs stable APIs when relevant\n4. Reference specific contribution points when asking about extension manifest\n5. Be specific about the VS Code version or API version when known\n\nScope: This tool is for EXTENSION DEVELOPMENT ONLY - building tools that extend VS Code itself, not for general file creation or non-extension programming tasks.",
+        "modelDescription": "Get comprehensive Si Code API documentation and references for extension development. This tool provides authoritative documentation for Si Code's extensive API surface, including proposed APIs, contribution points, and best practices. Use this tool for understanding complex Si Code API interactions.\n\nWhen to use this tool:\n- User asks about specific Si Code APIs, interfaces, or extension capabilities\n- Need documentation for Si Code extension contribution points (commands, views, settings, etc.)\n- Questions about proposed APIs and their usage patterns\n- Understanding Si Code extension lifecycle, activation events, and packaging\n- Best practices for Si Code extension development architecture\n- API examples and code patterns for extension features\n- Troubleshooting extension-specific issues or API limitations\n\nWhen NOT to use this tool:\n- Creating simple standalone files or scripts unrelated to Si Code extensions\n- General programming questions not specific to Si Code extension development\n- Questions about using Si Code as an editor (user-facing features)\n- Non-extension related development tasks\n- File creation or editing that doesn't involve Si Code extension APIs\n\nCRITICAL usage guidelines:\n1. Always include specific API names, interfaces, or concepts in your query\n2. Mention the extension feature you're trying to implement\n3. Include context about proposed vs stable APIs when relevant\n4. Reference specific contribution points when asking about extension manifest\n5. Be specific about the Si Code version or API version when known\n\nScope: This tool is for EXTENSION DEVELOPMENT ONLY - building tools that extend Si Code itself, not for general file creation or non-extension programming tasks.",
         "inputSchema": {
           "type": "object",
           "properties": {
@@ -581,7 +581,7 @@
         "icon": "$(new-folder)",
         "userDescription": "%github.copilot.tools.createNewWorkspace.userDescription%",
         "when": "config.github.copilot.chat.newWorkspaceCreation.enabled",
-        "modelDescription": "Get comprehensive setup steps to help the user create complete project structures in a VS Code workspace. This tool is designed for full project initialization and scaffolding, not for creating individual files.\n\nWhen to use this tool:\n- User wants to create a new complete project from scratch\n- Setting up entire project frameworks (TypeScript projects, React apps, Node.js servers, etc.)\n- Initializing Model Context Protocol (MCP) servers with full structure\n- Creating VS Code extensions with proper scaffolding\n- Setting up Next.js, Vite, or other framework-based projects\n- User asks for \"new project\", \"create a workspace\", \"set up a [framework] project\"\n- Need to establish complete development environment with dependencies, config files, and folder structure\n\nWhen NOT to use this tool:\n- Creating single files or small code snippets\n- Adding individual files to existing projects\n- Making modifications to existing codebases\n- User asks to \"create a file\" or \"add a component\"\n- Simple code examples or demonstrations\n- Debugging or fixing existing code\n\nThis tool provides complete project setup including:\n- Folder structure creation\n- Package.json and dependency management\n- Configuration files (tsconfig, eslint, etc.)\n- Initial boilerplate code\n- Development environment setup\n- Build and run instructions\n\nUse other file creation tools for individual files within existing projects.",
+        "modelDescription": "Get comprehensive setup steps to help the user create complete project structures in a Si Code workspace. This tool is designed for full project initialization and scaffolding, not for creating individual files.\n\nWhen to use this tool:\n- User wants to create a new complete project from scratch\n- Setting up entire project frameworks (TypeScript projects, React apps, Node.js servers, etc.)\n- Initializing Model Context Protocol (MCP) servers with full structure\n- Creating Si Code extensions with proper scaffolding\n- Setting up Next.js, Vite, or other framework-based projects\n- User asks for \"new project\", \"create a workspace\", \"set up a [framework] project\"\n- Need to establish complete development environment with dependencies, config files, and folder structure\n\nWhen NOT to use this tool:\n- Creating single files or small code snippets\n- Adding individual files to existing projects\n- Making modifications to existing codebases\n- User asks to \"create a file\" or \"add a component\"\n- Simple code examples or demonstrations\n- Debugging or fixing existing code\n\nThis tool provides complete project setup including:\n- Folder structure creation\n- Package.json and dependency management\n- Configuration files (tsconfig, eslint, etc.)\n- Initial boilerplate code\n- Development environment setup\n- Build and run instructions\n\nUse other file creation tools for individual files within existing projects.",
         "inputSchema": {
           "type": "object",
           "properties": {
@@ -600,13 +600,13 @@
       },
       {
         "name": "copilot_installExtension",
-        "displayName": "Install Extension in VS Code",
+        "displayName": "Install Extension in Si Code",
         "when": "!config.github.copilot.chat.installExtensionSkill.enabled",
         "toolReferenceName": "installExtension",
         "legacyToolReferenceFullNames": [
           "new/installExtension"
         ],
-        "modelDescription": "Install an extension in VS Code. Use this tool to install an extension in Visual Studio Code as part of a new workspace creation process only.",
+        "modelDescription": "Install an extension in Si Code. Use this tool to install an extension in Si Code as part of a new workspace creation process only.",
         "inputSchema": {
           "type": "object",
           "properties": {
@@ -628,12 +628,12 @@
       },
       {
         "name": "copilot_runVscodeCommand",
-        "displayName": "Run VS Code Command",
+        "displayName": "Run Si Code Command",
         "toolReferenceName": "runCommand",
         "legacyToolReferenceFullNames": [
           "new/runVscodeCommand"
         ],
-        "modelDescription": "Run a command in VS Code. Use this tool to run a command in Visual Studio Code as part of a new workspace creation process only.",
+        "modelDescription": "Run a command in Si Code. Use this tool to run a command in Si Code as part of a new workspace creation process only.",
         "inputSchema": {
           "type": "object",
           "properties": {
@@ -672,7 +672,7 @@
         "legacyToolReferenceFullNames": [
           "newJupyterNotebook"
         ],
-        "modelDescription": "Generates a new Jupyter Notebook (.ipynb) in VS Code. Jupyter Notebooks are interactive documents commonly used for data exploration, analysis, visualization, and combining code with narrative text. Prefer creating plain Python files or similar unless a user explicitly requests creating a new Jupyter Notebook or already has a Jupyter Notebook opened or exists in the workspace.",
+        "modelDescription": "Generates a new Jupyter Notebook (.ipynb) in Si Code. Jupyter Notebooks are interactive documents commonly used for data exploration, analysis, visualization, and combining code with narrative text. Prefer creating plain Python files or similar unless a user explicitly requests creating a new Jupyter Notebook or already has a Jupyter Notebook opened or exists in the workspace.",
         "userDescription": "%copilot.tools.newJupyterNotebook.description%",
         "inputSchema": {
           "type": "object",
@@ -1429,7 +1429,7 @@
             "disambiguation": [
               {
                 "category": "create_new_workspace_or_extension",
-                "description": "The user wants to create a complete Visual Studio Code workspace from scratch, such as a new application or a Visual Studio Code extension. Use this category only if the question relates to generating or creating new workspaces in Visual Studio Code. Do not use this category for updating existing code or generating sample code snippets",
+                "description": "The user wants to create a complete Si Code workspace from scratch, such as a new application or a Si Code extension. Use this category only if the question relates to generating or creating new workspaces in Si Code. Do not use this category for updating existing code or generating sample code snippets",
                 "examples": [
                   "Scaffold a Node server.",
                   "Create a sample project which uses the fileSystemProvider API.",
@@ -1445,7 +1445,7 @@
             "disambiguation": [
               {
                 "category": "create_jupyter_notebook",
-                "description": "The user wants to create a new Jupyter notebook in Visual Studio Code.",
+                "description": "The user wants to create a new Jupyter notebook in Si Code.",
                 "examples": [
                   "Create a notebook to analyze this CSV file."
                 ]
@@ -1559,7 +1559,7 @@
             "disambiguation": [
               {
                 "category": "create_new_workspace_or_extension",
-                "description": "The user wants to create a complete Visual Studio Code workspace from scratch, such as a new application or a Visual Studio Code extension. Use this category only if the question relates to generating or creating new workspaces in Visual Studio Code. Do not use this category for updating existing code or generating sample code snippets",
+                "description": "The user wants to create a complete Si Code workspace from scratch, such as a new application or a Si Code extension. Use this category only if the question relates to generating or creating new workspaces in Si Code. Do not use this category for updating existing code or generating sample code snippets",
                 "examples": [
                   "Scaffold a Node server.",
                   "Create a sample project which uses the fileSystemProvider API.",
@@ -1575,7 +1575,7 @@
             "disambiguation": [
               {
                 "category": "create_jupyter_notebook",
-                "description": "The user wants to create a new Jupyter notebook in Visual Studio Code.",
+                "description": "The user wants to create a new Jupyter notebook in Si Code.",
                 "examples": [
                   "Create a notebook to analyze this CSV file."
                 ]
@@ -1650,7 +1650,7 @@
       {
         "id": "github.copilot.vscode",
         "name": "vscode",
-        "fullName": "VS Code",
+        "fullName": "Si Code",
         "description": "%copilot.vscode.description%",
         "when": "!github.copilot.interactiveSession.disabled",
         "sampleRequest": "%copilot.vscode.sampleRequest%",
@@ -1660,7 +1660,7 @@
         "disambiguation": [
           {
             "category": "vscode_configuration_questions",
-            "description": "The user wants to learn about, use, or configure the Visual Studio Code. Use this category if the users question is specifically about commands, settings, keybindings, extensions and other features available in Visual Studio Code. Do not use this category to answer questions about generating code or creating new projects including Visual Studio Code extensions.",
+            "description": "The user wants to learn about, use, or configure the Si Code. Use this category if the users question is specifically about commands, settings, keybindings, extensions and other features available in Si Code. Do not use this category to answer questions about generating code or creating new projects including Si Code extensions.",
             "examples": [
               "Switch to light mode.",
               "Keyboard shortcut to toggle terminal visibility.",
@@ -1721,7 +1721,7 @@
             "disambiguation": [
               {
                 "category": "terminal_state_questions",
-                "description": "The user wants to learn about specific state such as the selection, command, or failed command in the integrated terminal in Visual Studio Code.",
+                "description": "The user wants to learn about specific state such as the selection, command, or failed command in the integrated terminal in Si Code.",
                 "examples": [
                   "Why did the latest terminal command fail?"
                 ]
@@ -2243,7 +2243,7 @@
             "apiKey": {
               "type": "string",
               "secret": true,
-              "description": "API key for the models. If not set then Entra ID (Azure AD) authentication with your Microsoft account credentials will be used.",
+              "description": "API key for the models. If not set then Entra ID (Azure AD) authentication with your work or school account credentials will be used.",
               "title": "API Key"
             },
             "models": {
@@ -3258,7 +3258,7 @@
               "pl"
             ],
             "enumDescriptions": [
-              "Use VS Code's configured display language",
+              "Use Si Code's configured display language",
               "English",
               "français",
               "italiano",
@@ -3414,7 +3414,7 @@
           "github.copilot.selectedCompletionModel": {
             "type": "string",
             "default": "",
-            "markdownDescription": "The currently selected completion model ID. To select from a list of available models, use the __\"Change Completions Model\"__ command or open the model picker (from the Copilot menu in the VS Code title bar, select __\"Configure Code Completions\"__ then __\"Change Completions Model\"__. The value must be a valid model ID. An empty value indicates that the default model will be used."
+            "markdownDescription": "The currently selected completion model ID. To select from a list of available models, use the __\"Change Completions Model\"__ command or open the model picker (from the Copilot menu in the Si Code title bar, select __\"Configure Code Completions\"__ then __\"Change Completions Model\"__. The value must be a valid model ID. An empty value indicates that the default model will be used."
           },
           "github.copilot.chat.reviewAgent.enabled": {
             "type": "boolean",

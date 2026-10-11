@@ -109,7 +109,7 @@ async function resolveBuild(buildArg) {
 		return getElectronPath();
 	}
 	if (isVersionString(buildArg)) {
-		console.log(`[chat-simulation] Downloading VS Code ${buildArg}...`);
+		console.log(`[chat-simulation] Downloading Si Code ${buildArg}...`);
 		const { downloadAndUnzipVSCode, resolveCliArgsFromVSCodeExecutablePath } = require('@vscode/test-electron');
 		const exePath = await downloadAndUnzipVSCode(buildArg);
 		console.log(`[chat-simulation] Downloaded: ${exePath}`);
@@ -534,7 +534,7 @@ async function launchVSCode(executable, launchArgs, env, opts = {}) {
 	let exitError = /** @type {Error | null} */ (null);
 	child.once('exit', (code, signal) => {
 		if (!exitError) {
-			exitError = new Error(`VS Code exited before CDP connected (code=${code} signal=${signal})`);
+			exitError = new Error(`Si Code exited before CDP connected (code=${code} signal=${signal})`);
 		}
 	});
 

@@ -18,7 +18,9 @@
 		"onStartupFinished",
 		"onCommand:sicode.configure",
 		"onCommand:sicode.inlineEdit",
-		"onCommand:sicode.openMcp"
+		"onCommand:sicode.openMcp",
+		"onCommand:sicode.runPython",
+		"onCommand:sicode.mcp.add"
 	],
 	"main": "./out/extension",
 	"capabilities": {
@@ -43,6 +45,31 @@
 				"command": "sicode.openMcp",
 				"title": "Open MCP Configuration",
 				"category": "Si Code"
+			},
+			{
+				"command": "sicode.runPython",
+				"title": "Run Python File",
+				"category": "Si Code"
+			},
+			{
+				"command": "sicode.mcp.add",
+				"title": "Add MCP Server",
+				"category": "Si Code"
+			},
+			{
+				"command": "sicode.mcp.browse",
+				"title": "Browse MCP Servers",
+				"category": "Si Code"
+			},
+			{
+				"command": "sicode.mcp.installed",
+				"title": "Show Installed MCP Servers",
+				"category": "Si Code"
+			},
+			{
+				"command": "sicode.mcp.connect",
+				"title": "Connect MCP Servers",
+				"category": "Si Code"
 			}
 		],
 		"menus": {
@@ -51,6 +78,36 @@
 					"command": "sicode.inlineEdit",
 					"when": "editorHasSelection && !editorReadonly",
 					"group": "1_modification"
+				},
+				{
+					"command": "sicode.runPython",
+					"when": "editorLangId == python",
+					"group": "navigation"
+				}
+			],
+			"editor/title": [
+				{
+					"command": "sicode.runPython",
+					"when": "editorLangId == python",
+					"group": "navigation"
+				}
+			]
+		},
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "sicode",
+					"title": "Si Code",
+					"icon": "media/icon.svg"
+				}
+			]
+		},
+		"views": {
+			"sicode": [
+				{
+					"type": "webview",
+					"id": "sicode.mcp",
+					"name": "MCP Servers"
 				}
 			]
 		},
@@ -71,6 +128,11 @@
 					"type": "string",
 					"default": "gemini-2.0-flash",
 					"description": "Model id sent to Google Gemini."
+				},
+				"sicode.sarvam.model": {
+					"type": "string",
+					"default": "sarvam-105b",
+					"description": "Model id sent to Sarvam. The chat model is sarvam-105b. sarvam-105b-conversations is available for dialogue."
 				},
 				"sicode.openrouter.model": {
 					"type": "string",
@@ -144,6 +206,22 @@
 				}
 			},
 			{
+				"vendor": "sicode-sarvam",
+				"displayName": "Si Code Sarvam",
+				"configuration": {
+					"type": "object",
+					"properties": {
+						"apiKey": {
+							"type": "string",
+							"secret": true,
+							"title": "API Key",
+							"description": "Sarvam API subscription key"
+						}
+					},
+					"required": ["apiKey"]
+				}
+			},
+			{
 				"vendor": "sicode-openrouter",
 				"displayName": "Si Code OpenRouter",
 				"configuration": {
@@ -204,7 +282,7 @@
 				"id": "sicode.agent",
 				"name": "sicode",
 				"fullName": "Si Code",
-				"description": "Si Code agent with MCP tools.",
+				"description": "Si Code agent that edits files, runs commands, and calls MCP tools.",
 				"isDefault": true,
 				"locations": ["panel"],
 				"modes": ["agent"],
@@ -217,6 +295,106 @@
 				"description": "Inline edit with Si Code.",
 				"isDefault": true,
 				"locations": ["editor"]
+			}
+		],
+		"languageModelTools": [
+			{
+				"name": "sicode_readFile",
+				"displayName": "Read File",
+				"toolReferenceName": "readFile",
+				"canBeReferencedInPrompt": true,
+				"icon": "$(file)",
+				"modelDescription": "Read a text file from the workspace.",
+				"userDescription": "Read a file",
+				"inputSchema": {
+					"type": "object",
+					"properties": {
+						"path": { "type": "string", "description": "Workspace-relative or absolute path." }
+					},
+					"required": ["path"]
+				}
+			},
+			{
+				"name": "sicode_listDirectory",
+				"displayName": "List Directory",
+				"toolReferenceName": "listDirectory",
+				"canBeReferencedInPrompt": true,
+				"icon": "$(folder)",
+				"modelDescription": "List files and folders in a workspace directory.",
+				"userDescription": "List a directory",
+				"inputSchema": {
+					"type": "object",
+					"properties": {
+						"path": { "type": "string", "description": "Workspace-relative or absolute directory." }
+					}
+				}
+			},
+			{
+				"name": "sicode_diagnostics",
+				"displayName": "Diagnostics",
+				"toolReferenceName": "diagnostics",
+				"canBeReferencedInPrompt": true,
+				"icon": "$(warning)",
+				"modelDescription": "Read editor diagnostics for one file or the whole workspace.",
+				"userDescription": "Read problems",
+				"inputSchema": {
+					"type": "object",
+					"properties": {
+						"path": { "type": "string", "description": "Optional file path." }
+					}
+				}
+			},
+			{
+				"name": "sicode_writeFile",
+				"displayName": "Write File",
+				"toolReferenceName": "writeFile",
+				"canBeReferencedInPrompt": true,
+				"icon": "$(new-file)",
+				"modelDescription": "Create or replace a text file.",
+				"userDescription": "Write a file",
+				"inputSchema": {
+					"type": "object",
+					"properties": {
+						"path": { "type": "string", "description": "Workspace-relative or absolute path." },
+						"contents": { "type": "string", "description": "The full new contents of the file." }
+					},
+					"required": ["path", "contents"]
+				}
+			},
+			{
+				"name": "sicode_editFile",
+				"displayName": "Edit File",
+				"toolReferenceName": "editFile",
+				"canBeReferencedInPrompt": true,
+				"icon": "$(edit)",
+				"modelDescription": "Replace one exact snippet in a file.",
+				"userDescription": "Edit a file",
+				"inputSchema": {
+					"type": "object",
+					"properties": {
+						"path": { "type": "string", "description": "Workspace-relative or absolute path." },
+						"oldText": { "type": "string", "description": "Exact text to replace." },
+						"newText": { "type": "string", "description": "Replacement text." }
+					},
+					"required": ["path", "oldText", "newText"]
+				}
+			},
+			{
+				"name": "sicode_runTerminal",
+				"displayName": "Run Terminal Command",
+				"toolReferenceName": "runTerminal",
+				"canBeReferencedInPrompt": true,
+				"icon": "$(terminal)",
+				"modelDescription": "Run a shell command after the user approves it. Use this for builds, tests, linters, and Python.",
+				"userDescription": "Run a command in the terminal",
+				"inputSchema": {
+					"type": "object",
+					"properties": {
+						"command": { "type": "string", "description": "The shell command to run." },
+						"cwd": { "type": "string", "description": "Optional working directory." }
+					},
+					"required": ["command"]
+				}
 			}
 		]
 	}

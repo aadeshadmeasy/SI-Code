@@ -229,7 +229,7 @@ export abstract class AbstractConfigurationService extends Disposable implements
 		const defaultValueFromConfig = this.getDefaultValueForConfig(key);
 
 		// Preserve legacy behavior for settings whose code default is undefined.
-		// VS Code may return type-default sentinels (false/0/''/null/undefined) from inspect().defaultValue,
+		// Si Code may return type-default sentinels (false/0/''/null/undefined) from inspect().defaultValue,
 		// which should not override an intentional undefined default in code.
 		const isTypeDefaultSentinel = defaultValueFromConfig === undefined || defaultValueFromConfig === null || defaultValueFromConfig === false || defaultValueFromConfig === 0 || defaultValueFromConfig === '';
 		if (key.defaultValue === undefined && isTypeDefaultSentinel) {
@@ -681,7 +681,7 @@ export enum AzureAuthMode {
 }
 
 export namespace AzureAuthMode {
-	/** Microsoft authentication provider ID for VS Code authentication API */
+	/** Microsoft authentication provider ID for Si Code authentication API */
 	export const MICROSOFT_AUTH_PROVIDER = 'microsoft';
 	/** Azure Cognitive Services scope for Entra ID authentication */
 	export const COGNITIVE_SERVICES_SCOPE = 'https://cognitiveservices.azure.com/.default';
@@ -697,7 +697,7 @@ export const XTabProviderId = 'XtabProvider';
 
 export namespace ConfigKey {
 
-	/** Settings owned by VS Code or the completions extension; coordinate identifier changes with their owner. */
+	/** Settings owned by Si Code or the completions extension; coordinate identifier changes with their owner. */
 	export namespace Shared {
 		/** Allows for overriding the base domain we use for making requests to the CAPI. This helps CAPI devs develop against a local instance. */
 		export const DebugOverrideProxyUrl = defineSetting<string | undefined>('advanced.debug.overrideProxyUrl', ConfigType.Simple, undefined, undefined, { userScopeOnly: true });

@@ -123,7 +123,7 @@ export class SettingsDocument {
 		completions.push(this.newSimpleCompletionItem(getText('profileName'), range, vscode.l10n.t("name of the profile in which the workspace is opened (e.g. Data Science (Profile)). Ignored if default profile is used")));
 		completions.push(this.newSimpleCompletionItem(getText('folderName'), range, vscode.l10n.t("name of the workspace folder the file is contained in (e.g. myFolder)")));
 		completions.push(this.newSimpleCompletionItem(getText('folderPath'), range, vscode.l10n.t("file path of the workspace folder the file is contained in (e.g. /Users/Development/myFolder)")));
-		completions.push(this.newSimpleCompletionItem(getText('appName'), range, vscode.l10n.t("e.g. VS Code")));
+		completions.push(this.newSimpleCompletionItem(getText('appName'), range, vscode.l10n.t("e.g. Si Code")));
 		completions.push(this.newSimpleCompletionItem(getText('remoteName'), range, vscode.l10n.t("e.g. SSH")));
 		completions.push(this.newSimpleCompletionItem(getText('dirty'), range, vscode.l10n.t("an indicator for when the active editor has unsaved changes")));
 		completions.push(this.newSimpleCompletionItem(getText('focusedView'), range, vscode.l10n.t("the name of the view that is currently focused")));

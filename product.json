@@ -50,10 +50,10 @@
 				"publisherId": {
 					"publisherId": "5f5636e7-69ed-4afe-b5d6-8d231fb3d3ee",
 					"publisherName": "ms-vscode",
-					"displayName": "Microsoft",
+					"displayName": "ms-vscode",
 					"flags": "verified"
 				},
-				"publisherDisplayName": "Microsoft"
+				"publisherDisplayName": "ms-vscode"
 			}
 		},
 		{
@@ -66,10 +66,10 @@
 				"publisherId": {
 					"publisherId": "5f5636e7-69ed-4afe-b5d6-8d231fb3d3ee",
 					"publisherName": "ms-vscode",
-					"displayName": "Microsoft",
+					"displayName": "ms-vscode",
 					"flags": "verified"
 				},
-				"publisherDisplayName": "Microsoft"
+				"publisherDisplayName": "ms-vscode"
 			}
 		},
 		{
@@ -82,10 +82,10 @@
 				"publisherId": {
 					"publisherId": "5f5636e7-69ed-4afe-b5d6-8d231fb3d3ee",
 					"publisherName": "ms-vscode",
-					"displayName": "Microsoft",
+					"displayName": "ms-vscode",
 					"flags": "verified"
 				},
-				"publisherDisplayName": "Microsoft"
+				"publisherDisplayName": "ms-vscode"
 			}
 		}
 	],
@@ -122,7 +122,7 @@
 			},
 			"microsoft": {
 				"id": "microsoft",
-				"name": "Microsoft"
+				"name": "Work account"
 			}
 		},
 		"providerExtensionId": "vscode.github-authentication",
@@ -208,6 +208,18 @@
 	],
 	"onboardingThemes": [
 		{
+			"id": "sicode",
+			"label": "Si Code",
+			"themeId": "Si Code",
+			"type": "dark"
+		},
+		{
+			"id": "sicode-light",
+			"label": "Si Code Light",
+			"themeId": "Si Code Light",
+			"type": "light"
+		},
+		{
 			"id": "dark-2026",
 			"label": "Dark 2026",
 			"themeId": "Dark 2026",
@@ -254,5 +266,15 @@
 		"nlsBaseUrl": "",
 		"itemUrl": "https://open-vsx.org/vscode/item",
 		"publisherUrl": "https://open-vsx.org/vscode/publisher"
+	},
+	"extensionRecommendations": {
+		"ms-python.python": {
+			"onFileOpen": [
+				{
+					"languages": ["python"],
+					"important": true
+				}
+			]
+		}
 	}
 }

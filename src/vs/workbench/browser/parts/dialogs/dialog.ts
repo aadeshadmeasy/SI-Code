@@ -55,11 +55,12 @@ export function createWorkbenchDialogOptions(
 export function createBrowserAboutDialogDetails(productService: IProductService): { title: string; details: string; detailsToCopy: string } {
 	const detailString = (useAgo: boolean): string => {
 		return localize('aboutDetail',
-			"Version: {0}\nCommit: {1}\nDate: {2}\nBrowser: {3}",
+			"Version: {0}\nCommit: {1}\nDate: {2}\nBrowser: {3}\n{4} includes Code - OSS under the MIT License. Copyright (c) Microsoft Corporation.",
 			productService.version || 'Unknown',
 			productService.commit || 'Unknown',
 			productService.date ? `${productService.date}${useAgo ? ' (' + fromNow(new Date(productService.date), true) + ')' : ''}` : 'Unknown',
-			navigator.userAgent
+			navigator.userAgent,
+			productService.nameShort
 		);
 	};
 

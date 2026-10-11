@@ -1,0 +1,59 @@
+name: Si Code Release
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    name: Package ${{ matrix.artifact }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            task: vscode-linux-x64
+            artifact: VSCode-linux-x64
+          - os: ubuntu-latest
+            task: vscode-linux-arm64
+            artifact: VSCode-linux-arm64
+          - os: windows-latest
+            task: vscode-win32-x64
+            artifact: VSCode-win32-x64
+          - os: windows-latest
+            task: vscode-win32-arm64
+            artifact: VSCode-win32-arm64
+          - os: macos-latest
+            task: vscode-darwin-arm64
+            artifact: VSCode-darwin-arm64
+          - os: macos-13
+            task: vscode-darwin-x64
+            artifact: VSCode-darwin-x64
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Install Linux packaging libraries
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y build-essential g++ libx11-dev libxkbfile-dev libsecret-1-dev libkrb5-dev python-is-python3 fakeroot rpm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Package
+        run: npm run gulp -- ${{ matrix.task }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: ../${{ matrix.artifact }}
+          if-no-files-found: error

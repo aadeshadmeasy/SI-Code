@@ -78,18 +78,18 @@ else {
 	if (Object.keys(product).length === 0) {
 		Object.assign(product, {
 			version: '1.104.0-dev',
-			nameShort: 'Code - OSS Dev',
-			nameLong: 'Code - OSS Dev',
-			applicationName: 'code-oss',
-			dataFolderName: '.vscode-oss',
-			urlProtocol: 'code-oss',
+			nameShort: 'Si Code Dev',
+			nameLong: 'Si Code Dev',
+			applicationName: 'sicode',
+			dataFolderName: '.sicode',
+			urlProtocol: 'sicode',
 			reportIssueUrl: 'https://github.com/microsoft/vscode/issues/new',
 			licenseName: 'MIT',
 			licenseUrl: 'https://github.com/microsoft/vscode/blob/main/LICENSE.txt',
 			serverLicenseUrl: 'https://github.com/microsoft/vscode/blob/main/LICENSE.txt',
 			defaultChatAgent: {
-				extensionId: 'GitHub.copilot',
-				chatExtensionId: 'GitHub.copilot-chat',
+				extensionId: 'sicode.sicode',
+				chatExtensionId: 'sicode.sicode',
 				provider: {
 					default: {
 						id: 'github',

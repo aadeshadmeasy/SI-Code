@@ -1,76 +1,80 @@
-# Visual Studio Code - Open Source ("Code - OSS") by Aadesh Panwar - branch aadesh
-[![Feature Requests](https://img.shields.io/github/issues/microsoft/vscode/feature-request.svg)](https://github.com/microsoft/vscode/issues?q=is%3Aopen+is%3Aissue+label%3Afeature-request+sort%3Areactions-%2B1-desc)
-[![Bugs](https://img.shields.io/github/issues/microsoft/vscode/bug.svg)](https://github.com/microsoft/vscode/issues?utf8=✓&q=is%3Aissue+is%3Aopen+label%3Abug)
+# Si Code
 
-## The Repository
+Si Code is an open-source desktop editor based on [Code - OSS](https://github.com/microsoft/vscode). It keeps the editor you already know and adds a small bring-your-own-key AI layer: chat, inline edit, and inline completions. You supply the API key. Si Code does not ship a hosted model.
 
-This repository ("`Code - OSS`") is where we (Microsoft) develop the [Visual Studio Code](https://code.visualstudio.com) product together with the community. Not only do we work on code and issues here, but we also publish our [roadmap](https://github.com/microsoft/vscode/wiki/Roadmap), [monthly iteration plans](https://github.com/microsoft/vscode/wiki/Iteration-Plans), and our [endgame plans](https://github.com/microsoft/vscode/wiki/Running-the-Endgame). This source code is available to everyone under the standard [MIT license](https://github.com/microsoft/vscode/blob/main/LICENSE.txt).
+The name, application id, and data folder live in [`product.json`](product.json). Packaged builds use `sicode` as the executable name and `.sicode` as the user data folder.
 
-## Visual Studio Code
+Si Code is licensed under the [MIT License](LICENSE.txt). It includes Code - OSS. Copyright (c) Microsoft Corporation.
 
-<p align="center">
-  <img alt="VS Code in action" src="https://github.com/user-attachments/assets/56af271c-949d-454c-a3ea-16188c063414">
-</p>
+## AI features
 
-[Visual Studio Code](https://code.visualstudio.com) is a distribution of the `Code - OSS` repository with Microsoft-specific customizations released under a traditional [Microsoft product license](https://code.visualstudio.com/License/).
+- **Chat.** Open the Chat view. The default participant is Si Code. It sees the active file and selection.
+- **Inline edit.** Select code and run **Si Code: Inline Edit**, or press `Ctrl+I` (`Cmd+I` on macOS). Accept or reject the diff in the editor.
+- **Completions.** With `sicode.completions.enabled` on, the first configured model can suggest text at the cursor.
+- **Agent tools.** In agent mode, the model can call tools the editor already exposes, including tools from your MCP servers.
 
-[Visual Studio Code](https://code.visualstudio.com) combines the simplicity of a code editor with what developers need for their core edit-build-debug cycle. It provides comprehensive code editing, navigation, and understanding support along with lightweight debugging, a rich extensibility model, and lightweight integration with existing tools.
+Keys are stored in secret storage. Run **Si Code: Configure AI** and paste a key for any of:
 
-Visual Studio Code is updated monthly with new features and bug fixes. You can download it for Windows, macOS, and Linux on the [Visual Studio Code website](https://code.visualstudio.com/Download). To get the latest releases every day, install the [Insiders build](https://code.visualstudio.com/insiders).
+| Provider | Default model | Endpoint |
+| --- | --- | --- |
+| OpenAI | `gpt-4o-mini` | `https://api.openai.com/v1` |
+| Anthropic | `claude-sonnet-4-5` | `https://api.anthropic.com` |
+| Google Gemini | `gemini-2.0-flash` | `https://generativelanguage.googleapis.com/v1beta` |
+| OpenRouter | `openai/gpt-4o-mini` | `https://openrouter.ai/api/v1` |
+| OpenAI-compatible (Ollama and others) | `llama3.2` | `http://127.0.0.1:11434/v1` |
 
-## Contributing
+You can also add a key from the chat model picker with **Manage Models**. Those keys are stored by the editor as language-model secrets. Either path works.
 
-There are many ways in which you can participate in this project, for example:
+## MCP servers
 
-* [Submit bugs and feature requests](https://github.com/microsoft/vscode/issues), and help us verify them as they are checked in
-* Review [source code changes](https://github.com/microsoft/vscode/pulls)
-* Review the [documentation](https://github.com/microsoft/vscode-docs) and make pull requests for anything from typos to new content.
+Si Code uses the editor's built-in MCP support. Put servers in `mcp.json`. The chat agent calls their tools through the same tool loop as any other editor tool, using the model selected for your key.
 
-If you are interested in fixing issues and contributing directly to the codebase, please see the document [How to Contribute](https://github.com/microsoft/vscode/wiki/How-to-Contribute), which covers the following:
+User config: **Si Code: Open MCP Configuration**. Workspace config can live in `.vscode/mcp.json` or, when `chat.mcp.workspaceRootConfig.enabled` is on, in `.mcp.json` at the workspace root.
 
-* [How to build and run from source](https://github.com/microsoft/vscode/wiki/How-to-Contribute)
-* [The development workflow, including debugging and running tests](https://github.com/microsoft/vscode/wiki/How-to-Contribute#debugging)
-* [Coding guidelines](https://github.com/microsoft/vscode/wiki/Coding-Guidelines)
-* [Submitting pull requests](https://github.com/microsoft/vscode/wiki/How-to-Contribute#pull-requests)
-* [Finding an issue to work on](https://github.com/microsoft/vscode/wiki/How-to-Contribute#where-to-contribute)
-* [Contributing to translations](https://aka.ms/vscodeloc)
+```json
+{
+  "servers": {
+    "local-tools": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["server.js"]
+    },
+    "remote-tools": {
+      "type": "http",
+      "url": "http://127.0.0.1:3001/mcp"
+    }
+  }
+}
+```
 
-## Feedback
+Stdio servers speak newline-delimited JSON-RPC. HTTP servers use streamable HTTP. Both shapes above are the editor's schema (`servers`, not `mcpServers`).
 
-* Ask a question on [Stack Overflow](https://stackoverflow.com/questions/tagged/vscode)
-* [Request a new feature](CONTRIBUTING.md)
-* Upvote [popular feature requests](https://github.com/microsoft/vscode/issues?q=is%3Aopen+is%3Aissue+label%3Afeature-request+sort%3Areactions-%2B1-desc)
-* [File an issue](https://github.com/microsoft/vscode/issues)
-* Connect with the extension author community on [GitHub Discussions](https://github.com/microsoft/vscode-discussions/discussions) or [Slack](https://aka.ms/vscode-dev-community)
-* Follow [@code](https://x.com/code) and let us know what you think!
+## Marketplace and telemetry
 
-See our [wiki](https://github.com/microsoft/vscode/wiki/Feedback-Channels) for a description of each of these channels and information on some other available community-driven channels.
+The extension gallery points at [Open VSX](https://open-vsx.org). Product telemetry is off (`enableTelemetry` in `product.json`, and the telemetry level defaults to off).
 
-## Related Projects
+## Build
 
-Many of the core components and extensions to VS Code live in their own repositories on GitHub. For example, the [node debug adapter](https://github.com/microsoft/vscode-node-debug) and the [mono debug adapter](https://github.com/microsoft/vscode-mono-debug) repositories are separate from each other. For a complete list, please visit the [Related Projects](https://github.com/microsoft/vscode/wiki/Related-Projects) page on our [wiki](https://github.com/microsoft/vscode/wiki).
+Requirements: Node.js from [`.nvmrc`](.nvmrc), Python 3, and a C++ toolchain. On Linux, also install `build-essential`, `libx11-dev`, `libxkbfile-dev`, `libsecret-1-dev`, and `libkrb5-dev`.
 
-## Bundled Extensions
+```bash
+npm install
+./scripts/code.sh
+```
 
-VS Code includes a set of built-in extensions located in the [extensions](extensions) folder, including grammars and snippets for many languages. Extensions that provide rich language support (inline suggestions, Go to Definition) for a language have the suffix `language-features`. For example, the `json` extension provides coloring for `JSON` and the `json-language-features` extension provides rich language support for `JSON`.
+Packaged desktop builds are produced by the existing gulp tasks. [`.github/workflows/sicode-release.yml`](.github/workflows/sicode-release.yml) runs them for Windows (x64, arm64), macOS (x64, arm64), and Linux (x64, arm64) on a tag `v*` or a manual dispatch. Each job uploads the application folder (`VSCode-<platform>-<arch>`).
 
-## Development Container
+The Si Code extension typechecks on its own:
 
-This repository includes a Visual Studio Code Dev Containers / GitHub Codespaces development container.
+```bash
+npx tsc -p extensions/sicode
+node --test extensions/sicode/test/mcp.e2e.test.mjs
+```
 
-* For [Dev Containers](https://aka.ms/vscode-remote/download/containers), use the **Dev Containers: Clone Repository in Container Volume...** command, which creates a Docker volume for better disk I/O on macOS and Windows.
-  * If you already have VS Code and Docker installed, you can also click [here](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/microsoft/vscode) to get started. This will cause VS Code to automatically install the Dev Containers extension if needed, clone the source code into a container volume, and spin up a dev container for use.
+That test starts a real stdio MCP server and a real HTTP MCP server, then runs the chat tool loop against both.
 
-* For Codespaces, install the [GitHub Codespaces](https://marketplace.visualstudio.com/items?itemName=GitHub.codespaces) extension in VS Code, and use the **Codespaces: Create New Codespace** command.
+## What is not in this pass
 
-Docker / the Codespace should have at least **4 cores and 6 GB of RAM (8 GB recommended)** to run a full build. See the [development container README](.devcontainer/README.md) for more information.
-
-## Code of Conduct
-
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information, see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
-
-## License
-
-Copyright (c) Microsoft Corporation. All rights reserved.
-
-Licensed under the [MIT](LICENSE.txt) license.
+- Editing several files in one agent turn, beyond the tools your MCP servers already provide and the single selection diff.
+- Signed installers (`.exe`, `.dmg`, `.deb`). The release workflow packages the application folders.
+- A hosted model. Si Code only calls the endpoint for the key you provide.

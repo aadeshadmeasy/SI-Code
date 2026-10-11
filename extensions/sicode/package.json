@@ -1,0 +1,223 @@
+{
+	"name": "sicode",
+	"displayName": "Si Code",
+	"description": "Bring-your-own-key chat, inline edit, and completions for Si Code.",
+	"version": "1.0.0",
+	"publisher": "sicode",
+	"license": "MIT",
+	"engines": {
+		"vscode": "^1.95.0"
+	},
+	"enabledApiProposals": [
+		"chatProvider",
+		"chatParticipantAdditions",
+		"defaultChatParticipant",
+		"languageModelSystem"
+	],
+	"activationEvents": [
+		"onStartupFinished",
+		"onCommand:sicode.configure",
+		"onCommand:sicode.inlineEdit",
+		"onCommand:sicode.openMcp"
+	],
+	"main": "./out/extension",
+	"capabilities": {
+		"virtualWorkspaces": false,
+		"untrustedWorkspaces": {
+			"supported": false
+		}
+	},
+	"contributes": {
+		"commands": [
+			{
+				"command": "sicode.configure",
+				"title": "Configure AI",
+				"category": "Si Code"
+			},
+			{
+				"command": "sicode.inlineEdit",
+				"title": "Inline Edit",
+				"category": "Si Code"
+			},
+			{
+				"command": "sicode.openMcp",
+				"title": "Open MCP Configuration",
+				"category": "Si Code"
+			}
+		],
+		"menus": {
+			"editor/context": [
+				{
+					"command": "sicode.inlineEdit",
+					"when": "editorHasSelection && !editorReadonly",
+					"group": "1_modification"
+				}
+			]
+		},
+		"configuration": {
+			"title": "Si Code",
+			"properties": {
+				"sicode.openai.model": {
+					"type": "string",
+					"default": "gpt-4o-mini",
+					"description": "Model id sent to OpenAI."
+				},
+				"sicode.anthropic.model": {
+					"type": "string",
+					"default": "claude-sonnet-4-5",
+					"description": "Model id sent to Anthropic."
+				},
+				"sicode.gemini.model": {
+					"type": "string",
+					"default": "gemini-2.0-flash",
+					"description": "Model id sent to Google Gemini."
+				},
+				"sicode.openrouter.model": {
+					"type": "string",
+					"default": "openai/gpt-4o-mini",
+					"description": "Model id sent to OpenRouter."
+				},
+				"sicode.compatible.model": {
+					"type": "string",
+					"default": "llama3.2",
+					"description": "Model id sent to an OpenAI-compatible server, such as Ollama."
+				},
+				"sicode.compatible.baseUrl": {
+					"type": "string",
+					"default": "http://127.0.0.1:11434/v1",
+					"description": "Base URL for the OpenAI-compatible server. Ollama's default is http://127.0.0.1:11434/v1."
+				},
+				"sicode.completions.enabled": {
+					"type": "boolean",
+					"default": true,
+					"description": "Offer inline completions from the first configured Si Code model."
+				}
+			}
+		},
+		"languageModelChatProviders": [
+			{
+				"vendor": "sicode-openai",
+				"displayName": "Si Code OpenAI",
+				"configuration": {
+					"type": "object",
+					"properties": {
+						"apiKey": {
+							"type": "string",
+							"secret": true,
+							"title": "API Key",
+							"description": "OpenAI API key"
+						}
+					},
+					"required": ["apiKey"]
+				}
+			},
+			{
+				"vendor": "sicode-anthropic",
+				"displayName": "Si Code Anthropic",
+				"configuration": {
+					"type": "object",
+					"properties": {
+						"apiKey": {
+							"type": "string",
+							"secret": true,
+							"title": "API Key",
+							"description": "Anthropic API key"
+						}
+					},
+					"required": ["apiKey"]
+				}
+			},
+			{
+				"vendor": "sicode-gemini",
+				"displayName": "Si Code Gemini",
+				"configuration": {
+					"type": "object",
+					"properties": {
+						"apiKey": {
+							"type": "string",
+							"secret": true,
+							"title": "API Key",
+							"description": "Google Gemini API key"
+						}
+					},
+					"required": ["apiKey"]
+				}
+			},
+			{
+				"vendor": "sicode-openrouter",
+				"displayName": "Si Code OpenRouter",
+				"configuration": {
+					"type": "object",
+					"properties": {
+						"apiKey": {
+							"type": "string",
+							"secret": true,
+							"title": "API Key",
+							"description": "OpenRouter API key"
+						}
+					},
+					"required": ["apiKey"]
+				}
+			},
+			{
+				"vendor": "sicode-compatible",
+				"displayName": "Si Code Compatible",
+				"configuration": {
+					"type": "object",
+					"properties": {
+						"apiKey": {
+							"type": "string",
+							"secret": true,
+							"title": "API Key",
+							"description": "API key for an OpenAI-compatible server. Ollama can use any non-empty value."
+						},
+						"baseUrl": {
+							"type": "string",
+							"title": "Base URL",
+							"description": "OpenAI-compatible base URL, for example http://127.0.0.1:11434/v1"
+						}
+					},
+					"required": ["apiKey"]
+				}
+			}
+		],
+		"chatParticipants": [
+			{
+				"id": "sicode.ask",
+				"name": "sicode",
+				"fullName": "Si Code",
+				"description": "Ask Si Code about the open file.",
+				"isDefault": true,
+				"locations": ["panel"],
+				"modes": ["ask"]
+			},
+			{
+				"id": "sicode.edit",
+				"name": "sicode",
+				"fullName": "Si Code",
+				"description": "Edit the selection with Si Code.",
+				"isDefault": true,
+				"locations": ["panel"],
+				"modes": ["edit"]
+			},
+			{
+				"id": "sicode.agent",
+				"name": "sicode",
+				"fullName": "Si Code",
+				"description": "Si Code agent with MCP tools.",
+				"isDefault": true,
+				"locations": ["panel"],
+				"modes": ["agent"],
+				"when": "config.chat.agent.enabled"
+			},
+			{
+				"id": "sicode.inline",
+				"name": "sicode",
+				"fullName": "Si Code",
+				"description": "Inline edit with Si Code.",
+				"isDefault": true,
+				"locations": ["editor"]
+			}
+		]
+	}
+}

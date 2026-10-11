@@ -225,26 +225,15 @@ export const startEntries: GettingStartedStartEntryContent = [
 
 const Button = (title: string, href: string) => `[${title}](${href})`;
 
-const CopilotStepTitle = localize('gettingStarted.copilotSetup.title', "Use AI features with Copilot for free");
-const CopilotDescription = localize({ key: 'gettingStarted.copilotSetup.description', comment: ['{Locked="["}', '{Locked="]({0})"}'] }, "You can use [Copilot]({0}) to generate code across multiple files, fix errors, ask questions about your code, and much more using natural language.", defaultChat.documentationUrl ?? '');
-const CopilotTermsString = localize({ key: 'gettingStarted.copilotSetup.terms', comment: ['{Locked="]({2})"}', '{Locked="]({3})"}'] }, "By continuing with {0} Copilot, you agree to {1}'s [Terms]({2}) and [Privacy Statement]({3})", defaultChat.provider.default.name, defaultChat.provider.default.name, defaultChat.termsStatementUrl, defaultChat.privacyStatementUrl);
-const CopilotAnonymousButton = Button(localize('setupCopilotButton.setup', "Use AI Features"), `command:workbench.action.chat.triggerSetupAnonymousWithoutDialog`);
-const CopilotSignedOutButton = Button(localize('setupCopilotButton.setup', "Use AI Features"), `command:workbench.action.chat.triggerSetup`);
-const CopilotSignedInButton = Button(localize('setupCopilotButton.setup', "Use AI Features"), `command:workbench.action.chat.triggerSetup`);
-const CopilotCompleteButton = Button(localize('setupCopilotButton.chatWithCopilot', "Start to Chat"), 'command:workbench.action.chat.open');
-
-function createCopilotSetupStep(id: string, button: string, when: string, includeTerms: boolean): BuiltinGettingStartedStep {
-	const description = includeTerms ?
-		`${CopilotDescription}\n${CopilotTermsString}\n${button}` :
-		`${CopilotDescription}\n${button}`;
-
+function createSiCodeSetupStep(): BuiltinGettingStartedStep {
 	return {
-		id,
-		title: CopilotStepTitle,
-		description,
-		when: `${when} && !chatSetupHidden && !chatSetupDisabledInWorkspace`,
+		id: 'sicode.setup',
+		title: localize('gettingStarted.sicode.title', "Add your {0} API key", product.nameShort),
+		description: localize('gettingStarted.sicode.description', "Bring your own key for OpenAI, Anthropic, Gemini, OpenRouter, or a local OpenAI-compatible server such as Ollama. Chat can call tools from your MCP servers.\n{0}", Button(localize('gettingStarted.sicode.button', "Configure AI"), 'command:sicode.configure')),
+		when: '!chatSetupHidden && !chatSetupDisabledInWorkspace',
+		completionEvents: ['onCommand:sicode.configure'],
 		media: {
-			type: 'svg', altText: 'VS Code Copilot multi file edits', path: 'multi-file-edits.svg'
+			type: 'svg', altText: 'Si Code chat', path: 'multi-file-edits.svg'
 		},
 	};
 }
@@ -252,20 +241,17 @@ function createCopilotSetupStep(id: string, button: string, when: string, includ
 export const walkthroughs: GettingStartedWalkthroughContent = [
 	{
 		id: 'Setup',
-		title: localize('gettingStarted.setup.title', "Get started with VS Code"),
+		title: localize('gettingStarted.setup.title', "Get started with {0}", product.nameShort),
 		description: localize('gettingStarted.setup.description', "Customize your editor, learn the basics, and start coding"),
 		isFeatured: true,
 		icon: setupIcon,
 		when: '!isWeb',
-		walkthroughPageTitle: localize('gettingStarted.setup.walkthroughPageTitle', 'Setup VS Code'),
+		walkthroughPageTitle: localize('gettingStarted.setup.walkthroughPageTitle', "Setup {0}", product.nameShort),
 		next: 'Beginner',
 		content: {
 			type: 'steps',
 			steps: [
-				createCopilotSetupStep('CopilotSetupAnonymous', CopilotAnonymousButton, 'chatAnonymous && !chatSetupCompleted', true),
-				createCopilotSetupStep('CopilotSetupSignedOut', CopilotSignedOutButton, 'chatEntitlementSignedOut && !chatAnonymous && !github.copilot.hasByokModels', false),
-				createCopilotSetupStep('CopilotSetupComplete', CopilotCompleteButton, 'chatSetupCompleted && !chatSetupDisabled && (chatAnonymous || chatPlanPro || chatPlanProPlus || chatPlanMax || chatPlanBusiness || chatPlanEnterprise || chatPlanFree)', false),
-				createCopilotSetupStep('CopilotSetupSignedIn', CopilotSignedInButton, '!chatEntitlementSignedOut && (!chatSetupCompleted || chatSetupDisabled || chatPlanCanSignUp)', false),
+				createSiCodeSetupStep(),
 				{
 					id: 'pickColorTheme',
 					title: localize('gettingStarted.pickColor.title', "Choose your theme"),

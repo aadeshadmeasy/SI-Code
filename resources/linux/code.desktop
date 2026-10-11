@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=@@NAME_LONG@@
-Comment=Code Editing. Redefined.
+Comment=Code editing, with your own AI key.
 GenericName=Text Editor
 Exec=@@EXEC@@ %F
 Icon=@@ICON@@
@@ -10,7 +10,7 @@ StartupWMClass=@@DESKTOP_NAME@@
 Categories=TextEditor;Development;IDE;
 MimeType=application/x-@@NAME@@-workspace;
 Actions=new-empty-window;
-Keywords=vscode;
+Keywords=sicode;
 
 [Desktop Action new-empty-window]
 Name=New Empty Window

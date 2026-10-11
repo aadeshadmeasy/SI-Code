@@ -4,15 +4,8 @@
 	<metadata_license>@@LICENSE@@</metadata_license>
 	<project_license>@@LICENSE@@</project_license>
 	<name>@@NAME_LONG@@</name>
-	<url type="homepage">https://code.visualstudio.com</url>
-	<summary>Visual Studio Code. Code editing. Redefined.</summary>
+	<summary>Si Code. Open source editor with bring-your-own-key AI.</summary>
 	<description>
-		<p>Visual Studio Code is a new choice of tool that combines the simplicity of a code editor with what developers need for the core edit-build-debug cycle. See https://code.visualstudio.com/docs/setup/linux for installation instructions and FAQ.</p>
+		<p>Si Code is a desktop editor based on Code - OSS. It keeps the MIT license and the Microsoft copyright, and adds chat, inline edit, and completions that use your own API key. Model Context Protocol servers configured in mcp.json are available to the chat agent.</p>
 	</description>
-	<screenshots>
-		<screenshot type="default">
-			<image>https://code.visualstudio.com/home/home-screenshot-linux-lg.png</image>
-			<caption>Editing TypeScript and searching for extensions</caption>
-		</screenshot>
-	</screenshots>
 </component>

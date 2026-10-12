@@ -12,12 +12,12 @@ The executable and CLI name stay `sicode`. User data is stored in `.sicode`. The
 | --- | --- |
 | Linux x64 | [SiCode-linux-x64.tar.gz](https://github.com/aadeshadmeasy/vscode/releases/download/v0.1.0/SiCode-linux-x64.tar.gz) |
 | Linux arm64 | [SiCode-linux-arm64.tar.gz](https://github.com/aadeshadmeasy/vscode/releases/download/v0.1.0/SiCode-linux-arm64.tar.gz) |
-| macOS Apple silicon | [SiCode-darwin-arm64.tar.gz](https://github.com/aadeshadmeasy/vscode/releases/download/v0.1.0/SiCode-darwin-arm64.tar.gz) |
-| macOS Intel | [SiCode-darwin-x64.tar.gz](https://github.com/aadeshadmeasy/vscode/releases/download/v0.1.0/SiCode-darwin-x64.tar.gz) |
+| macOS Apple silicon | [SI-Code-darwin-arm64.dmg](https://github.com/aadeshadmeasy/vscode/releases/download/v0.1.0/SI-Code-darwin-arm64.dmg) |
+| macOS Intel | [SI-Code-darwin-x64.dmg](https://github.com/aadeshadmeasy/vscode/releases/download/v0.1.0/SI-Code-darwin-x64.dmg) |
 | Windows x64 | [SiCode-win32-x64.zip](https://github.com/aadeshadmeasy/vscode/releases/download/v0.1.0/SiCode-win32-x64.zip) |
 | Windows arm64 | [SiCode-win32-arm64.zip](https://github.com/aadeshadmeasy/vscode/releases/download/v0.1.0/SiCode-win32-arm64.zip) |
 
-Unpack the archive and start `sicode` on Linux and macOS, or `SI Code.exe` on Windows. macOS Gatekeeper and Windows SmartScreen warn because these archives are not code-signed. On macOS, right-click `SI Code.app` and choose Open. On Windows, choose More info, then Run anyway.
+On macOS, open the disk image and drag `SI Code.app` to Applications. The app is ad-hoc signed and not notarized. First launch: right-click `SI Code.app` and choose Open, or run `xattr -dr com.apple.quarantine "/Applications/SI Code.app"`. On Windows, SmartScreen warns because the zip is unsigned. Choose More info, then Run anyway. Linux and macOS archives start with `sicode`. Windows starts with `SI Code.exe`.
 
 ## Bring your own key
 

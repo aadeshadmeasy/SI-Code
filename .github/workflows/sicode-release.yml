@@ -46,6 +46,7 @@ jobs:
             artifact: VSCode-darwin-arm64
             slug: darwin-arm64
             archive: SiCode-darwin-arm64.tar.gz
+            dmg: SI-Code-darwin-arm64.dmg
           # macos-13 (Intel) stays queued with no runners. Cross-build x64
           # on the arm64 macos-latest image, which already packaged arm64.
           - os: macos-latest
@@ -53,6 +54,7 @@ jobs:
             artifact: VSCode-darwin-x64
             slug: darwin-x64
             archive: SiCode-darwin-x64.tar.gz
+            dmg: SI-Code-darwin-x64.dmg
     steps:
       - uses: actions/checkout@v4
 
@@ -74,7 +76,44 @@ jobs:
         if: runner.os != 'Windows'
         run: |
           mkdir -p release-artifacts
+          if [ "$(uname)" = "Darwin" ]; then
+            app="../${{ matrix.artifact }}/SI Code.app"
+            test -d "$app"
+            # Ad-hoc signature so Apple Silicon will launch the bundle.
+            # No Developer ID certificate and no notarization.
+            xattr -cr "$app"
+            codesign --force --deep -s - "$app"
+          fi
           tar -C .. -czf "$GITHUB_WORKSPACE/release-artifacts/${{ matrix.archive }}" "${{ matrix.artifact }}"
+
+      - name: Create macOS disk image
+        if: runner.os == 'macOS'
+        run: |
+          set -euo pipefail
+          app="../${{ matrix.artifact }}/SI Code.app"
+          stage="$(mktemp -d)"
+          mount="$(mktemp -d)"
+          cleanup() {
+            hdiutil detach "$mount" >/dev/null 2>&1 || true
+            rm -rf "$stage" "$mount"
+          }
+          trap cleanup EXIT
+          size_mb="$(du -sm "$app" | awk '{print $1}')"
+          size_mb="$((size_mb + 256))"
+          hdiutil create -size "${size_mb}m" -fs HFS+ -volname "SI Code" -ov "$stage/rw.dmg"
+          hdiutil attach "$stage/rw.dmg" -mountpoint "$mount" -nobrowse
+          ditto "$app" "$mount/SI Code.app"
+          ln -s /Applications "$mount/Applications"
+          codesign --force --deep -s - "$mount/SI Code.app"
+          sync
+          hdiutil detach "$mount"
+          dmg="$GITHUB_WORKSPACE/release-artifacts/${{ matrix.dmg }}"
+          rm -f "$dmg" "${dmg}.dmg"
+          hdiutil convert "$stage/rw.dmg" -format UDZO -ov -o "$dmg"
+          if [ ! -f "$dmg" ] && [ -f "${dmg}.dmg" ]; then
+            mv "${dmg}.dmg" "$dmg"
+          fi
+          ls -lh "$dmg"
 
       - name: Archive Windows
         if: runner.os == 'Windows'
@@ -87,6 +126,13 @@ jobs:
         with:
           name: ${{ matrix.archive }}
           path: release-artifacts/${{ matrix.archive }}
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@v4
+        if: runner.os == 'macOS'
+        with:
+          name: ${{ matrix.dmg }}
+          path: release-artifacts/${{ matrix.dmg }}
           if-no-files-found: error
 
   release:

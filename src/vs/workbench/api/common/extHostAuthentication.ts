@@ -592,35 +592,46 @@ export class DynamicAuthProvider implements vscode.AuthenticationProvider {
 		if (sessions.length) {
 			const newTokens: IAuthorizationToken[] = [];
 			const removedTokens: IAuthorizationToken[] = [];
+			const forceRefresh = options.forceRefresh === true;
 			const tokenMap = new Map<string, IAuthorizationToken>(this._tokenStore.tokens.map(token => [token.access_token, token]));
 			for (const session of sessions) {
 				const token = tokenMap.get(session.accessToken);
-				if (token && token.expires_in) {
-					const now = Date.now();
-					const expiresInMS = token.expires_in * 1000;
-					// Check if the token is about to expire in 5 minutes or if it is expired
-					if (now > token.created_at + expiresInMS - (5 * 60 * 1000)) {
-						this._logger.info(`Token for session ${session.id} is about to expire, refreshing...`);
+				if (!token) {
+					continue;
+				}
+				const expiresInMS = token.expires_in ? token.expires_in * 1000 : undefined;
+				const nearExpiry = expiresInMS !== undefined && Date.now() > token.created_at + expiresInMS - (5 * 60 * 1000);
+				if (!forceRefresh && !nearExpiry) {
+					continue;
+				}
+				if (!token.refresh_token) {
+					if (nearExpiry) {
+						// No refresh token available, cannot refresh
+						this._logger.warn(`No refresh token available for scopes ${session.scopes.join(' ')}. Throwing away token.`);
 						removedTokens.push(token);
-						if (!token.refresh_token) {
-							// No refresh token available, cannot refresh
-							this._logger.warn(`No refresh token available for scopes ${session.scopes.join(' ')}. Throwing away token.`);
-							continue;
-						}
-						try {
-							const newToken = await this.exchangeRefreshTokenForToken(token.refresh_token, session.scopes, options.silent !== true);
-							// TODO@TylerLeonhardt: When the core scope handling doesn't care about order, this check should be
-							// updated to not care about order
-							if (newToken.scope !== scopeStr) {
-								this._logger.warn(`Token scopes '${newToken.scope}' do not match requested scopes '${scopeStr}'. Overwriting token with what was requested...`);
-								newToken.scope = scopeStr;
-							}
-							this._logger.info(`Successfully created a new token for scopes ${session.scopes.join(' ')}.`);
-							newTokens.push(newToken);
-						} catch (err) {
-							this._logger.error(`Failed to refresh token: ${err}`);
-						}
-
+					}
+					continue;
+				}
+				this._logger.info(forceRefresh
+					? `Refreshing token for session ${session.id} after the server rejected it.`
+					: `Token for session ${session.id} is about to expire, refreshing...`);
+				try {
+					const newToken = await this.exchangeRefreshTokenForToken(token.refresh_token, session.scopes, options.silent !== true);
+					// TODO@TylerLeonhardt: When the core scope handling doesn't care about order, this check should be
+					// updated to not care about order
+					if (newToken.scope !== scopeStr) {
+						this._logger.warn(`Token scopes '${newToken.scope}' do not match requested scopes '${scopeStr}'. Overwriting token with what was requested...`);
+						newToken.scope = scopeStr;
+					}
+					this._logger.info(`Successfully created a new token for scopes ${session.scopes.join(' ')}.`);
+					removedTokens.push(token);
+					newTokens.push(newToken);
+				} catch (err) {
+					this._logger.error(`Failed to refresh token: ${err}`);
+					// Only a rejected grant drops the saved session. A network
+					// failure must not open the browser on the next request.
+					if (isInvalidGrantRefreshError(err)) {
+						removedTokens.push(token);
 					}
 				}
 			}
@@ -960,6 +971,11 @@ export class DynamicAuthProvider implements vscode.AuthenticationProvider {
 			}
 		}
 	}
+}
+
+function isInvalidGrantRefreshError(err: unknown): boolean {
+	const message = err instanceof Error ? err.message : String(err);
+	return message.includes(AuthorizationErrorType.InvalidGrant);
 }
 
 export type IAuthorizationToken = IAuthorizationTokenResponse & {

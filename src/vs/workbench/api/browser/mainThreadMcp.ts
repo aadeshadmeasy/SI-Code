@@ -276,10 +276,10 @@ export class MainThreadMcp extends Disposable implements MainThreadMcpShape {
 		if (!server) {
 			return undefined;
 		}
-		return this._getSessionForProvider(id, server, providerId, scopes, { clientId: options.clientId }, options.errorOnUserInteraction);
+		return this._getSessionForProvider(id, server, providerId, scopes, { clientId: options.clientId }, options.errorOnUserInteraction, undefined, options.forceRefresh);
 	}
 
-	async $getTokenFromServerMetadata(id: number, authDetails: IMcpAuthenticationDetails, { errorOnUserInteraction, forceNewRegistration, clientId }: IMcpAuthenticationOptions = {}): Promise<string | undefined> {
+	async $getTokenFromServerMetadata(id: number, authDetails: IMcpAuthenticationDetails, { errorOnUserInteraction, forceNewRegistration, forceRefresh, clientId }: IMcpAuthenticationOptions = {}): Promise<string | undefined> {
 		const server = this._serverDefinitions.get(id);
 		if (!server) {
 			return undefined;
@@ -381,7 +381,7 @@ export class MainThreadMcp extends Disposable implements MainThreadMcpShape {
 
 		return this._getSessionForProvider(id, server, providerId, resolvedScopes, {
 			authorizationServer, clientId: resolvedClientId, resource: authDetails.resourceMetadata?.resource, clientSecretStorageKey
-		}, errorOnUserInteraction, clientSecret);
+		}, errorOnUserInteraction, clientSecret, forceRefresh);
 	}
 
 	private _ensureXaaIssuer(): URI {
@@ -410,9 +410,10 @@ export class MainThreadMcp extends Disposable implements MainThreadMcpShape {
 		authContext: IMcpServerAuthContext,
 		errorOnUserInteraction: boolean = false,
 		clientSecret?: string,
+		forceRefresh?: boolean,
 	): Promise<string | undefined> {
 		const { authorizationServer, clientId, resource, audience } = authContext;
-		const providerOptions = { authorizationServer, clientId, clientSecret, resource, audience };
+		const providerOptions = { authorizationServer, clientId, clientSecret, resource, audience, forceRefresh };
 		const sessions = await this._authenticationService.getSessions(providerId, scopes, { ...providerOptions, silent: errorOnUserInteraction }, true);
 		// Only HTTP servers authenticate, so the server URL is always known here. A token is only released
 		// to a server whose current URL matches the one the user consented to, so changing the URL while

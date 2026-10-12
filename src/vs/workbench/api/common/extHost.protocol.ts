@@ -3724,6 +3724,11 @@ export interface IMcpAuthenticationDetails {
 export interface IMcpAuthenticationOptions {
 	errorOnUserInteraction?: boolean;
 	forceNewRegistration?: boolean;
+	/**
+	 * Exchange a stored refresh token before opening a browser. A configured
+	 * Authorization header never uses this.
+	 */
+	forceRefresh?: boolean;
 	clientId?: string;
 }
 

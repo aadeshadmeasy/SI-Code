@@ -90,7 +90,7 @@
 		}
 	],
 	"defaultChatAgent": {
-		"extensionId": "sicode.sicode",
+		"extensionId": "GitHub.copilot",
 		"chatExtensionId": "sicode.sicode",
 		"chatExtensionOutputId": "GitHub.copilot-chat.GitHub Copilot Chat.log",
 		"chatExtensionOutputExtensionStateCommand": "github.copilot.debug.extensionState",

@@ -23,7 +23,7 @@ On macOS, open the disk image and drag `SI Code.app` to Applications. The app is
 
 Run **SI Code: Configure AI** and paste a key. The key stays in the editor's secret storage on this machine.
 
-Google sign-in is optional and uses a Supabase project you create. Set `sicode.supabase.url` and `sicode.supabase.anonKey`, register the redirect URLs in `extensions/sicode/supabase.sql`, then run **SI Code: Sign In with Google**. The service role key stays out of the app.
+**SI Code: Sign in with Google** opens the browser, listens on `127.0.0.1:33418`, and keeps the session in secret storage. The signed-in email shows in the status bar and the Accounts menu. Provider and model choices sync to your account. API keys stay on this machine.
 
 | Provider | Default model | Endpoint |
 | --- | --- | --- |

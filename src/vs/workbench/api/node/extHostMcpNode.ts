@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
+import { ChildProcessWithoutNullStreams, execFile, spawn } from 'child_process';
 import { readFile } from 'fs/promises';
 import { homedir } from 'os';
 import type { RequestInit as UndiciRequestInit } from 'undici';
@@ -89,6 +89,11 @@ export class NodeExtHostMpcService extends ExtHostMcpService {
 			}
 			env[key] = value === null ? undefined : String(value);
 		}
+		if (process.platform !== 'win32') {
+			// A macOS app launched from Finder does not inherit the terminal PATH,
+			// so `npx` and Homebrew Node are missing. Prepend the login shell PATH.
+			envMergePath(env, await loginShellPath());
+		}
 
 		let child: ChildProcessWithoutNullStreams;
 		try {
@@ -134,6 +139,11 @@ export class NodeExtHostMpcService extends ExtHostMcpService {
 		child.on('spawn', () => this._proxy.$onDidChangeState(id, { state: McpConnectionState.Kind.Running }));
 
 		child.on('error', e => {
+			const code = typeof e === 'object' && e && 'code' in e ? String(e.code) : undefined;
+			if (code === 'ENOENT') {
+				onError(`${e.message}. '${launch.command}' was not found on PATH. A macOS app opened from Finder does not see the terminal PATH; SI Code adds the login-shell PATH plus Homebrew. Set the server command to an absolute path if it is still missing.`);
+				return;
+			}
 			onError(e);
 		});
 		child.on('exit', code => {
@@ -194,6 +204,47 @@ class McpHTTPHandleNode extends McpHTTPHandle {
 			text: () => undiciResponse.text(),
 		};
 	}
+}
+
+const loginPathPrefixes = ['/opt/homebrew/bin', '/usr/local/bin'];
+
+let cachedLoginPath: Promise<string | undefined> | undefined;
+
+function loginShellPath(): Promise<string | undefined> {
+	cachedLoginPath ??= new Promise(resolve => {
+		const shell = process.env.SHELL || (process.platform === 'darwin' ? '/bin/zsh' : '/bin/bash');
+		execFile(shell, ['-ilc', 'printf %s "$PATH"'], { timeout: 4000 }, (err, stdout) => {
+			if (err) {
+				resolve(undefined);
+				return;
+			}
+			const value = String(stdout).trim().split('\n').pop()?.trim();
+			resolve(value || undefined);
+		});
+	});
+	return cachedLoginPath;
+}
+
+/** Prepends the login-shell PATH and the usual Homebrew locations without dropping the current PATH. */
+export function envMergePath(env: Record<string, string | undefined>, loginPath: string | undefined): void {
+	const key = Object.keys(env).find(name => name.toUpperCase() === 'PATH') ?? 'PATH';
+	const homeBin = path.join(homedir(), '.local', 'bin');
+	const prefixes = [
+		...(loginPath ? loginPath.split(path.delimiter) : []),
+		...loginPathPrefixes,
+		homeBin,
+	];
+	const current = (env[key] ?? '').split(path.delimiter);
+	const seen = new Set<string>();
+	const merged: string[] = [];
+	for (const entry of [...prefixes, ...current]) {
+		if (!entry || seen.has(entry)) {
+			continue;
+		}
+		seen.add(entry);
+		merged.push(entry);
+	}
+	env[key] = merged.join(path.delimiter);
 }
 
 const windowsShellScriptRe = /\.(bat|cmd)$/i;

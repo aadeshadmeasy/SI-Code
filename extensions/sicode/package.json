@@ -20,7 +20,9 @@
 		"onCommand:sicode.inlineEdit",
 		"onCommand:sicode.openMcp",
 		"onCommand:sicode.runPython",
-		"onCommand:sicode.mcp.add"
+		"onCommand:sicode.mcp.add",
+		"onCommand:sicode.signIn",
+		"onCommand:sicode.signOut"
 	],
 	"main": "./out/extension",
 	"capabilities": {
@@ -69,6 +71,16 @@
 			{
 				"command": "sicode.mcp.connect",
 				"title": "Connect MCP Servers",
+				"category": "SI Code"
+			},
+			{
+				"command": "sicode.signIn",
+				"title": "Sign In with Google",
+				"category": "SI Code"
+			},
+			{
+				"command": "sicode.signOut",
+				"title": "Sign Out",
 				"category": "SI Code"
 			}
 		],
@@ -148,6 +160,16 @@
 					"type": "string",
 					"default": "http://127.0.0.1:11434/v1",
 					"description": "Base URL for the OpenAI-compatible server. Ollama's default is http://127.0.0.1:11434/v1."
+				},
+				"sicode.supabase.url": {
+					"type": "string",
+					"default": "",
+					"description": "Supabase project URL (https://<project-ref>.supabase.co). Leave empty to skip sign-in."
+				},
+				"sicode.supabase.anonKey": {
+					"type": "string",
+					"default": "",
+					"description": "Supabase anon public key. Do not put the service role key here."
 				},
 				"sicode.completions.enabled": {
 					"type": "boolean",

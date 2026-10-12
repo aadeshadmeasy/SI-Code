@@ -104,7 +104,8 @@ jobs:
           hdiutil attach "$stage/rw.dmg" -mountpoint "$mount" -nobrowse
           ditto "$app" "$mount/SI Code.app"
           ln -s /Applications "$mount/Applications"
-          codesign --force --deep -s - "$mount/SI Code.app"
+          # The bundle is already ad-hoc signed. Signing again on the
+          # mounted image fails inside Electron Framework.framework.
           sync
           hdiutil detach "$mount"
           dmg="$GITHUB_WORKSPACE/release-artifacts/${{ matrix.dmg }}"

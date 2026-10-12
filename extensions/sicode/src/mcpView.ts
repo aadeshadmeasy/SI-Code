@@ -50,11 +50,12 @@ function html(nonce: string): string {
 </head>
 <body>
 	<h1>MCP servers</h1>
-	<p>Add a server here or in mcp.json. Connecting a server that requires a sign-in opens the editor's authentication screen.</p>
+	<p>Add a server here or in mcp.json. A saved sign-in is reused and refreshed. A browser opens only when that sign-in is no longer valid. An Authorization header in mcp.json is sent as the API key or personal access token and does not open a sign-in window.</p>
+	<p>If a server fails, its error is on the server in the MCP list. Retry starts it again.</p>
 	<button class="primary" data-command="workbench.mcp.addConfiguration" type="button">Add a server</button>
 	<button data-command="workbench.mcp.browseServers" type="button">Browse servers</button>
 	<button data-command="workbench.mcp.showInstalledServers" type="button">Installed servers</button>
-	<button data-command="workbench.mcp.startServer" data-arg="*" type="button">Connect and sign in</button>
+	<button data-command="workbench.mcp.startServer" data-arg="*" type="button">Retry servers</button>
 	<button data-command="workbench.mcp.openUserMcpJson" type="button">Open user mcp.json</button>
 	<button data-command="workbench.mcp.openWorkspaceMcpJson" type="button">Open workspace mcp.json</button>
 	<script nonce="${nonce}">

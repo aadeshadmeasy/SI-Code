@@ -31,7 +31,7 @@ import { IInstantiationService } from '../../../../../platform/instantiation/com
 import { ILogService } from '../../../../../platform/log/common/log.js';
 import { IMarkerService } from '../../../../../platform/markers/common/markers.js';
 import { IOpenerService } from '../../../../../platform/opener/common/opener.js';
-import product from '../../../../../platform/product/common/product.js';
+import product, { isSicodeReleaseProduct } from '../../../../../platform/product/common/product.js';
 import { GitHubPaths, IDefaultAccountService } from '../../../../../platform/defaultAccount/common/defaultAccount.js';
 import { IProductService } from '../../../../../platform/product/common/productService.js';
 import { ITelemetryService } from '../../../../../platform/telemetry/common/telemetry.js';
@@ -70,11 +70,13 @@ const defaultChat = {
 
 const SIGN_IN_TITLE_BAR_ACTION_ID = 'workbench.action.chat.signInIndicator';
 
-export const ChatSetupFromAccountsWhen = ContextKeyExpr.and(
-	ChatContextKeys.Setup.hidden.negate(),
-	ChatContextKeys.Setup.disabledInWorkspace.negate(),
-	CONTEXT_DEFAULT_ACCOUNT_STATE.notEqualsTo(DefaultAccountStatus.Available),
-);
+export const ChatSetupFromAccountsWhen = isSicodeReleaseProduct()
+	? ContextKeyExpr.false()
+	: ContextKeyExpr.and(
+		ChatContextKeys.Setup.hidden.negate(),
+		ChatContextKeys.Setup.disabledInWorkspace.negate(),
+		CONTEXT_DEFAULT_ACCOUNT_STATE.notEqualsTo(DefaultAccountStatus.Available),
+	);
 
 export class ChatSetupContribution extends Disposable implements IWorkbenchContribution {
 
@@ -409,7 +411,7 @@ export class ChatSetupContribution extends Disposable implements IWorkbenchContr
 					menu: [{
 						id: MenuId.TitleBarAdjacentCenter,
 						order: 0,
-						when: ContextKeyExpr.and(
+						when: isSicodeReleaseProduct() ? ContextKeyExpr.false() : ContextKeyExpr.and(
 							IsWebContext.negate(),
 							ChatContextKeys.Entitlement.signedOut,
 							CONTEXT_DEFAULT_ACCOUNT_STATE.notEqualsTo(DefaultAccountStatus.Available), // hide only when signed in (a default GitHub account is present); still shown while signed out or before the account state resolves, incl. untrusted workspaces — no auth prompt

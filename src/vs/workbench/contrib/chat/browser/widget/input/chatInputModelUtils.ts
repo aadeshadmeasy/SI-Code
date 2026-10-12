@@ -3,6 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { isSicodeReleaseProduct } from '../../../../../../platform/product/common/product.js';
 import { ChatAgentLocation, ChatModeKind } from '../../../common/constants.js';
 import { ILanguageModelChatMetadata, ILanguageModelChatMetadataAndIdentifier, isLanguageModelVendorAbsenceConclusive } from '../../../common/languageModels.js';
 import { URI } from '../../../../../../base/common/uri.js';
@@ -29,6 +30,26 @@ function isOwnModel(model: ILanguageModelChatMetadataAndIdentifier): boolean {
  * `isUserSelectable` defaults to `true` when omitted: only an explicit `false` hides
  * the model from the picker and this model-selection flow.
  */
+function isCopilotAutoModel(entry: ILanguageModelChatMetadataAndIdentifier): boolean {
+	const vendor = entry.metadata?.vendor ?? '';
+	const isAuto = entry.metadata?.id === 'auto' || entry.identifier === 'copilot/auto';
+	return isAuto && (vendor === 'copilot' || vendor === 'copilotcli' || vendor.startsWith('agent-host-') || entry.identifier === 'copilot/auto');
+}
+
+function contributedModelsForPicker(
+	models: ILanguageModelChatMetadataAndIdentifier[],
+	currentModeKind: ChatModeKind,
+	location: ChatAgentLocation,
+): ILanguageModelChatMetadataAndIdentifier[] {
+	return models.filter(entry =>
+		!entry.metadata?.targetChatSessionType &&
+		entry.metadata?.isUserSelectable !== false &&
+		isModelSupportedForMode(entry, currentModeKind) &&
+		isModelSupportedForInlineChat(entry, location) &&
+		!isCopilotAutoModel(entry)
+	);
+}
+
 export function filterModelsForSession(
 	models: ILanguageModelChatMetadataAndIdentifier[],
 	sessionType: string | undefined,
@@ -36,18 +57,26 @@ export function filterModelsForSession(
 	location: ChatAgentLocation,
 ): ILanguageModelChatMetadataAndIdentifier[] {
 	if (sessionType && sessionType !== 'local' && hasModelsTargetingSession(models, sessionType)) {
-		return models.filter(entry =>
+		const targeted = models.filter(entry =>
 			entry.metadata?.targetChatSessionType === sessionType &&
-			entry.metadata?.isUserSelectable !== false
+			entry.metadata?.isUserSelectable !== false &&
+			!(isSicodeReleaseProduct() && isCopilotAutoModel(entry))
 		);
+		if (!isSicodeReleaseProduct()) {
+			return targeted;
+		}
+		// Extension language-model providers are not tied to the Copilot harness.
+		// Keep them in the picker next to whatever that session still offers.
+		return [...targeted, ...contributedModelsForPicker(models, currentModeKind, location)];
 	}
 
-	return models.filter(entry =>
+	const general = models.filter(entry =>
 		!entry.metadata?.targetChatSessionType &&
 		entry.metadata?.isUserSelectable !== false &&
 		isModelSupportedForMode(entry, currentModeKind) &&
 		isModelSupportedForInlineChat(entry, location)
 	);
+	return isSicodeReleaseProduct() ? general.filter(entry => !isCopilotAutoModel(entry)) : general;
 }
 
 /**

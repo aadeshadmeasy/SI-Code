@@ -189,6 +189,7 @@ suite('ExtHostMcp', () => {
 			check?: (url: string) => Promise<string | undefined>;
 			respond?: (url: string, init: CommonRequestInit) => CommonResponse;
 			onState?: (state: McpConnectionState) => void;
+			onToken?: (authOptions: { forceNewRegistration?: boolean; forceRefresh?: boolean } | undefined) => string | undefined;
 		} = {}) {
 			const requests: { url: string; method: string; headers: Record<string, string>; body: Uint8Array<ArrayBuffer> | undefined }[] = [];
 			const checkedUrls: string[] = [];
@@ -206,8 +207,8 @@ suite('ExtHostMcp', () => {
 						void backchannelStopped.complete();
 					}
 				}
-				override async $getTokenFromServerMetadata(): Promise<string> {
-					return 'test-access-token';
+				override async $getTokenFromServerMetadata(_id: number, _details: unknown, authOptions?: { forceNewRegistration?: boolean; forceRefresh?: boolean }): Promise<string> {
+					return options.onToken?.(authOptions) || 'test-access-token';
 				}
 				override $logMcpAuthSetup(): void { }
 			}, {
@@ -446,6 +447,92 @@ suite('ExtHostMcp', () => {
 				contentType: redirected.headers['Content-Type'],
 				apiKey: redirected.headers['X-Api-Key'],
 			}, { accept: 'text/event-stream, application/json', contentType: 'application/json', apiKey: undefined });
+		});
+
+		test('a configured Authorization header is not replaced with OAuth', async () => {
+			let tokenCalls = 0;
+			const { handle, requests } = createHandle({
+				headers: [['Authorization', 'Bearer pat-token']],
+				onToken: () => {
+					tokenCalls++;
+					return 'oauth-token';
+				},
+				respond: () => createMockResponse({ status: 401, body: 'bad token' }),
+			});
+			const headers: Record<string, string> = { Authorization: 'Bearer pat-token' };
+			const response = await handle['_fetchWithAuthRetry'](TEST_MCP_URL, { method: 'POST', headers }, headers);
+			assert.strictEqual(response.status, 401);
+			assert.strictEqual(tokenCalls, 0);
+			assert.strictEqual(headers.Authorization, 'Bearer pat-token');
+			assert.strictEqual(requests.length, 1);
+		});
+
+		test('a 401 refreshes the saved sign-in and does not force a new registration', async () => {
+			const tokenOptions: Array<{ forceNewRegistration?: boolean; forceRefresh?: boolean } | undefined> = [];
+			let attempt = 0;
+			const { handle } = createHandle({
+				onToken: authOptions => {
+					tokenOptions.push(authOptions);
+					return tokenOptions.length === 1 ? 'saved-token' : 'refreshed-token';
+				},
+				respond: (url, init) => {
+					if (url !== TEST_MCP_URL) {
+						if (url.includes('oauth-protected-resource')) {
+							return createMockResponse({ body: JSON.stringify({ resource: TEST_MCP_URL, authorization_servers: [TEST_AUTH_SERVER] }) });
+						}
+						return createMockResponse({
+							body: JSON.stringify({
+								issuer: TEST_AUTH_SERVER,
+								authorization_endpoint: `${TEST_AUTH_SERVER}/authorize`,
+								token_endpoint: `${TEST_AUTH_SERVER}/token`,
+								response_types_supported: ['code'],
+							})
+						});
+					}
+					attempt++;
+					const authed = init.headers.Authorization === 'Bearer refreshed-token';
+					return createMockResponse({ status: authed ? 202 : 401 });
+				},
+			});
+			const headers: Record<string, string> = {};
+			const response = await handle['_fetchWithAuthRetry'](TEST_MCP_URL, { method: 'POST', headers }, headers);
+			assert.strictEqual(response.status, 202);
+			assert.strictEqual(attempt, 3);
+			assert.strictEqual(tokenOptions.length, 2);
+			assert.strictEqual(tokenOptions[1]?.forceRefresh, true);
+			assert.strictEqual(tokenOptions.some(options => options?.forceNewRegistration), false);
+		});
+
+		test('a 403 keeps the saved sign-in', async () => {
+			const tokenOptions: Array<{ forceNewRegistration?: boolean; forceRefresh?: boolean } | undefined> = [];
+			const { handle } = createHandle({
+				onToken: authOptions => {
+					tokenOptions.push(authOptions);
+					return 'saved-token';
+				},
+				respond: (url, init) => {
+					if (url !== TEST_MCP_URL) {
+						if (url.includes('oauth-protected-resource')) {
+							return createMockResponse({ body: JSON.stringify({ resource: TEST_MCP_URL, authorization_servers: [TEST_AUTH_SERVER] }) });
+						}
+						return createMockResponse({
+							body: JSON.stringify({
+								issuer: TEST_AUTH_SERVER,
+								authorization_endpoint: `${TEST_AUTH_SERVER}/authorize`,
+								token_endpoint: `${TEST_AUTH_SERVER}/token`,
+								response_types_supported: ['code'],
+							})
+						});
+					}
+					return createMockResponse({ status: init.headers.Authorization ? 403 : 401 });
+				},
+			});
+			const headers: Record<string, string> = {};
+			const response = await handle['_fetchWithAuthRetry'](TEST_MCP_URL, { method: 'POST', headers }, headers);
+			assert.strictEqual(response.status, 403);
+			assert.strictEqual(tokenOptions.length, 1);
+			assert.strictEqual(tokenOptions[0]?.forceRefresh, undefined);
+			assert.strictEqual(tokenOptions[0]?.forceNewRegistration, undefined);
 		});
 
 		test('validates MCP retries without applying server allowlists to OAuth metadata discovery', async () => {

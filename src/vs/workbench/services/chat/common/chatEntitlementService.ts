@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import product from '../../../../platform/product/common/product.js';
+import product, { isSicodeReleaseProduct } from '../../../../platform/product/common/product.js';
 import { Barrier } from '../../../../base/common/async.js';
 import { CancellationToken, CancellationTokenSource } from '../../../../base/common/cancellation.js';
 import { Emitter, Event } from '../../../../base/common/event.js';
@@ -1071,6 +1071,10 @@ export class ChatEntitlementRequests extends Disposable {
 	}
 
 	private async resolve(): Promise<void> {
+		if (isSicodeReleaseProduct()) {
+			return;
+		}
+
 		this.pendingResolveCts.dispose(true);
 		const cts = this.pendingResolveCts = new CancellationTokenSource();
 
@@ -1488,6 +1492,17 @@ export class ChatEntitlementContext extends Disposable {
 			sku: undefined,
 			copilotTrackingId: undefined
 		};
+
+		// SI Code ships its own chat extension. Copilot sign-in and entitlement
+		// must not gate it, including profiles that already stored "signed out".
+		if (isSicodeReleaseProduct()) {
+			this._state.completed = true;
+			this._state.installed = true;
+			this._state.disabled = false;
+			this._state.untrusted = false;
+			this._state.hidden = false;
+			this._state.entitlement = ChatEntitlement.Unavailable;
+		}
 
 		const migrated = this.storageService.getBoolean(ChatEntitlementContext.CHAT_ENTITLEMENT_CONTEXT_MIGRATED_STORAGE_KEY, StorageScope.PROFILE) === true;
 		if (!migrated) {

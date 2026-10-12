@@ -20,7 +20,9 @@
 		"onCommand:sicode.inlineEdit",
 		"onCommand:sicode.openMcp",
 		"onCommand:sicode.runPython",
-		"onCommand:sicode.mcp.add"
+		"onCommand:sicode.mcp.add",
+		"onCommand:sicode.signIn",
+		"onCommand:sicode.signOut"
 	],
 	"main": "./out/extension",
 	"capabilities": {
@@ -69,6 +71,16 @@
 			{
 				"command": "sicode.mcp.connect",
 				"title": "Connect MCP Servers",
+				"category": "SI Code"
+			},
+			{
+				"command": "sicode.signIn",
+				"title": "Sign in with Google",
+				"category": "SI Code"
+			},
+			{
+				"command": "sicode.signOut",
+				"title": "Sign out",
 				"category": "SI Code"
 			}
 		],
@@ -397,5 +409,8 @@
 				}
 			}
 		]
+	},
+	"dependencies": {
+		"@supabase/supabase-js": "^2.117.3"
 	}
 }

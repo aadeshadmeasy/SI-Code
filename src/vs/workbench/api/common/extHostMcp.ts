@@ -520,9 +520,13 @@ export class McpHTTPHandle extends Disposable {
 			// https://github.com/modelcontextprotocol/typescript-sdk/issues/389
 			const retryWithSessionId = this._mode.value === HttpMode.Http && !!this._mode.sessionId && (res.status === 400 || res.status === 404);
 
+			const detail = await this._getErrText(res);
+			const message = isAuthStatusCode(res.status)
+				? this._authRejectedMessage(res.status, detail)
+				: `${res.status} status sending message to ${this._launch.uri}: ${detail}` + (retryWithSessionId ? `; will retry with new session ID` : '');
 			this._proxy.$onDidChangeState(this._id, {
 				state: McpConnectionState.Kind.Error,
-				message: `${res.status} status sending message to ${this._launch.uri}: ${await this._getErrText(res)}` + (retryWithSessionId ? `; will retry with new session ID` : ''),
+				message,
 				shouldRetry: retryWithSessionId,
 			});
 			return;
@@ -687,7 +691,11 @@ export class McpHTTPHandle extends Disposable {
 				transportHeaders,
 			);
 			if (res.status >= 300) {
-				this._proxy.$onDidChangeState(this._id, { state: McpConnectionState.Kind.Error, message: `${res.status} status connecting to ${this._launch.uri} as SSE: ${await this._getErrText(res)}` });
+				const detail = await this._getErrText(res);
+				const message = isAuthStatusCode(res.status)
+					? this._authRejectedMessage(res.status, detail)
+					: `${res.status} status connecting to ${this._launch.uri} as SSE: ${detail}`;
+				this._proxy.$onDidChangeState(this._id, { state: McpConnectionState.Kind.Error, message });
 				return;
 			}
 		} catch (e) {
@@ -759,7 +767,34 @@ export class McpHTTPHandle extends Disposable {
 		} while (!chunk.done);
 	}
 
-	private async _addAuthHeader(headers: Record<string, string>, options?: { forceNewRegistration?: boolean; errorOnUserInteraction?: boolean }) {
+	/**
+	 * An Authorization value the user put on the server (API key or personal
+	 * access token). That header is sent as-is and must not start OAuth.
+	 */
+	private _configuredAuthorization(): string | undefined {
+		for (const [name, value] of this._launch.headers) {
+			if (name.toLowerCase() === 'authorization' && value.trim()) {
+				return value;
+			}
+		}
+		return undefined;
+	}
+
+	private _authRejectedMessage(status: number, detail: string): string {
+		const body = detail ? ` ${detail}` : '';
+		if (this._configuredAuthorization()) {
+			return localize('mcp.staticAuthRejected', "The server rejected the Authorization header from mcp.json ({0}). Check the API key or personal access token, then retry.{1}", status, body);
+		}
+		if (status === 403) {
+			return localize('mcp.forbiddenKept', "The server refused the request (403). The saved sign-in was kept. Retry, or sign out of this server if the account is wrong.{0}", body);
+		}
+		return localize('mcp.unauthorized', "The server rejected the sign-in ({0}). Retry. A browser opens only when the saved sign-in can no longer be refreshed.{1}", status, body);
+	}
+
+	private async _addAuthHeader(headers: Record<string, string>, options?: { forceNewRegistration?: boolean; errorOnUserInteraction?: boolean; forceRefresh?: boolean }) {
+		if (this._configuredAuthorization()) {
+			return headers;
+		}
 		const errorOnUserInteraction = options?.errorOnUserInteraction ?? this._errorOnUserInteraction;
 		if (this._authMetadata) {
 			try {
@@ -776,7 +811,8 @@ export class McpHTTPHandle extends Disposable {
 					authDetails,
 					{
 						errorOnUserInteraction,
-						forceNewRegistration: options?.forceNewRegistration
+						forceNewRegistration: options?.forceNewRegistration,
+						forceRefresh: options?.forceRefresh,
 					});
 				if (token) {
 					setHostHeader(headers, 'Authorization', `Bearer ${token}`);
@@ -799,6 +835,7 @@ export class McpHTTPHandle extends Disposable {
 					{
 						errorOnUserInteraction,
 						forceNewRegistration: options?.forceNewRegistration,
+						forceRefresh: options?.forceRefresh,
 						clientId: this._launch.oauth?.clientId,
 					}
 				);
@@ -841,6 +878,12 @@ export class McpHTTPHandle extends Disposable {
 		const doFetch = () => this._fetch(mcpUrl, init, { transportHeaders });
 
 		let res = await doFetch();
+		if (this._configuredAuthorization()) {
+			if (isAuthStatusCode(res.status)) {
+				this._log(LogLevel.Warning, `MCP server rejected the configured Authorization header (${res.status}). It was not replaced with a browser sign-in.`);
+			}
+			return res;
+		}
 		if (isAuthStatusCode(res.status)) {
 			if (!this._authMetadata) {
 				const protocolHeaders = { 'MCP-Protocol-Version': MCP.LATEST_PROTOCOL_VERSION };
@@ -874,12 +917,24 @@ export class McpHTTPHandle extends Disposable {
 				}
 			}
 		}
-		// If we have an Authorization header and still get an auth error, we should retry with a new auth registration
-		if (headers['Authorization'] && isAuthStatusCode(res.status)) {
-			const errorText = await this._getErrText(res);
-			this._log(LogLevel.Info, `Received ${res.status} status with Authorization header, retrying with new auth registration. Error details: ${errorText || 'no additional details'}`);
-			await this._addAuthHeader(headers, { forceNewRegistration: true });
-			res = await doFetch();
+		// A 403 is not an expired token. Deleting the saved sign-in here is what
+		// made Supabase open the browser on every connect.
+		if (headers['Authorization'] && res.status === 403) {
+			this._log(LogLevel.Warning, 'Received 403 with a saved sign-in. The session was kept.');
+			return res;
+		}
+		// A 401 tries the refresh token once. The browser opens only when that
+		// refresh is rejected as invalid_grant inside the auth provider.
+		if (headers['Authorization'] && res.status === 401) {
+			const previous = headers['Authorization'];
+			this._log(LogLevel.Info, 'Received 401 with a saved sign-in. Refreshing it.');
+			await this._addAuthHeader(headers, { forceRefresh: true });
+			if (headers['Authorization'] && headers['Authorization'] !== previous) {
+				init.headers = headers;
+				res = await doFetch();
+			} else if (headers['Authorization'] === previous) {
+				this._log(LogLevel.Warning, 'The saved sign-in could not be refreshed. The browser was not opened. Retry the server.');
+			}
 		}
 		return res;
 	}

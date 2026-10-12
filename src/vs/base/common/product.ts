@@ -154,6 +154,12 @@ export interface IProductConfiguration {
 		readonly accessScopes?: string[];
 	};
 
+	/**
+	 * When false, gallery installs skip signature verification. Open VSX does
+	 * not ship the Microsoft signature module this check expects.
+	 */
+	readonly extensionSignatureVerification?: boolean;
+
 	readonly agentSdks?: { readonly [packageId: string]: IAgentSdkProductConfig };
 
 	readonly copilotVersions?: {

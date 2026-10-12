@@ -8,6 +8,7 @@ import { registerChatParticipants } from './chat.js';
 import { registerInlineCompletions } from './inline.js';
 import { registerMcpView } from './mcpView.js';
 import { SicodeProvider } from './providers.js';
+import { registerSupabaseAuth } from './auth.js';
 import { openSettings } from './settingsView.js';
 import { registerAgentTools } from './tools.js';
 import { vendors } from './vendors.js';
@@ -33,6 +34,7 @@ export function activate(context: vscode.ExtensionContext): void {
 	registerInlineCompletions(context);
 	registerAgentTools(context);
 	registerMcpView(context);
+	registerSupabaseAuth(context);
 	context.subscriptions.push(
 		vscode.commands.registerCommand('sicode.configure', () => openSettings(context)),
 		vscode.commands.registerCommand('sicode.inlineEdit', () => vscode.commands.executeCommand('inlineChat.start')),

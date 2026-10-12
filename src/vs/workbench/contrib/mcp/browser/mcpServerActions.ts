@@ -818,7 +818,9 @@ export class StartServerAction extends McpServerAction {
 		}
 		this.class = StartServerAction.CLASS;
 		this.enabled = true;
-		this.label = localize('start', "Start Server");
+		this.label = serverState.state === McpConnectionState.Kind.Error
+			? localize('mcp.retry', "Retry")
+			: localize('start', "Start Server");
 	}
 
 	override async run(): Promise<void> {

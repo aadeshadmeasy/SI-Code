@@ -369,6 +369,12 @@ export interface IAuthenticationProviderSessionOptions {
 	 */
 	silent?: boolean;
 	/**
+	 * Exchange a stored refresh token even when the access token is not near expiry.
+	 * Used after an MCP server rejects a saved token. A failed refresh that is not
+	 * `invalid_grant` keeps the saved token.
+	 */
+	forceRefresh?: boolean;
+	/**
 	 * The account that is being asked about. If this is passed in, the provider should
 	 * attempt to return the sessions that are only related to this account.
 	 */

@@ -19,6 +19,7 @@ import { clearUserSelectedSessionType, getRememberedSessionType, storeUserSelect
 import { IAgentHostEnablementService } from '../../../../platform/agentHost/common/agentHostEnablementService.js';
 import { requiresCopilotAgentHost, IManagedSettingsService } from '../../../../platform/policy/common/copilotManagedSettings.js';
 import { localize } from '../../../../nls.js';
+import { isSicodeReleaseProduct } from '../../../../platform/product/common/product.js';
 
 export function managedPolicyRequiresAgentHostMessage(): string {
 	return localize('chat.managedPolicy.requireAgentHost', "Your organization requires the new Copilot experience. Move to Copilot to keep your conversation. If Copilot cannot start, try again or contact your administrator. Your original conversation is still available.");
@@ -390,6 +391,9 @@ export function getComputedDefaultSessionType(
 	managedSandboxEnforced = false,
 	managedPolicyRequiresAgentHost = false
 ): string {
+	if (isSicodeReleaseProduct()) {
+		return localChatSessionType;
+	}
 	if (managedPolicyRequiresAgentHost) {
 		return SessionType.AgentHostCopilot;
 	}
@@ -497,6 +501,9 @@ export function getDefaultNewChatSessionTypeAndReasonFromServices(
 	managedSandboxEnforced = false,
 	managedPolicyRequiresAgentHost = false
 ): IResolvedNewChatSessionType {
+	if (isSicodeReleaseProduct()) {
+		return { sessionType: localChatSessionType, selectionReason: 'computedDefault' };
+	}
 	if (managedPolicyRequiresAgentHost && (!options?.explicitOverride || options.explicitOverride === localChatSessionType)) {
 		return { sessionType: SessionType.AgentHostCopilot, selectionReason: 'copilotPreference' };
 	}

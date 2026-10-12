@@ -6,22 +6,26 @@ The executable and CLI name stay `sicode`. User data is stored in `.sicode`. The
 
 ## Download
 
-[SI Code v0.1.0](https://github.com/aadeshadmeasy/vscode/releases/tag/v0.1.0)
+[SI Code v0.1.1](https://github.com/aadeshadmeasy/SI-Code/releases/tag/v0.1.1)
 
 | Platform | Archive |
 | --- | --- |
-| Linux x64 | [SiCode-linux-x64.tar.gz](https://github.com/aadeshadmeasy/vscode/releases/download/v0.1.0/SiCode-linux-x64.tar.gz) |
-| Linux arm64 | [SiCode-linux-arm64.tar.gz](https://github.com/aadeshadmeasy/vscode/releases/download/v0.1.0/SiCode-linux-arm64.tar.gz) |
-| macOS Apple silicon | [SI-Code-darwin-arm64.dmg](https://github.com/aadeshadmeasy/vscode/releases/download/v0.1.0/SI-Code-darwin-arm64.dmg) |
-| macOS Intel | [SI-Code-darwin-x64.dmg](https://github.com/aadeshadmeasy/vscode/releases/download/v0.1.0/SI-Code-darwin-x64.dmg) |
-| Windows x64 | [SiCode-win32-x64.zip](https://github.com/aadeshadmeasy/vscode/releases/download/v0.1.0/SiCode-win32-x64.zip) |
-| Windows arm64 | [SiCode-win32-arm64.zip](https://github.com/aadeshadmeasy/vscode/releases/download/v0.1.0/SiCode-win32-arm64.zip) |
+| Linux x64 | [SiCode-linux-x64.tar.gz](https://github.com/aadeshadmeasy/SI-Code/releases/download/v0.1.1/SiCode-linux-x64.tar.gz) |
+| Linux arm64 | [SiCode-linux-arm64.tar.gz](https://github.com/aadeshadmeasy/SI-Code/releases/download/v0.1.1/SiCode-linux-arm64.tar.gz) |
+| macOS Apple silicon | [SI-Code-darwin-arm64.dmg](https://github.com/aadeshadmeasy/SI-Code/releases/download/v0.1.1/SI-Code-darwin-arm64.dmg) |
+| macOS Intel | [SI-Code-darwin-x64.dmg](https://github.com/aadeshadmeasy/SI-Code/releases/download/v0.1.1/SI-Code-darwin-x64.dmg) |
+| Windows x64 zip | [SiCode-win32-x64.zip](https://github.com/aadeshadmeasy/SI-Code/releases/download/v0.1.1/SiCode-win32-x64.zip) |
+| Windows arm64 zip | [SiCode-win32-arm64.zip](https://github.com/aadeshadmeasy/SI-Code/releases/download/v0.1.1/SiCode-win32-arm64.zip) |
+| Windows x64 installer | [SI-Code-win32-x64-setup.exe](https://github.com/aadeshadmeasy/SI-Code/releases/download/v0.1.1/SI-Code-win32-x64-setup.exe) |
+| Windows arm64 installer | [SI-Code-win32-arm64-setup.exe](https://github.com/aadeshadmeasy/SI-Code/releases/download/v0.1.1/SI-Code-win32-arm64-setup.exe) |
 
-On macOS, open the disk image and drag `SI Code.app` to Applications. The app is ad-hoc signed and not notarized. First launch: right-click `SI Code.app` and choose Open, or run `xattr -dr com.apple.quarantine "/Applications/SI Code.app"`. On Windows, SmartScreen warns because the zip is unsigned. Choose More info, then Run anyway. Linux and macOS archives start with `sicode`. Windows starts with `SI Code.exe`.
+On macOS, open the disk image and drag `SI Code.app` to Applications. The app is ad-hoc signed and not notarized. First launch: right-click `SI Code.app` and choose Open, or run `xattr -dr com.apple.quarantine "/Applications/SI Code.app"`. On Windows, run the setup exe, or unzip the archive. SmartScreen warns because the build is unsigned. Choose More info, then Run anyway. Linux and macOS archives start with `sicode`. Windows starts with `SI Code.exe`.
 
 ## Bring your own key
 
-There is no SI Code account. Run **SI Code: Configure AI** and paste a key. The key stays in the editor's secret storage on this machine.
+Run **SI Code: Configure AI** and paste a key. The key stays in the editor's secret storage on this machine.
+
+**SI Code: Sign in with Google** opens the browser, listens on `127.0.0.1:33418`, and keeps the session in secret storage. The signed-in email shows in the status bar and the Accounts menu. Provider and model choices sync to your account. API keys stay on this machine.
 
 | Provider | Default model | Endpoint |
 | --- | --- | --- |
@@ -71,7 +75,7 @@ Python files are highlighted by the built-in Python grammar. **SI Code: Run Pyth
 
 ## Marketplace and telemetry
 
-The extension gallery points at [Open VSX](https://open-vsx.org). Product telemetry is off (`enableTelemetry` in `product.json`, and the telemetry level defaults to off). There is no update service and no crash-upload URL. Report a problem from Help, which opens [this repository's issues](https://github.com/aadeshadmeasy/vscode/issues/new).
+The extension gallery points at [Open VSX](https://open-vsx.org). Product telemetry is off (`enableTelemetry` in `product.json`, and the telemetry level defaults to off). There is no update service and no crash-upload URL. Report a problem from Help, which opens [this repository's issues](https://github.com/aadeshadmeasy/SI-Code/issues/new).
 
 ## Build
 

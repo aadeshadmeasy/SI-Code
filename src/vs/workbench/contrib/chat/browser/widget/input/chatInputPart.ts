@@ -32,6 +32,7 @@ import { Schemas } from '../../../../../../base/common/network.js';
 import { mixin } from '../../../../../../base/common/objects.js';
 import { autorun, constObservable, derived, derivedOpts, IObservable, ISettableObservable, ITransaction, observableFromEvent, observableSignalFromEvent, observableValue, transaction } from '../../../../../../base/common/observable.js';
 import { isMacintosh, isWeb, OS } from '../../../../../../base/common/platform.js';
+import { isSicodeReleaseProduct } from '../../../../../../platform/product/common/product.js';
 import { isTerminalSandboxSupported } from '../../../../../../platform/sandbox/common/settings.js';
 import { IRemoteAgentService } from '../../../../../services/remote/common/remoteAgentService.js';
 import { isEqual } from '../../../../../../base/common/resources.js';
@@ -1260,6 +1261,12 @@ export class ChatInputPart extends Disposable implements IHistoryNavigationWidge
 		this._hasFileAttachmentContextKey = ChatContextKeys.hasFileAttachments.bindTo(contextKeyService);
 
 		this.initSelectedModel();
+		if (isSicodeReleaseProduct()) {
+			// Activate every languageModelChatProviders contribution, built-in or
+			// third-party, so the picker and Language Models table are not empty
+			// until some other Copilot path happens to ask.
+			void this.languageModelsService.selectLanguageModels({}).catch(onUnexpectedError);
+		}
 
 		this._register(this._onDidChangeCurrentChatMode.event(() => {
 			this._modelSelectionController.ensureCurrentModelSupported();
@@ -2113,7 +2120,9 @@ export class ChatInputPart extends Disposable implements IHistoryNavigationWidge
 		const allModels = this.getAllMergedModels();
 
 		// Session owns a pool but no targeted models registered yet: return empty so callers don't treat general-pool models as valid.
-		if (sessionType
+		// SI Code chat is not that pool. Extension providers stay selectable.
+		if (!isSicodeReleaseProduct()
+			&& sessionType
 			&& this.chatSessionsService.requiresCustomModelsForSessionType(sessionType)
 			&& !hasModelsTargetingSession(allModels, sessionType)) {
 			return [];

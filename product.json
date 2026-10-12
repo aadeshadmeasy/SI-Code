@@ -262,6 +262,7 @@
 	],
 	"builtInExtensionsEnabledWithAutoUpdates": [],
 	"sessionsWindowAllowedExtensions": [],
+	"extensionSignatureVerification": false,
 	"extensionsGallery": {
 		"serviceUrl": "https://open-vsx.org/vscode/gallery",
 		"controlUrl": "https://raw.githubusercontent.com/EclipseFdn/publish-extensions/master/extension-control/extensions.json",

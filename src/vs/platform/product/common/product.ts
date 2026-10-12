@@ -106,4 +106,14 @@ else {
 	}
 }
 
+/**
+ * Packaged SI Code builds set `nameShort` to "SI Code" and stamp `commit`
+ * while gulp packages the app. Source checkouts and unit tests load
+ * product.json without that stamp, so Copilot-bypass behavior stays out of
+ * those runs.
+ */
+export function isSicodeReleaseProduct(): boolean {
+	return product.nameShort === 'SI Code' && typeof product.commit === 'string' && product.commit.length > 0;
+}
+
 export default product;

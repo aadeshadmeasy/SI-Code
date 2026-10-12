@@ -22,7 +22,7 @@ import { ChatStatusDashboard } from './chatStatusDashboard.js';
 import { mainWindow } from '../../../../../base/browser/window.js';
 import { $ as h, disposableWindowInterval } from '../../../../../base/browser/dom.js';
 import { isNewUser } from './chatStatus.js';
-import product from '../../../../../platform/product/common/product.js';
+import product, { isSicodeReleaseProduct } from '../../../../../platform/product/common/product.js';
 import { isCompletionsEnabled } from '../../../../../editor/common/services/completionsEnablement.js';
 import { CHAT_SETUP_ACTION_ID } from '../actions/chatActions.js';
 import { IContextKeyService } from '../../../../../platform/contextkey/common/contextkey.js';
@@ -190,6 +190,12 @@ export class ChatStatusBarEntry extends Disposable implements IWorkbenchContribu
 	}
 
 	private update(): void {
+		if (isSicodeReleaseProduct()) {
+			this.entry?.dispose();
+			this.entry = undefined;
+			return;
+		}
+
 		const sentiment = this.chatEntitlementService.sentiment;
 		if (!sentiment.hidden) {
 			const props = this.getEntryProps();

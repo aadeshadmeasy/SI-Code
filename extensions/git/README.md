@@ -1,10 +1,10 @@
-# Git integration for Visual Studio Code
+# Git integration for Si Code
 
-**Notice:** This extension is bundled with Visual Studio Code. It can be disabled but not uninstalled.
+**Notice:** This extension is bundled with Si Code. It can be disabled but not uninstalled.
 
 ## Features
 
-See [Git support in VS Code](https://code.visualstudio.com/docs/editor/versioncontrol#_git-support) to learn about the features of this extension.
+See [Git support in Si Code](https://code.visualstudio.com/docs/editor/versioncontrol#_git-support) to learn about the features of this extension.
 
 ## API
 

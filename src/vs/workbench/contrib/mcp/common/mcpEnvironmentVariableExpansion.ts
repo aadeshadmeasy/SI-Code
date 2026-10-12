@@ -17,7 +17,7 @@ export interface IMcpEnvironmentVariableExpansionContext {
 /**
  * Only the `${VAR}` and `${VAR:-default}` forms that migration from `.vscode/mcp.json`
  * writes are expanded. Bare `$VAR` is copied unchanged by the migration and was always
- * literal in VS Code, so it stays literal.
+ * literal in Si Code, so it stays literal.
  */
 const expansionOptions: IEnvVarResolverOptions = { bareReferences: false };
 

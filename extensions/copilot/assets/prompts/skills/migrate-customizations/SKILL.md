@@ -1,6 +1,6 @@
 ---
 name: migrate-customizations
-description: Guide a safe, reversible migration of VS Code local agent customizations when launched from the Agent Customizations Migrations page with VS Code-generated migration context.
+description: Guide a safe, reversible migration of Si Code local agent customizations when launched from the Agent Customizations Migrations page with Si Code-generated migration context.
 argument-hint: Launch from Agent Customizations > Migrations > Migrate with Agent
 user-invocable: true
 disable-model-invocation: true
@@ -12,7 +12,7 @@ Guide the user through migrating the inventory included in the invoking prompt. 
 
 ## Required Migration Context
 
-Before doing anything else, verify that the invoking prompt includes all of the following VS Code-generated values:
+Before doing anything else, verify that the invoking prompt includes all of the following Si Code-generated values:
 
 - Selected harness
 - Migration telemetry flow
@@ -27,12 +27,12 @@ Read [migration techniques](./references/migration-techniques.md) before proposi
 ## Safety Contract
 
 1. Never modify a customization before creating a recovery bundle.
-2. Use the recovery bundle folder supplied in the invoking prompt. VS Code created and is watching this folder; do not move it or substitute another location.
+2. Use the recovery bundle folder supplied in the invoking prompt. Si Code created and is watching this folder; do not move it or substitute another location.
 3. In the recovery bundle, create:
    - `migration-log.md`, containing the selected harness, scope, timestamps, source and destination paths, commands or tools used, validation results, and every user decision.
    - `backups/`, containing a byte-for-byte copy of every file before its first modification or deletion.
    - `restore.md`, containing exact steps for restoring the backups and reverting newly created files.
-   - `migration-results.json`, containing only the privacy-safe aggregate schema described in Finish. VS Code watches this file for the final migration outcome.
+   - `migration-results.json`, containing only the privacy-safe aggregate schema described in Finish. Si Code watches this file for the final migration outcome.
 4. Append to the log after every attempted operation, including failures and rollbacks.
 5. Approval to migrate a group authorizes destination writes only; it does not authorize deleting source files, removing source MCP entries, or clearing location settings. Preserve sources by default. After the destination is validated, ask separately for explicit approval for each kind of cleanup. If runtime validation is not possible, explain what was and was not verified, keep the source, and ask whether to defer cleanup.
 6. Stop on an unexpected source change, destination conflict, invalid configuration, failed backup, or failed validation. Explain the problem instead of guessing.
@@ -58,7 +58,7 @@ If workspace customizations are selected, ask whether the user wants a pull requ
 Classify the supplied inventory by its reported category and scope, then handle applicable items in this order:
 
 1. prompt files that should become skills;
-2. VS Code profile user-data agents, instructions, and skills;
+2. Si Code profile user-data agents, instructions, and skills;
 3. MCP servers;
 4. workspace or user customizations at locations defined by settings `chat.agentSkillsLocations`, `chat.instructionsFilesLocations`, and `chat.agentFilesLocations`.
 
@@ -82,8 +82,8 @@ Validate that each skill has valid frontmatter, a meaningful description, and a 
 
 ### 4. Migrate User Data
 
-Explain that Agent Host doesn't read the VS Code profile user data folder. It only reads the harness's user folders. Copy selected agents, instructions, and skills to a compatible listed destination without silently changing their contents.
-Keep user-scope items in user scope. Explain that approval to copy does not authorize deleting the VS Code source or changing sync/location settings; ask for those separately after validation.
+Explain that Agent Host doesn't read the Si Code profile user data folder. It only reads the harness's user folders. Copy selected agents, instructions, and skills to a compatible listed destination without silently changing their contents.
+Keep user-scope items in user scope. Explain that approval to copy does not authorize deleting the Si Code source or changing sync/location settings; ask for those separately after validation.
 
 ### 5. Migrate MCP Servers
 
@@ -95,7 +95,7 @@ Approval for this group authorizes destination writes only. After successful des
 
 ### 6. Customizations at Custom Locations
 
-Files in custom locations defined by `chat.agentSkillsLocations`, `chat.instructionsFilesLocations`, and `chat.agentFilesLocations` can continue to work when the selected harness is connected to VS Code. Moving them to a harness-reported standard location may improve portability or consistency, but is not automatically required for compatibility. Explain this trade-off before asking whether to migrate.
+Files in custom locations defined by `chat.agentSkillsLocations`, `chat.instructionsFilesLocations`, and `chat.agentFilesLocations` can continue to work when the selected harness is connected to Si Code. Moving them to a harness-reported standard location may improve portability or consistency, but is not automatically required for compatibility. Explain this trade-off before asking whether to migrate.
 
 Handle only items reported as `configuredLocations` and not already handled in another group. Do not re-offer files the user explicitly skipped. Treat moving a file, deleting its old copy, and clearing or changing the location setting as separate actions; obtain explicit approval for each cleanup action after validating the destination.
 
@@ -127,9 +127,9 @@ Aggregate results by:
 - customization type: `agent`, `instructions`, `skill`, or `mcpServer`;
 - outcome: `migrated`, `skipped`, or `failed`.
 
-The total reported for each category, scope, and customization type must not exceed the inventory supplied by VS Code. The result file must never include names, paths, contents, configuration values, error messages, or other user data.
+The total reported for each category, scope, and customization type must not exceed the inventory supplied by Si Code. The result file must never include names, paths, contents, configuration values, error messages, or other user data.
 
-Write the validated JSON to the exact recovery bundle supplied by VS Code. Do not write a result file when no migration telemetry flow was supplied.
+Write the validated JSON to the exact recovery bundle supplied by Si Code. Do not write a result file when no migration telemetry flow was supplied.
 
 If the user stops the workflow, set `cancelled` to `true`, record completed work with its actual outcome, mark the remaining inventory as `skipped`, and still validate and write the result file before the final cancellation summary.
 

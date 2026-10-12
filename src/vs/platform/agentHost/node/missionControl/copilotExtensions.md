@@ -1,6 +1,6 @@
 # Copilot Host compatibility on Mission Control
 
-The native VS Code Agent Host exposes the following Copilot Host extension methods on its authenticated Mission Control listener:
+The native Si Code Agent Host exposes the following Copilot Host extension methods on its authenticated Mission Control listener:
 
 | Method | Request | Result |
 | --- | --- | --- |
@@ -27,4 +27,4 @@ Session requests address the exact host-advertised session URI and route through
 
 Plan reads use the live Copilot SDK's plan and SQL todo APIs. The result includes both todo rows and dependency edges. Native plan and todo changes publish `copilot.planHint` and `copilot.todosHint` session metadata, including source event IDs, so clients can refetch the plan.
 
-All requests require relay identity authentication. Passive connections may list projects and read plans, but cannot mutate projects or approval modes. Catalogue actions share the global protocol sequence and are recorded/replayed by the owning relay listener without modifying shared host configuration or notifying local configuration listeners. Root snapshots and updates expose only the host-owned project namespace; private host configuration and VS Code host-management methods remain unavailable through Mission Control.
+All requests require relay identity authentication. Passive connections may list projects and read plans, but cannot mutate projects or approval modes. Catalogue actions share the global protocol sequence and are recorded/replayed by the owning relay listener without modifying shared host configuration or notifying local configuration listeners. Root snapshots and updates expose only the host-owned project namespace; private host configuration and Si Code host-management methods remain unavailable through Mission Control.

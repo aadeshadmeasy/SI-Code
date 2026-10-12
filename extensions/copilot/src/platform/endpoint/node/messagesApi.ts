@@ -192,7 +192,7 @@ export function createMessagesRequestBody(accessor: ServicesAccessor, options: I
 	}
 
 	// Build final tools array. The client-side search_tools tool is already in the
-	// anthropicTools array (registered as a model-specific VS Code tool) and will handle
+	// anthropicTools array (registered as a model-specific Si Code tool) and will handle
 	// tool search client-side. Deferred tools still have defer_loading: true so the model
 	// knows to use the search tool to discover them.
 	const finalTools: AnthropicMessagesTool[] = [...nonDeferredTools, ...deferredTools];

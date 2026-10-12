@@ -1,0 +1,165 @@
+name: SI Code Release
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    name: Package ${{ matrix.slug }}
+    runs-on: ${{ matrix.os }}
+    env:
+      # @vscode/ripgrep and Electron download GitHub release assets during
+      # install. Unauthenticated API calls from hosted runners return 403.
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            task: vscode-linux-x64
+            artifact: VSCode-linux-x64
+            slug: linux-x64
+            archive: SiCode-linux-x64.tar.gz
+          - os: ubuntu-latest
+            task: vscode-linux-arm64
+            artifact: VSCode-linux-arm64
+            slug: linux-arm64
+            archive: SiCode-linux-arm64.tar.gz
+          - os: windows-latest
+            task: vscode-win32-x64
+            artifact: VSCode-win32-x64
+            slug: win32-x64
+            archive: SiCode-win32-x64.zip
+          - os: windows-latest
+            task: vscode-win32-arm64
+            artifact: VSCode-win32-arm64
+            slug: win32-arm64
+            archive: SiCode-win32-arm64.zip
+          - os: macos-latest
+            task: vscode-darwin-arm64
+            artifact: VSCode-darwin-arm64
+            slug: darwin-arm64
+            archive: SiCode-darwin-arm64.tar.gz
+            dmg: SI-Code-darwin-arm64.dmg
+          # macos-13 (Intel) stays queued with no runners. Cross-build x64
+          # on the arm64 macos-latest image, which already packaged arm64.
+          - os: macos-latest
+            task: vscode-darwin-x64
+            artifact: VSCode-darwin-x64
+            slug: darwin-x64
+            archive: SiCode-darwin-x64.tar.gz
+            dmg: SI-Code-darwin-x64.dmg
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Install Linux packaging libraries
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y build-essential g++ libx11-dev libxkbfile-dev libsecret-1-dev libkrb5-dev python-is-python3 fakeroot rpm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Package
+        run: npm run gulp -- ${{ matrix.task }}
+
+      - name: Archive Linux or macOS
+        if: runner.os != 'Windows'
+        run: |
+          mkdir -p release-artifacts
+          if [ "$(uname)" = "Darwin" ]; then
+            app="../${{ matrix.artifact }}/SI Code.app"
+            test -d "$app"
+            # Ad-hoc signature so Apple Silicon will launch the bundle.
+            # No Developer ID certificate and no notarization.
+            xattr -cr "$app"
+            codesign --force --deep -s - "$app"
+          fi
+          tar -C .. -czf "$GITHUB_WORKSPACE/release-artifacts/${{ matrix.archive }}" "${{ matrix.artifact }}"
+
+      - name: Create macOS disk image
+        if: runner.os == 'macOS'
+        run: |
+          set -euo pipefail
+          app="../${{ matrix.artifact }}/SI Code.app"
+          stage="$(mktemp -d)"
+          mount="$(mktemp -d)"
+          cleanup() {
+            hdiutil detach "$mount" >/dev/null 2>&1 || true
+            rm -rf "$stage" "$mount"
+          }
+          trap cleanup EXIT
+          size_mb="$(du -sm "$app" | awk '{print $1}')"
+          size_mb="$((size_mb + 256))"
+          hdiutil create -size "${size_mb}m" -fs HFS+ -volname "SI Code" -ov "$stage/rw.dmg"
+          hdiutil attach "$stage/rw.dmg" -mountpoint "$mount" -nobrowse
+          ditto "$app" "$mount/SI Code.app"
+          ln -s /Applications "$mount/Applications"
+          codesign --force --deep -s - "$mount/SI Code.app"
+          sync
+          hdiutil detach "$mount"
+          dmg="$GITHUB_WORKSPACE/release-artifacts/${{ matrix.dmg }}"
+          rm -f "$dmg" "${dmg}.dmg"
+          hdiutil convert "$stage/rw.dmg" -format UDZO -ov -o "$dmg"
+          if [ ! -f "$dmg" ] && [ -f "${dmg}.dmg" ]; then
+            mv "${dmg}.dmg" "$dmg"
+          fi
+          ls -lh "$dmg"
+
+      - name: Archive Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path release-artifacts | Out-Null
+          Compress-Archive -Path "../${{ matrix.artifact }}" -DestinationPath "release-artifacts/${{ matrix.archive }}"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.archive }}
+          path: release-artifacts/${{ matrix.archive }}
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@v4
+        if: runner.os == 'macOS'
+        with:
+          name: ${{ matrix.dmg }}
+          path: release-artifacts/${{ matrix.dmg }}
+          if-no-files-found: error
+
+  release:
+    name: Publish GitHub Release
+    # Publish archives that uploaded even if one platform job failed.
+    if: always() && startsWith(github.ref, 'refs/tags/v') && needs.package.result != 'cancelled'
+    needs: package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Require at least one archive
+        run: |
+          shopt -s nullglob
+          files=(dist/*)
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "No release archives were uploaded."
+            exit 1
+          fi
+          ls -lh dist
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          name: SI Code ${{ github.ref_name }}
+          generate_release_notes: true
+          overwrite_files: true
+          files: dist/*

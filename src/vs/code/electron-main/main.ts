@@ -376,7 +376,7 @@ class CodeMain {
 		} catch (error) {
 
 			// Handle unexpected errors (the only expected error is EADDRINUSE that
-			// indicates another instance of VS Code is running)
+			// indicates another instance of Si Code is running)
 			if (error.code !== 'EADDRINUSE') {
 
 				// Show a dialog for errors that can be resolved by the user
@@ -608,7 +608,7 @@ class CodeMain {
 			// is closed and then exit the waiting process.
 			//
 			// Note: we are not doing this if the wait marker has been already
-			// added as argument. This can happen if VS Code was started from CLI.
+			// added as argument. This can happen if Si Code was started from CLI.
 			const waitMarkerFilePath = createWaitMarkerFileSync(args.verbose);
 			if (waitMarkerFilePath) {
 				addArg(process.argv, '--waitMarkerFilePath', waitMarkerFilePath);

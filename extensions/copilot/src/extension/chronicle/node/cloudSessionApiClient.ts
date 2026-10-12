@@ -233,8 +233,8 @@ export class CloudSessionApiClient {
 	}
 
 	/**
-	 * List VS Code cloud sessions for the authenticated user.
-	 * Paginates through all pages and filters to only VS Code Chat sessions.
+	 * List Si Code cloud sessions for the authenticated user.
+	 * Paginates through all pages and filters to only Si Code Chat sessions.
 	 */
 	async listSessions(): Promise<Array<{ id: string; task_id?: string; agent_task_id?: string; agent_id?: number; state: string; created_at: string }>> {
 		const allSessions: Array<{ id: string; task_id?: string; agent_task_id?: string; agent_id?: number; state: string; created_at: string }> = [];
@@ -256,7 +256,7 @@ export class CloudSessionApiClient {
 				const sessions = Array.isArray(data) ? data : (data as Record<string, unknown>).sessions;
 				const pageSessions = Array.isArray(sessions) ? sessions : [];
 
-				// Filter to VS Code Chat sessions only
+				// Filter to Si Code Chat sessions only
 				for (const session of pageSessions) {
 					if (session.agent_id === CloudAgentId.VSCodeChat) {
 						allSessions.push(session);

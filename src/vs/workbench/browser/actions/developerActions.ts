@@ -723,9 +723,9 @@ function managedSettingsPipeline(rawLabel: string, raw: unknown | undefined, nor
 	content += raw === undefined ? `*${markdownText(rawUnavailableMessage ?? 'Unavailable')}*\n\n` : markdownJsonBlock(raw);
 	content += '**Normalized bag**\n\n';
 	content += markdownJsonBlock(normalized);
-	content += '**VS Code policy projection**\n\n';
+	content += '**Si Code policy projection**\n\n';
 	content += markdownJsonBlock(projected);
-	return markdownDetails('Source, normalized, and VS Code projection', content);
+	return markdownDetails('Source, normalized, and Si Code projection', content);
 }
 
 function formatDiagnosticValue(value: unknown): string {
@@ -1018,7 +1018,7 @@ class PolicyDiagnosticsAction extends Action2 {
 					['Active sources (precedence order)', activeSources],
 					['Supplied keys', String(resolutions.length + suppressedTelemetry.length)],
 					[localize('telemetryBlockSource', "Selected telemetry block"), managedSettingsSourceShortLabel(telemetrySource ?? 'none')],
-					['Effective VS Code policy keys', String(effectiveKeyCount)]
+					['Effective Si Code policy keys', String(effectiveKeyCount)]
 				]
 			);
 			content += `*${localize('managedSettingsPrecedence', "Precedence is native MDM, then server, then file. Most settings resolve per key, filling gaps from lower channels. Telemetry selects one whole block: omitted leaves never inherit from weaker blocks. Empty or unknown-only server/file objects still select a block; native MDM exposes only declared flat keys. The internal telemetry presence marker is not a policy setting. For sandbox.enabled, any managed true wins regardless of channel precedence, matching the runtime sandbox floor.")}*\n\n`;
@@ -1061,7 +1061,7 @@ class PolicyDiagnosticsAction extends Action2 {
 				);
 			}
 			content += markdownDetails('Merged normalized bag', markdownJsonBlock(pick.values));
-			content += markdownDetails('Effective VS Code policy bag', markdownJsonBlock(effective));
+			content += markdownDetails('Effective Si Code policy bag', markdownJsonBlock(effective));
 
 			content += `### Normalization and Parse Issues (${parseErrors.length})\n\n`;
 			if (parseErrors.length > 0) {
@@ -1135,13 +1135,13 @@ class PolicyDiagnosticsAction extends Action2 {
 			}
 
 			content += markdownDetails(
-				'VS Code managed-settings schema',
-				'*Only keys declared here can reach VS Code policy callbacks. Runtime-owned keys may still be enforced by the Copilot runtime even when absent from the projections above.*\n\n' +
+				'Si Code managed-settings schema',
+				'*Only keys declared here can reach Si Code policy callbacks. Runtime-owned keys may still be enforced by the Copilot runtime even when absent from the projections above.*\n\n' +
 				markdownJsonBlock(declaredDefinitions)
 			);
 
 			content += '### Agent Runtime Resolution\n\n';
-			content += '*Resolved independently by each provider through its own SDK/runtime. This may include runtime-owned keys that VS Code does not declare as configuration policies.*\n\n';
+			content += '*Resolved independently by each provider through its own SDK/runtime. This may include runtime-owned keys that Si Code does not declare as configuration policies.*\n\n';
 			content += '*Copilot resolves device and account policy without creating a session. This does not include session-specific client contributions or execute policy helpers. Inspect the snapshot diagnostics for source failures or cached-policy warnings; a returned snapshot is not proof of a successful live fetch.*\n\n';
 			if (!agentHostEnablementService.enabled.get()) {
 				summary.agentRuntime = 'Agent Host disabled';

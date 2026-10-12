@@ -118,7 +118,7 @@ function computeChecksum(filename: string): string {
 
 // foundry-local-sdk (on-device chat dictation) loads its N-API addons and shared
 // libraries from the per-user runtime cache. Exclude the package's native files,
-// which may require a newer glibc than VS Code's supported maximum.
+// which may require a newer glibc than Si Code's supported maximum.
 function getFoundryLocalExcludeFilter(): string[] {
 	return [
 		'**',
@@ -345,7 +345,7 @@ function packageTask(platform: string, arch: string, sourceFolderName: string, d
 			const shortcut = gulp.src('resources/darwin/bin/code.sh')
 				.pipe(replace('@@APPNAME@@', product.applicationName))
 				.pipe(replace('@@NAME@@', product.nameShort))
-				.pipe(rename('bin/code'));
+				.pipe(rename('bin/' + product.applicationName));
 			const policyDest = gulp.src('.build/policies/darwin/**', { base: '.build/policies/darwin' })
 				.pipe(rename(f => f.dirname = `policies/${f.dirname}`));
 			all = es.merge(all, shortcut, policyDest);
@@ -458,10 +458,26 @@ function packageTask(platform: string, arch: string, sourceFolderName: string, d
 	return task;
 }
 
+let loggedMissingSignTool = false;
+
+function noteMissingSignTool(): void {
+	if (!loggedMissingSignTool) {
+		loggedMissingSignTool = true;
+		console.warn('[win32] signtool.exe was not found; leaving binaries unsigned and continuing packaging.');
+	}
+}
+
 function hasAuthenticodeSignature(filePath: string): Promise<boolean> {
 	return new Promise((resolve, reject) => {
 		const proc = cp.spawn('signtool.exe', ['verify', '/pa', filePath]);
-		proc.on('error', reject);
+		proc.on('error', err => {
+			if ((err as NodeJS.ErrnoException).code === 'ENOENT') {
+				noteMissingSignTool();
+				resolve(false);
+				return;
+			}
+			reject(err);
+		});
 		proc.on('exit', code => resolve(code === 0));
 	});
 }
@@ -478,7 +494,14 @@ async function stripAuthenticodeSignature(filePath: string): Promise<void> {
 		let out = '';
 		proc.stdout?.on('data', chunk => out += chunk.toString());
 		proc.stderr?.on('data', chunk => out += chunk.toString());
-		proc.on('error', reject);
+		proc.on('error', err => {
+			if ((err as NodeJS.ErrnoException).code === 'ENOENT') {
+				noteMissingSignTool();
+				resolve();
+				return;
+			}
+			reject(err);
+		});
 		proc.on('exit', code => {
 			if (code === 0) {
 				resolve();

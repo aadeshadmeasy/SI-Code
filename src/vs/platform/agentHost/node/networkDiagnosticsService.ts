@@ -123,8 +123,8 @@ export class NetworkDiagnosticsService implements INetworkDiagnosticsService {
 			dnsIpv4, dnsIpv6,
 		};
 
-		// Reachability: a GET through IRequestService, which applies VS Code's proxy,
-		// strictSSL, and certificate handling — the path the rest of VS Code uses.
+		// Reachability: a GET through IRequestService, which applies Si Code's proxy,
+		// strictSSL, and certificate handling — the path the rest of Si Code uses.
 		const probeStart = Date.now();
 		try {
 			const context = await this._requestService.request({

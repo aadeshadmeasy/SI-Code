@@ -176,7 +176,7 @@ function buildHookProperties(target: Target, arraySchema: IJSONSchema): Record<s
 }
 
 /**
- * Hook properties for the VS Code format.
+ * Hook properties for the Si Code format.
  */
 const vscodeHookProperties: Record<string, IJSONSchema> = buildHookProperties(Target.VSCode, hookArraySchema);
 

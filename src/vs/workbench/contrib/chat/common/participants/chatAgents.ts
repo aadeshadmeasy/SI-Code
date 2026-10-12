@@ -20,6 +20,7 @@ import type { MessageOrigin } from '../../../../../platform/agentHost/common/sta
 import { IConfigurationService } from '../../../../../platform/configuration/common/configuration.js';
 import { ContextKeyExpr, IContextKey, IContextKeyService } from '../../../../../platform/contextkey/common/contextkey.js';
 import { ExtensionIdentifier } from '../../../../../platform/extensions/common/extensions.js';
+import product from '../../../../../platform/product/common/product.js';
 import { createDecorator } from '../../../../../platform/instantiation/common/instantiation.js';
 import { ChatContextKeys } from '../actions/chatContextKeys.js';
 import { IChatAgentEditedFileEvent, IChatProgressHistoryResponseContent, IChatRequestModeInstructions, IChatRequestVariableData, ISerializableChatAgentData } from '../model/chatModel.js';
@@ -476,10 +477,16 @@ export class ChatAgentService extends Disposable implements IChatAgentService {
 	}
 
 	private _preferExtensionAgent<T extends IChatAgentData>(agents: T[]): T | undefined {
-		// We potentially have multiple agents on the same location,
-		// contributed from core and from extensions.
-		// This method will prefer the last extensions provided agent
-		// falling back to the last core agent if no extension agent is found.
+		// Prefer the product's default chat extension when it contributed an agent,
+		// so Si Code stays the default while other extensions are also installed.
+		const preferred = product.defaultChatAgent?.chatExtensionId;
+		if (preferred) {
+			const match = findLast(agents, agent => ExtensionIdentifier.equals(agent.extensionId, preferred));
+			if (match) {
+				return match;
+			}
+		}
+		// Otherwise prefer the last extension agent, then the last core agent.
 		return findLast(agents, agent => !agent.isCore) ?? agents.at(-1);
 	}
 

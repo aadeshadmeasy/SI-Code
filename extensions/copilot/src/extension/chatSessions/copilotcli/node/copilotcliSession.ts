@@ -1194,7 +1194,7 @@ export class CopilotCLISession extends DisposableStore implements ICopilotCLISes
 		const toolCalls = new Map<string, ToolCall>();
 		const toolStartTimes = new Map<string, number>();
 		// Synthesized `execute_tool` spans for native CLI tools (those that execute inside the SDK
-		// and therefore never reach the tools service). MCP/VS Code tools already emit `execute_tool`
+		// and therefore never reach the tools service). MCP/Si Code tools already emit `execute_tool`
 		// spans via the tools service, so we skip those here to avoid duplicate debug-log entries.
 		// Synthesizing these spans is what surfaces native tool calls (e.g. powershell, grep) in the
 		// chat debug logs view for the in-process Copilot CLI experience.
@@ -2671,7 +2671,7 @@ export class CopilotCLISession extends DisposableStore implements ICopilotCLISes
 					}
 					case 'user_message':
 					default: {
-						// Route steering messages through the VS Code chat UI so
+						// Route steering messages through the Si Code chat UI so
 						// they appear in the chat panel with proper rendering.
 						const vsCodeApi = require('vscode') as typeof import('vscode');
 						getMissionControlPendingCommandCompletionIds(state).add(cmd.id);
@@ -2948,7 +2948,7 @@ export class CopilotCLISession extends DisposableStore implements ICopilotCLISes
 	 *
 	 * Native CLI tools (e.g. `powershell`, `bash`, `grep`, `task`) execute inside the SDK and never
 	 * reach the workbench tools service, so they don't otherwise produce `execute_tool` spans for the
-	 * chat debug logs view. MCP/VS Code tools (those carrying an `mcpServerName`) already emit spans
+	 * chat debug logs view. MCP/Si Code tools (those carrying an `mcpServerName`) already emit spans
 	 * via the tools service and are skipped here to avoid duplicate entries.
 	 */
 	private _startSyntheticToolSpan(
@@ -2990,7 +2990,7 @@ export class CopilotCLISession extends DisposableStore implements ICopilotCLISes
 
 	/**
 	 * Completes the synthesized `execute_tool` span for a native CLI tool, recording the result and
-	 * status. No-op for tools that were not synthesized (e.g. MCP/VS Code tools).
+	 * status. No-op for tools that were not synthesized (e.g. MCP/Si Code tools).
 	 */
 	private _endSyntheticToolSpan(
 		event: ToolExecutionCompleteEvent,

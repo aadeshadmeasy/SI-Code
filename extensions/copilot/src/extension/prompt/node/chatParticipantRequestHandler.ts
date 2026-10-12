@@ -115,7 +115,7 @@ export class ChatParticipantRequestHandler {
 
 		const { turns, sessionId } = _instantiationService.invokeFunction(accessor => addHistoryToConversation(accessor, rawHistory));
 		normalizeSummariesOnRounds(turns);
-		// Use session ID from history, then VS Code's request.sessionId, then fallback to UUID
+		// Use session ID from history, then Si Code's request.sessionId, then fallback to UUID
 		const actualSessionId = sessionId ?? request.sessionId ?? generateUuid();
 
 		this.documentContext = IDocumentContext.inferDocumentContext(request, tabsAndEditorsService.activeTextEditor, turns);

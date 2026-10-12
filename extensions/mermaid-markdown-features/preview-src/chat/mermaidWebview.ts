@@ -443,7 +443,7 @@ export async function initializeMermaidWebview(vscode: VsCodeApi, options?: PanZ
 	content.appendChild(diagram);
 	wrapper.appendChild(content);
 
-	// Run mermaid using the selected VS Code-themed config
+	// Run mermaid using the selected Si Code-themed config
 	const config: MermaidConfig = buildMermaidConfig(loadExtensionConfig(), themeTracker);
 	mermaid.initialize(config);
 	try {

@@ -142,7 +142,7 @@ type StartupMarkClassification = {
 	owner: 'benibenj';
 	comment: 'Bounded Agent Host startup markers and workload counts, correlated by a random process-lifetime identifier.';
 	agentHostSessionId: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; comment: 'Random identifier for this Agent Host process lifetime, not a conversation or user identifier.' };
-	hostLaunchKind: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; comment: 'Whether the Agent Host was launched by VS Code main, CLI, or an unknown launcher.' };
+	hostLaunchKind: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; comment: 'Whether the Agent Host was launched by Si Code main, CLI, or an unknown launcher.' };
 	schemaVersion: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; isMeasurement: true; comment: 'Version of the startup marker schema.' };
 	name: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; comment: 'Allowlisted name of this startup milestone or operation boundary.' };
 	provider: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; comment: 'Built-in provider, host for shared work, or other for an unrecognized provider.' };

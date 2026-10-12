@@ -1,7 +1,7 @@
 # System-wide (OS global) keybindings
 
 This document is the canonical spec for the **system-wide keybindings** feature: user
-`keybindings.json` entries that fire even when VS Code is not the focused application, backed by
+`keybindings.json` entries that fire even when Si Code is not the focused application, backed by
 Electron's [`globalShortcut`](https://www.electronjs.org/docs/latest/api/accelerator) module.
 
 History: introduced in PR microsoft/vscode#323871; the first-run notice dialog was later removed in
@@ -20,14 +20,14 @@ A user adds `"systemWide": true` to a keybinding entry in **`keybindings.json`**
 }
 ```
 
-While VS Code is running (even unfocused), pressing that combination runs the command. Rules:
+While Si Code is running (even unfocused), pressing that combination runs the command. Rules:
 
 - **User keybindings only.** Default and extension-contributed keybindings can never be
   system-wide — this prevents extensions from silently grabbing OS-global shortcuts.
 - **Single key combinations only.** Chords (`ctrl+k ctrl+c`) and single-modifier bindings cannot be
   expressed as an Electron accelerator; they are skipped with a `warn` log.
 - **`when` clauses are ignored** for the global trigger — an OS-global shortcut has no editor/UI
-  context, so it is always active while VS Code runs. The user is warned once per binding label.
+  context, so it is always active while Si Code runs. The user is warned once per binding label.
 - **First binding wins** on accelerator conflicts (deduped both in the renderer selection and in the
   main-process per-window payload).
 - **Desktop only.** The flag is inert on web/server (there is no `globalShortcut` there, and the
@@ -156,7 +156,7 @@ registrations. Wired up in `src/vs/code/electron-main/app.ts` with the real Elec
 - `onTrigger(accelerator)` — resolves the target window: the focused window if it owns the
   accelerator, otherwise the deterministic winner (lowest window id) among alive owners. Sends
   `vscode:runAction` via `target.sendWhenReady(...)`. It deliberately does **not** force-focus the
-  routing window — a system-wide keybinding fires while VS Code is typically unfocused, and pulling
+  routing window — a system-wide keybinding fires while Si Code is typically unfocused, and pulling
   the routing window forward would flicker when the command opens/reveals a *different* window
   (e.g. `workbench.action.openAgentsWindow`). This matches every other `vscode:runAction` sender.
 - Lifecycle: on `ILifecycleMainService.onBeforeCloseWindow` (a normal close) and
@@ -237,7 +237,7 @@ The boolean travels from `keybindings.json` to `ResolvedKeybindingItem`:
   reconcile, and are surfaced to the user as a warning.
 - Keep `selectSystemWideKeybindings` pure — it is the primary unit-tested seam for renderer
   eligibility logic.
-- Commands run by system-wide keybindings usually execute while VS Code is inactive or hidden, and
+- Commands run by system-wide keybindings usually execute while Si Code is inactive or hidden, and
   `onTrigger` does not focus any window. A command that surfaces UI must focus its window with
   `FocusMode.Force` (as `workbench.action.focusWindow` and Open Agents Window do), because
   `FocusMode.Transfer` is a no-op for a hidden app on macOS.

@@ -1030,7 +1030,7 @@ export class CopilotSessionLauncher implements ICopilotSessionLauncher {
 		const searchSubagentEnabled = this._configurationService.getRootValue(copilotCliConfigSchema, CopilotCliConfigKey.SearchSubagent) === true;
 		const copilotConnectorsEnabled = this._configurationService.getRootValue(platformRootSchema, AgentHostMcpConnectorsEnabledConfigKey) === true;
 		const stabilityOrderedPromptEnabled = this._configurationService.getRootValue(copilotCliConfigSchema, CopilotCliConfigKey.StabilityOrderedPrompt) === true;
-		// The runtime defaults CONNECTORS on, so the VS Code rollout gate must explicitly disable it.
+		// The runtime defaults CONNECTORS on, so the Si Code rollout gate must explicitly disable it.
 		const featureFlags = {
 			AUTO_APPROVAL: true,
 			CONNECTORS: copilotConnectorsEnabled,
@@ -1039,7 +1039,7 @@ export class CopilotSessionLauncher implements ICopilotSessionLauncher {
 			// Attached long-lived services prevent the runtime from reaching session idle.
 			DETACH_LONG_LIVED_SERVICES: true,
 			// When on, the runtime uses the in-repo memory store instead of cloud memory.
-			// Always explicit so only the VS Code opt-in can switch the store.
+			// Always explicit so only the Si Code opt-in can switch the store.
 			[COPILOT_LOCAL_MEMORY_FEATURE_FLAG]: localMemoryEnabled,
 			...(copilotConnectorsEnabled ? { MANAGED_MCP_SERVERS: true } : {}),
 			...(hydraFusionEnabled ? { HYDRAFUSION: true, HYDRAFUSION_ROLLOUT: true } : {}),
@@ -1217,7 +1217,7 @@ export class CopilotSessionLauncher implements ICopilotSessionLauncher {
 			onUserInputRequest: (request, invocation) => runtime.handleUserInputRequest(request, invocation),
 			askUserVariant: 'elicitation',
 			onElicitationRequest: context => runtime.handleElicitationRequest(context),
-			// VS Code owns durable MCP credentials; the runtime must not consult its keychain store.
+			// Si Code owns durable MCP credentials; the runtime must not consult its keychain store.
 			mcpOAuthTokenStorage: 'in-memory',
 			onMcpAuthRequest: (request, context) => runtime.handleMcpAuthRequest(request, context),
 			hooks: toSdkHooks(pluginsWithoutDirs.flatMap(p => p.hooks), {
@@ -1253,7 +1253,7 @@ export class CopilotSessionLauncher implements ICopilotSessionLauncher {
 			// it, `rpc.plan.read()` returns `path: null` and the SDK
 			// never emits `exit_plan_mode.requested`.
 			infiniteSessions: { enabled: true },
-			// Always explicit so the VS Code opt-in gates memory instead of the runtime default.
+			// Always explicit so the Si Code opt-in gates memory instead of the runtime default.
 			memory: { enabled: memoryEnabled },
 			// Per-session remote export: the client-level `--remote` flag
 			// (enableRemoteSessions) enables the CLI capability, but each

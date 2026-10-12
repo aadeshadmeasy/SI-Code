@@ -339,7 +339,7 @@ export interface ICustomizationSyncProvider {
  * Service that manages the active customization harness and provides
  * per-type storage source filters based on the selected harness.
  *
- * The default (core) registration exposes a single "VS Code" harness
+ * The default (core) registration exposes a single "Si Code" harness
  * that shows all storage sources. The sessions window overrides this
  * to provide CLI-scoped harnesses.
  */
@@ -473,7 +473,7 @@ const EMPTY_DESCRIPTOR: IHarnessDescriptor = {
  */
 
 /**
- * Creates a "VS Code" harness descriptor that shows all storage sources
+ * Creates a "Si Code" harness descriptor that shows all storage sources
  * with no user-root restrictions.
  */
 export function createVSCodeHarnessDescriptor(): IHarnessDescriptor {

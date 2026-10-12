@@ -33,7 +33,7 @@ export const enum AgentHostConfigKey {
 	 * GitHub Enterprise Server, or `https://tenant.ghe.com` for GitHub Enterprise
 	 * Cloud). When set, the agent host computes its GitHub protected resources and
 	 * REST/GraphQL endpoints from this base instead of github.com. Normally pushed
-	 * by the local VS Code client from the selected enterprise account's
+	 * by the local Si Code client from the selected enterprise account's
 	 * authorization server; remote operators set it directly in the remote
 	 * `agent-host-config.json`.
 	 */
@@ -82,7 +82,7 @@ export const agentHostCustomizationConfigSchema = createSchema({
 	[AgentHostConfigKey.DefaultShell]: schemaProperty<string>({
 		type: 'string',
 		title: localize('agentHost.config.defaultShell.title', "Default Shell"),
-		description: localize('agentHost.config.defaultShell.description', "Absolute path to the shell executable used by host-managed terminals. Normally pushed by the connected VS Code client from `terminal.integrated.agentHostProfile.<os>` (falling back to `terminal.integrated.defaultProfile.<os>`); when unset, the agent host falls back to the system shell. Only the path is supported; `args` and `env` from the workbench profile are not piped through yet. The workbench only pushes this for the local agent host — remote agent host operators should set this directly in the remote machine's `agent-host-config.json`."),
+		description: localize('agentHost.config.defaultShell.description', "Absolute path to the shell executable used by host-managed terminals. Normally pushed by the connected Si Code client from `terminal.integrated.agentHostProfile.<os>` (falling back to `terminal.integrated.defaultProfile.<os>`); when unset, the agent host falls back to the system shell. Only the path is supported; `args` and `env` from the workbench profile are not piped through yet. The workbench only pushes this for the local agent host — remote agent host operators should set this directly in the remote machine's `agent-host-config.json`."),
 	}),
 	[AgentHostConfigKey.AllowSignedOutWhenUsable]: schemaProperty<boolean>({
 		type: 'boolean',
@@ -93,7 +93,7 @@ export const agentHostCustomizationConfigSchema = createSchema({
 	[AgentHostConfigKey.GithubEnterpriseUri]: schemaProperty<string>({
 		type: 'string',
 		title: localize('agentHost.config.githubEnterpriseUri.title', "GitHub Enterprise URI"),
-		description: localize('agentHost.config.githubEnterpriseUri.description', "Optional base URI of a GitHub Enterprise instance (for example \"https://ghe.example.com\" for GitHub Enterprise Server, or \"https://tenant.ghe.com\" for GitHub Enterprise Cloud). When set, the agent host authenticates and makes GitHub API calls against this instance instead of github.com. Normally pushed by the connected VS Code client from the selected enterprise account's authorization server; remote agent host operators can set it directly in the remote `agent-host-config.json`."),
+		description: localize('agentHost.config.githubEnterpriseUri.description', "Optional base URI of a GitHub Enterprise instance (for example \"https://ghe.example.com\" for GitHub Enterprise Server, or \"https://tenant.ghe.com\" for GitHub Enterprise Cloud). When set, the agent host authenticates and makes GitHub API calls against this instance instead of github.com. Normally pushed by the connected Si Code client from the selected enterprise account's authorization server; remote agent host operators can set it directly in the remote `agent-host-config.json`."),
 	}),
 });
 

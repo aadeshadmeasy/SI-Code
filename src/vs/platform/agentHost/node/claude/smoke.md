@@ -26,7 +26,7 @@ refs that change between runs.
 
 ## Prerequisites
 
-- A fresh build. Confirm via the `VS Code - Build` task or run
+- A fresh build. Confirm via the `Si Code - Build` task or run
   `npm run typecheck-client` once.
 - `@playwright/cli` available (`npx @playwright/cli --version` should work).
 - A real GitHub Copilot login. Models only populate after authenticate, and

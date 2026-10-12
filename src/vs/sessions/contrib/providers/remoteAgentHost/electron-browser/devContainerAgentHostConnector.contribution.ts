@@ -365,7 +365,7 @@ export class DevContainerAgentHostConnector extends Disposable implements IDevCo
 		}
 		const connection = await resolveDevContainerSourceConnection(workspaceUri, this._remoteAgentHostService, this._sessionsProvidersService, token);
 		if (!supportsAgentHostDevContainers(connection.initializeResult.get()) || !connection.devContainerService) {
-			throw new NonReconnectableTransportError(localize('devContainerAgentHost.unsupportedHost', "This remote Agent Host does not support Dev Container sessions. Update VS Code on the remote machine."));
+			throw new NonReconnectableTransportError(localize('devContainerAgentHost.unsupportedHost', "This remote Agent Host does not support Dev Container sessions. Update Si Code on the remote machine."));
 		}
 		return connection.devContainerService;
 	}

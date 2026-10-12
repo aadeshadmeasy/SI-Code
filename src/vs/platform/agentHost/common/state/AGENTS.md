@@ -1,11 +1,11 @@
 # Protocol versioning instructions
 
-This directory contains the VS Code-facing wrappers around the Agent Host Protocol (AHP) state model. Read this before modifying protocol types.
+This directory contains the Si Code-facing wrappers around the Agent Host Protocol (AHP) state model. Read this before modifying protocol types.
 
 ## Overview
 
-- `sessionState.ts`, `sessionActions.ts`, `sessionReducers.ts`, and `sessionProtocol.ts` are VS Code-facing wrappers and re-exports.
-- `protocol/**` is generated from the sibling `agent-host-protocol` repo by `scripts/sync-agent-host-protocol.ts`. Generated files carry a `DO NOT EDIT` banner; update the source protocol repo and sync the copy into VS Code.
+- `sessionState.ts`, `sessionActions.ts`, `sessionReducers.ts`, and `sessionProtocol.ts` are Si Code-facing wrappers and re-exports.
+- `protocol/**` is generated from the sibling `agent-host-protocol` repo by `scripts/sync-agent-host-protocol.ts`. Generated files carry a `DO NOT EDIT` banner; update the source protocol repo and sync the copy into Si Code.
 - `protocol/version/registry.ts` contains `PROTOCOL_VERSION`, `ACTION_INTRODUCED_IN`, `NOTIFICATION_INTRODUCED_IN`, and version helper functions. There is no `versions/` directory in this tree.
 
 ## Current changeset surface
@@ -16,18 +16,18 @@ The generated protocol includes the Changesets model:
 - The old `session/diffsChanged` shape is replaced by five `changeset/*` actions: `statusChanged`, `fileSet`, `fileRemoved`, `operationsChanged`, and `cleared`.
 - `invokeChangesetOperation` lets clients invoke server-defined verbs against a changeset. The wire command and dispatch path exist even when no concrete operations are advertised yet.
 - Changeset actions are scoped to an expanded changeset URI (`<sessionUri>/changeset/<id>`); see `../changesetUri.ts` for the build/parse helpers.
-- Session teardown uses `changeset/cleared` plus the corresponding session-level lifecycle notification. There is no separate `changeset/disposed` action in the VS Code protocol copy.
+- Session teardown uses `changeset/cleared` plus the corresponding session-level lifecycle notification. There is no separate `changeset/disposed` action in the Si Code protocol copy.
 
 ## Updating generated protocol types
 
 1. Update the source files in the sibling `agent-host-protocol` repo.
-2. Run `npx tsx scripts/sync-agent-host-protocol.ts` from the VS Code repo.
-3. If VS Code consumers need short aliases or type guards, update the wrapper files in this directory after the sync.
+2. Run `npx tsx scripts/sync-agent-host-protocol.ts` from the Si Code repo.
+3. If Si Code consumers need short aliases or type guards, update the wrapper files in this directory after the sync.
 4. Compile. The generated registry catches missing action/notification version map entries.
 
 ## Adding optional fields to existing types
 
-Optional protocol fields are usually backwards-compatible. Add the field in the source protocol repo, sync `protocol/**`, and add wrapper exports only when VS Code code needs them.
+Optional protocol fields are usually backwards-compatible. Add the field in the source protocol repo, sync `protocol/**`, and add wrapper exports only when Si Code code needs them.
 
 ## Adding new action types
 
@@ -36,7 +36,7 @@ Adding a new server-produced action type is backwards-compatible when old client
 1. Add the action interface and union membership in the source protocol repo.
 2. Add the action to `ACTION_INTRODUCED_IN` in `protocol/version/registry.ts` through the generated sync.
 3. Add the reducer case in the source protocol repo and sync it into `protocol/reducers.ts`.
-4. Re-export the new action from `sessionActions.ts` when VS Code callers need the type directly.
+4. Re-export the new action from `sessionActions.ts` when Si Code callers need the type directly.
 5. Update `../../../protocol.md` and any affected AHP docs.
 
 ## When to bump the protocol version

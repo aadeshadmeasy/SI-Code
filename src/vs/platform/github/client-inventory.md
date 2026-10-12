@@ -9,7 +9,7 @@ The platform GitHub service is the consolidation foundation, but migration is br
 
 This is a **runtime client-family inventory**, grouping related call sites rather than listing every endpoint invocation. The replacement map describes proposed changes unless explicitly marked migrated. See the [README](README.md) for the target architecture.
 
-**Caller survey snapshot:** 2026-09-29; VS Code `af5cce3c2a2af0fec4bb9c4416ca02790aeab652`, GitHub Pull Requests extension `596a9bbd4a36c482cbe1faa862fa8e4ec5a8a345`. Owners below are logical subsystem owners, not assigned individuals. The foundation and gap summaries below also account for the [current engine hardening](README.md#request-execution).
+**Caller survey snapshot:** 2026-09-29; Si Code `af5cce3c2a2af0fec4bb9c4416ca02790aeab652`, GitHub Pull Requests extension `596a9bbd4a36c482cbe1faa862fa8e4ec5a8a345`. Owners below are logical subsystem owners, not assigned individuals. The foundation and gap summaries below also account for the [current engine hardening](README.md#request-execution).
 
 ## 1. Runtime caller inventory
 
@@ -134,7 +134,7 @@ The key boundary is to **consolidate request execution, protection and shared re
 
 ### Repository contract follow-up
 
-The follow-up was checked against VS Code `5983cda0c8126417e5a9cdf33d0be2f4000d3f04` after the merged Agent Host migration (#338992), and the read-only Pull Requests extension checkout `596a9bbd4a36c482cbe1faa862fa8e4ec5a8a345`.
+The follow-up was checked against Si Code `5983cda0c8126417e5a9cdf33d0be2f4000d3f04` after the merged Agent Host migration (#338992), and the read-only Pull Requests extension checkout `596a9bbd4a36c482cbe1faa862fa8e4ec5a8a345`.
 
 - Core link presentations already consume repository/issue/PR resources directly. The shared-process binding remains anonymous-only; authenticated relocation is not part of these domain additions.
 - The [Sessions repository fetcher](../../sessions/contrib/github/browser/fetchers/githubRepositoryFetcher.ts) needs repository metadata, accessible-repository pages and qualified search. The [built-in remote-source provider](../../../../extensions/github/src/remoteSourceProvider.ts) additionally needs server-provided HTTPS/SSH clone URLs. The [Pull Requests extension metadata reader](https://github.com/microsoft/vscode-pull-request-github/blob/596a9bbd4a36c482cbe1faa862fa8e4ec5a8a345/src/github/githubRepository.ts#L414) uses repository identity and the default branch.

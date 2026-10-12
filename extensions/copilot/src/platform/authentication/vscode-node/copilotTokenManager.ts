@@ -91,7 +91,7 @@ export class VSCodeCopilotTokenManager extends BaseCopilotTokenManager {
 			const tokenResult = await this.authFromGitHubToken(session.accessToken, session.account.label);
 			if (tokenResult.kind === 'success') {
 				this._logService.info(`Got Copilot token for ${session.account.label}`);
-				this._logService.info(`Copilot Chat: ${this._envService.getVersion()}, VS Code: ${this._envService.vscodeVersion}`);
+				this._logService.info(`Copilot Chat: ${this._envService.getVersion()}, Si Code: ${this._envService.vscodeVersion}`);
 			}
 			return tokenResult;
 		} else {
@@ -99,7 +99,7 @@ export class VSCodeCopilotTokenManager extends BaseCopilotTokenManager {
 			const tokenResult = await this.authFromDevDeviceId(env.devDeviceId);
 			if (tokenResult.kind === 'success') {
 				this._logService.info(`Got Copilot token for devDeviceId`);
-				this._logService.info(`Copilot Chat: ${this._envService.getVersion()}, VS Code: ${this._envService.vscodeVersion}`);
+				this._logService.info(`Copilot Chat: ${this._envService.getVersion()}, Si Code: ${this._envService.vscodeVersion}`);
 			} else if (tokenResult.reason === 'RateLimited') {
 				return tokenResult;
 			} else {
@@ -151,7 +151,7 @@ export class VSCodeCopilotTokenManager extends BaseCopilotTokenManager {
 		}
 		if (tokenResult.kind === 'failure' && tokenResult.reason === 'HTTP401') {
 			const message =
-				'Your GitHub token is invalid. Please sign out from your GitHub account using the VS Code accounts menu and try again.';
+				'Your GitHub token is invalid. Please sign out from your GitHub account using the Si Code accounts menu and try again.';
 			if (!shown401Message) {
 				shown401Message = true;
 				window.showWarningMessage(message);

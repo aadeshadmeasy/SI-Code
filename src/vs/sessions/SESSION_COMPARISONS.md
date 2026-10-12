@@ -50,7 +50,7 @@ The Judge result uses the persisted structured verdict and provider-neutral part
 
 `readAttemptComparison` is intentionally a bounded manifest rather than a second transcript API. Agent Host already owns transcript retrieval through `get_session_context`, including summary, digest, and full detail levels. For attempts owned by the same provider authority as the Judge, the manifest maps provider-neutral participant records to exact provider-owned targets accepted by that existing tool. Cross-provider or cross-host attempts remain comparable through their bounded change, worktree, and validation evidence, but do not advertise an unusable transcript target.
 
-Both comparison tools are registered as ordinary workbench language-model tools and members of a hidden internal tool set. This follows the same client-tool publication path as other workbench-provided Agent Host tools: `AgentHostActiveClientService` publishes enabled tool-set members through `SessionActiveClient.tools`, and the owning VS Code client executes their implementations. Registering a tool without adding it to a tool set does not make it available to Agent Host sessions.
+Both comparison tools are registered as ordinary workbench language-model tools and members of a hidden internal tool set. This follows the same client-tool publication path as other workbench-provided Agent Host tools: `AgentHostActiveClientService` publishes enabled tool-set members through `SessionActiveClient.tools`, and the owning Si Code client executes their implementations. Registering a tool without adding it to a tool set does not make it available to Agent Host sessions.
 
 ## End-to-end flow
 

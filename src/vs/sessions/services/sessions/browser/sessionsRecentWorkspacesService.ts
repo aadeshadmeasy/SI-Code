@@ -80,7 +80,7 @@ export interface ISessionsRecentWorkspacesService {
 
 	readonly onDidChangeRecentWorkspaces: Event<void>;
 	readonly onDidRemoveRecentWorkspaces: Event<readonly URI[]>;
-	/** Whether VS Code's recent-folder and workspace-file history has loaded; Agents-owned history is synchronous. */
+	/** Whether Si Code's recent-folder and workspace-file history has loaded; Agents-owned history is synchronous. */
 	readonly historyLoadState: IObservable<WorkspaceHistoryLoadState>;
 
 	/**
@@ -97,7 +97,7 @@ export interface ISessionsRecentWorkspacesService {
 	/** Records `folderUri` as most-recently used; `checked` un-checks every other entry. */
 	addRecentWorkspace(folderUri: URI, providerId: string | undefined, checked: boolean): void;
 
-	/** Removes `folderUri` from the recent list, wherever it came from (own history or VS Code's recents). */
+	/** Removes `folderUri` from the recent list, wherever it came from (own history or Si Code's recents). */
 	removeRecentWorkspace(folderUri: URI, removeCollapsedWorktrees?: boolean): void;
 
 	/** Whether the workspace was dismissed from the new-session picker, including provider-derived entries. */

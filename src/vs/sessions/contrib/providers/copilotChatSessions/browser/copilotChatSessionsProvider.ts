@@ -816,7 +816,7 @@ class AgentSessionAdapter implements ICopilotChatSession {
 	}
 
 	/**
-	 * The cloud provider marks tasks that were neither started nor adopted from VS Code. Sending
+	 * The cloud provider marks tasks that were neither started nor adopted from Si Code. Sending
 	 * a message adopts a task, and the refreshed metadata clears the mark.
 	 */
 	private _extractIsExternal(session: IAgentSession): boolean {

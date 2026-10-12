@@ -512,7 +512,7 @@ subprocess (Phase 4), multi-tenant token isolation (Phase 4+), proxy
 
 Captured here so they aren't lost. None of these block Phase 2.
 
-- **HTTP proxy support** (`HTTP_PROXY` / `HTTPS_PROXY` env vars, VS Code's
+- **HTTP proxy support** (`HTTP_PROXY` / `HTTPS_PROXY` env vars, Si Code's
   `http.proxy` setting, PAC files, proxy auth). The Phase 2 proxy talks
   to CAPI through `ICopilotApiService`, so any outbound proxying is
   inherited from whatever HTTP client that service uses. If the agent
@@ -2144,7 +2144,7 @@ Two filters apply to the result:
 - **No-sidecar filter (CopilotAgent only).** Sessions without sidecar
   metadata are *dropped* — so Copilot's `listSessions` returns only
   sessions this host has seen before. Sessions created on another
-  machine or in another VS Code install are invisible until they've
+  machine or in another Si Code install are invisible until they've
   been re-opened through this host. **Claude does NOT inherit this
   filter** — the Claude SDK's session list includes external
   Claude-CLI-created sessions that have no host-side sidecar but

@@ -33,7 +33,7 @@ Create `.github/extensions/<name>/extension.mjs`.
 - Treat `open()` as idempotent. Reopening the same `instanceId` must reuse or safely replace its live server and reload state from the stable domain identity.
 - Use `process.env.VSCODE_CANVAS_DATA_DIR` for private durable extension data. Validate that it is an absolute path, create a child directory for the extension, and fail explicitly when it is unavailable.
 - Store repo-owned artifacts at a sensible workspace path when the user expects them to be versioned or directly editable.
-- Use semantic HTML, keyboard-accessible controls, visible focus, labels, and ARIA status text. The page has no privileged VS Code bridge; use ordinary same-origin HTTP endpoints or server-sent events.
+- Use semantic HTML, keyboard-accessible controls, visible focus, labels, and ARIA status text. The page has no privileged Si Code bridge; use ordinary same-origin HTTP endpoints or server-sent events.
 - Escape untrusted values before inserting them into HTML and validate every HTTP and action input.
 
 Declare the canvas with:
@@ -50,7 +50,7 @@ Rules:
 - Action names must not start with `canvas.`.
 - Every action must have a handler and its own JSON Schema when it accepts input.
 - Return raw action results. Throw `new CanvasError(code, message)` for expected failures.
-- Do not rely on closing the VS Code canvas tab to call `onClose`; tab closure hides presentation only. Preserve the live instance so a later agent reopen can show the same state.
+- Do not rely on closing the Si Code canvas tab to call `onClose`; tab closure hides presentation only. Preserve the live instance so a later agent reopen can show the same state.
 
 Keep `extension.mjs` focused on wiring. Put substantial HTML, CSS, client JavaScript, schemas, storage, and domain logic in sibling modules or asset files.
 

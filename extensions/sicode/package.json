@@ -1,0 +1,401 @@
+{
+	"name": "sicode",
+	"displayName": "SI Code",
+	"description": "Bring-your-own-key chat, inline edit, and completions for SI Code.",
+	"version": "1.0.0",
+	"publisher": "sicode",
+	"license": "MIT",
+	"engines": {
+		"vscode": "^1.95.0"
+	},
+	"enabledApiProposals": [
+		"chatProvider",
+		"chatParticipantAdditions",
+		"defaultChatParticipant",
+		"languageModelSystem"
+	],
+	"activationEvents": [
+		"onStartupFinished",
+		"onCommand:sicode.configure",
+		"onCommand:sicode.inlineEdit",
+		"onCommand:sicode.openMcp",
+		"onCommand:sicode.runPython",
+		"onCommand:sicode.mcp.add"
+	],
+	"main": "./out/extension",
+	"capabilities": {
+		"virtualWorkspaces": false,
+		"untrustedWorkspaces": {
+			"supported": false
+		}
+	},
+	"contributes": {
+		"commands": [
+			{
+				"command": "sicode.configure",
+				"title": "Configure AI",
+				"category": "SI Code"
+			},
+			{
+				"command": "sicode.inlineEdit",
+				"title": "Inline Edit",
+				"category": "SI Code"
+			},
+			{
+				"command": "sicode.openMcp",
+				"title": "Open MCP Configuration",
+				"category": "SI Code"
+			},
+			{
+				"command": "sicode.runPython",
+				"title": "Run Python File",
+				"category": "SI Code"
+			},
+			{
+				"command": "sicode.mcp.add",
+				"title": "Add MCP Server",
+				"category": "SI Code"
+			},
+			{
+				"command": "sicode.mcp.browse",
+				"title": "Browse MCP Servers",
+				"category": "SI Code"
+			},
+			{
+				"command": "sicode.mcp.installed",
+				"title": "Show Installed MCP Servers",
+				"category": "SI Code"
+			},
+			{
+				"command": "sicode.mcp.connect",
+				"title": "Connect MCP Servers",
+				"category": "SI Code"
+			}
+		],
+		"menus": {
+			"editor/context": [
+				{
+					"command": "sicode.inlineEdit",
+					"when": "editorHasSelection && !editorReadonly",
+					"group": "1_modification"
+				},
+				{
+					"command": "sicode.runPython",
+					"when": "editorLangId == python",
+					"group": "navigation"
+				}
+			],
+			"editor/title": [
+				{
+					"command": "sicode.runPython",
+					"when": "editorLangId == python",
+					"group": "navigation"
+				}
+			]
+		},
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "sicode",
+					"title": "SI Code",
+					"icon": "media/icon.svg"
+				}
+			]
+		},
+		"views": {
+			"sicode": [
+				{
+					"type": "webview",
+					"id": "sicode.mcp",
+					"name": "MCP Servers"
+				}
+			]
+		},
+		"configuration": {
+			"title": "SI Code",
+			"properties": {
+				"sicode.openai.model": {
+					"type": "string",
+					"default": "gpt-4o-mini",
+					"description": "Model id sent to OpenAI."
+				},
+				"sicode.anthropic.model": {
+					"type": "string",
+					"default": "claude-sonnet-4-5",
+					"description": "Model id sent to Anthropic."
+				},
+				"sicode.gemini.model": {
+					"type": "string",
+					"default": "gemini-2.0-flash",
+					"description": "Model id sent to Google Gemini."
+				},
+				"sicode.sarvam.model": {
+					"type": "string",
+					"default": "sarvam-105b",
+					"description": "Model id sent to Sarvam. The chat model is sarvam-105b. sarvam-105b-conversations is available for dialogue."
+				},
+				"sicode.openrouter.model": {
+					"type": "string",
+					"default": "openai/gpt-4o-mini",
+					"description": "Model id sent to OpenRouter."
+				},
+				"sicode.compatible.model": {
+					"type": "string",
+					"default": "llama3.2",
+					"description": "Model id sent to an OpenAI-compatible server, such as Ollama."
+				},
+				"sicode.compatible.baseUrl": {
+					"type": "string",
+					"default": "http://127.0.0.1:11434/v1",
+					"description": "Base URL for the OpenAI-compatible server. Ollama's default is http://127.0.0.1:11434/v1."
+				},
+				"sicode.completions.enabled": {
+					"type": "boolean",
+					"default": true,
+					"description": "Offer inline completions from the first configured SI Code model."
+				}
+			}
+		},
+		"languageModelChatProviders": [
+			{
+				"vendor": "sicode-openai",
+				"displayName": "SI Code OpenAI",
+				"configuration": {
+					"type": "object",
+					"properties": {
+						"apiKey": {
+							"type": "string",
+							"secret": true,
+							"title": "API Key",
+							"description": "OpenAI API key"
+						}
+					},
+					"required": ["apiKey"]
+				}
+			},
+			{
+				"vendor": "sicode-anthropic",
+				"displayName": "SI Code Anthropic",
+				"configuration": {
+					"type": "object",
+					"properties": {
+						"apiKey": {
+							"type": "string",
+							"secret": true,
+							"title": "API Key",
+							"description": "Anthropic API key"
+						}
+					},
+					"required": ["apiKey"]
+				}
+			},
+			{
+				"vendor": "sicode-gemini",
+				"displayName": "SI Code Gemini",
+				"configuration": {
+					"type": "object",
+					"properties": {
+						"apiKey": {
+							"type": "string",
+							"secret": true,
+							"title": "API Key",
+							"description": "Google Gemini API key"
+						}
+					},
+					"required": ["apiKey"]
+				}
+			},
+			{
+				"vendor": "sicode-sarvam",
+				"displayName": "SI Code Sarvam",
+				"configuration": {
+					"type": "object",
+					"properties": {
+						"apiKey": {
+							"type": "string",
+							"secret": true,
+							"title": "API Key",
+							"description": "Sarvam API subscription key"
+						}
+					},
+					"required": ["apiKey"]
+				}
+			},
+			{
+				"vendor": "sicode-openrouter",
+				"displayName": "SI Code OpenRouter",
+				"configuration": {
+					"type": "object",
+					"properties": {
+						"apiKey": {
+							"type": "string",
+							"secret": true,
+							"title": "API Key",
+							"description": "OpenRouter API key"
+						}
+					},
+					"required": ["apiKey"]
+				}
+			},
+			{
+				"vendor": "sicode-compatible",
+				"displayName": "SI Code Compatible",
+				"configuration": {
+					"type": "object",
+					"properties": {
+						"apiKey": {
+							"type": "string",
+							"secret": true,
+							"title": "API Key",
+							"description": "API key for an OpenAI-compatible server. Ollama can use any non-empty value."
+						},
+						"baseUrl": {
+							"type": "string",
+							"title": "Base URL",
+							"description": "OpenAI-compatible base URL, for example http://127.0.0.1:11434/v1"
+						}
+					},
+					"required": ["apiKey"]
+				}
+			}
+		],
+		"chatParticipants": [
+			{
+				"id": "sicode.ask",
+				"name": "sicode",
+				"fullName": "SI Code",
+				"description": "Ask SI Code about the open file.",
+				"isDefault": true,
+				"locations": ["panel"],
+				"modes": ["ask"]
+			},
+			{
+				"id": "sicode.edit",
+				"name": "sicode",
+				"fullName": "SI Code",
+				"description": "Edit the selection with SI Code.",
+				"isDefault": true,
+				"locations": ["panel"],
+				"modes": ["edit"]
+			},
+			{
+				"id": "sicode.agent",
+				"name": "sicode",
+				"fullName": "SI Code",
+				"description": "SI Code agent that edits files, runs commands, and calls MCP tools.",
+				"isDefault": true,
+				"locations": ["panel"],
+				"modes": ["agent"],
+				"when": "config.chat.agent.enabled"
+			},
+			{
+				"id": "sicode.inline",
+				"name": "sicode",
+				"fullName": "SI Code",
+				"description": "Inline edit with SI Code.",
+				"isDefault": true,
+				"locations": ["editor"]
+			}
+		],
+		"languageModelTools": [
+			{
+				"name": "sicode_readFile",
+				"displayName": "Read File",
+				"toolReferenceName": "readFile",
+				"canBeReferencedInPrompt": true,
+				"icon": "$(file)",
+				"modelDescription": "Read a text file from the workspace.",
+				"userDescription": "Read a file",
+				"inputSchema": {
+					"type": "object",
+					"properties": {
+						"path": { "type": "string", "description": "Workspace-relative or absolute path." }
+					},
+					"required": ["path"]
+				}
+			},
+			{
+				"name": "sicode_listDirectory",
+				"displayName": "List Directory",
+				"toolReferenceName": "listDirectory",
+				"canBeReferencedInPrompt": true,
+				"icon": "$(folder)",
+				"modelDescription": "List files and folders in a workspace directory.",
+				"userDescription": "List a directory",
+				"inputSchema": {
+					"type": "object",
+					"properties": {
+						"path": { "type": "string", "description": "Workspace-relative or absolute directory." }
+					}
+				}
+			},
+			{
+				"name": "sicode_diagnostics",
+				"displayName": "Diagnostics",
+				"toolReferenceName": "diagnostics",
+				"canBeReferencedInPrompt": true,
+				"icon": "$(warning)",
+				"modelDescription": "Read editor diagnostics for one file or the whole workspace.",
+				"userDescription": "Read problems",
+				"inputSchema": {
+					"type": "object",
+					"properties": {
+						"path": { "type": "string", "description": "Optional file path." }
+					}
+				}
+			},
+			{
+				"name": "sicode_writeFile",
+				"displayName": "Write File",
+				"toolReferenceName": "writeFile",
+				"canBeReferencedInPrompt": true,
+				"icon": "$(new-file)",
+				"modelDescription": "Create or replace a text file.",
+				"userDescription": "Write a file",
+				"inputSchema": {
+					"type": "object",
+					"properties": {
+						"path": { "type": "string", "description": "Workspace-relative or absolute path." },
+						"contents": { "type": "string", "description": "The full new contents of the file." }
+					},
+					"required": ["path", "contents"]
+				}
+			},
+			{
+				"name": "sicode_editFile",
+				"displayName": "Edit File",
+				"toolReferenceName": "editFile",
+				"canBeReferencedInPrompt": true,
+				"icon": "$(edit)",
+				"modelDescription": "Replace one exact snippet in a file.",
+				"userDescription": "Edit a file",
+				"inputSchema": {
+					"type": "object",
+					"properties": {
+						"path": { "type": "string", "description": "Workspace-relative or absolute path." },
+						"oldText": { "type": "string", "description": "Exact text to replace." },
+						"newText": { "type": "string", "description": "Replacement text." }
+					},
+					"required": ["path", "oldText", "newText"]
+				}
+			},
+			{
+				"name": "sicode_runTerminal",
+				"displayName": "Run Terminal Command",
+				"toolReferenceName": "runTerminal",
+				"canBeReferencedInPrompt": true,
+				"icon": "$(terminal)",
+				"modelDescription": "Run a shell command after the user approves it. Use this for builds, tests, linters, and Python.",
+				"userDescription": "Run a command in the terminal",
+				"inputSchema": {
+					"type": "object",
+					"properties": {
+						"command": { "type": "string", "description": "The shell command to run." },
+						"cwd": { "type": "string", "description": "Optional working directory." }
+					},
+					"required": ["command"]
+				}
+			}
+		]
+	}
+}

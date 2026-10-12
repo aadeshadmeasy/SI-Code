@@ -43,7 +43,7 @@ export interface CellOutputMetadata {
 
 
 /**
- * Metadata we store in VS Code cells.
+ * Metadata we store in Si Code cells.
  * This contains the original metadata from the Jupyter cells.
  */
 export interface CellMetadata {

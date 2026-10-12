@@ -1,6 +1,6 @@
 # Copilot CLI Integration
 
-This folder contains the Copilot CLI integration for VS Code Chat. It enables users to open a new Chat window and interact with a Copilot CLI agent instance directly within VS Code. **VS Code provides the UI, Copilot CLI SDK provides the smarts.**
+This folder contains the Copilot CLI integration for Si Code Chat. It enables users to open a new Chat window and interact with a Copilot CLI agent instance directly within Si Code. **Si Code provides the UI, Copilot CLI SDK provides the smarts.**
 
 > **Important:** The Copilot CLI agent functionality is powered by the `@github/copilot/sdk` package. See the SDK package for full type definitions.
 
@@ -8,7 +8,7 @@ This folder contains the Copilot CLI integration for VS Code Chat. It enables us
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                         VS Code Chat UI                          │
+│                         Si Code Chat UI                          │
 └─────────────────────────┬───────────────────────────────────────┘
                           │
                           ▼
@@ -48,7 +48,7 @@ This folder contains the Copilot CLI integration for VS Code Chat. It enables us
 ┌─────────────────────────────────────────────────────────────────┐
 │                    MCP Server (In-Process)                        │
 │  (vscode-node/contribution.ts, vscode-node/inProcHttpServer.ts)  │
-│  - Provides VS Code-specific tools to the SDK via MCP protocol   │
+│  - Provides Si Code-specific tools to the SDK via MCP protocol   │
 │  - Runs as an in-process HTTP server (InProcHttpServer)           │
 │  - Exposes diff, diagnostics, selection, and session tools        │
 │  - Discoverable by CLI via lock files in ~/.copilot/ide/          │
@@ -57,11 +57,11 @@ This folder contains the Copilot CLI integration for VS Code Chat. It enables us
 
 ## Folder Structure
 
-The integration follows VS Code's platform layering pattern with three layers:
+The integration follows Si Code's platform layering pattern with three layers:
 
 ```
 copilotcli/
-├── common/                     # Platform-agnostic (NO Node.js or VS Code API imports)
+├── common/                     # Platform-agnostic (NO Node.js or Si Code API imports)
 │   ├── copilotCLITools.ts      # Tool type definitions and processing helpers
 │   ├── copilotCLIPrompt.ts     # Prompt reference extraction and parsing
 │   ├── customSessionTitleService.ts
@@ -81,10 +81,10 @@ copilotcli/
 │   ├── nodePtyShim.ts          # Runtime node-pty copy for separate extension installs
 │   ├── userInputHelpers.ts     # User question/input handling interface
 │   ├── exitPlanModeHandler.ts  # Plan mode exit flow with user choice
-│   ├── ripgrepShim.ts          # Copies VS Code's ripgrep for SDK use
+│   ├── ripgrepShim.ts          # Copies Si Code's ripgrep for SDK use
 │   └── test/
 │
-└── vscode-node/                # VS Code API-dependent (commands, MCP tools, UI)
+└── vscode-node/                # Si Code API-dependent (commands, MCP tools, UI)
     ├── copilotCLIFolderMru.ts  # Folder MRU (most-recently-used) service
     └── test/
 ```
@@ -108,7 +108,7 @@ Strict import dependency rules — violations will cause build failures:
 
 **ICopilotCLIModels / CopilotCLIModels**
 - Fetches and caches available AI models from the SDK via `getAvailableModels()`
-- Registers a `LanguageModelChatProvider` with `targetChatSessionType: 'copilotcli'` so VS Code's model picker shows CLI models
+- Registers a `LanguageModelChatProvider` with `targetChatSessionType: 'copilotcli'` so Si Code's model picker shows CLI models
 - Exposes model capabilities: vision support, reasoning effort levels, token limits, billing multiplier
 - Rebuilds model list on authentication changes
 - Builds configuration schema for reasoning effort per model (low/medium/high/xhigh)
@@ -121,7 +121,7 @@ Strict import dependency rules — violations will cause build failures:
 **CopilotCLISession**
 - Wraps a single `Session` object from the `@github/copilot/sdk`
 - Entry point for every chat request via `handleRequest()`
-- Listens to SDK events and translates them to VS Code chat UI parts
+- Listens to SDK events and translates them to Si Code chat UI parts
 - Manages permission flow
 - Tracks external edits via `ExternalEditTracker` for proper diff display
 - Supports CLI commands: `compact`, `plan`, `fleet`
@@ -174,7 +174,7 @@ Handles permission requests from the SDK. Each permission kind has a dedicated h
 
 **ICopilotCLIMCPHandler / CopilotCLIMCPHandler**
 - Loads MCP server configuration for SDK sessions
-- Proxies all VS Code-configured MCP servers through a gateway URL with `type: 'http'` config per server
+- Proxies all Si Code-configured MCP servers through a gateway URL with `type: 'http'` config per server
 
 ### `node/copilotCLIImageSupport.ts`
 
@@ -195,7 +195,7 @@ Path helpers for Copilot CLI directories.
 
 ## Message Flow
 
-1. **User sends message** in VS Code Chat
+1. **User sends message** in Si Code Chat
 2. **CopilotCLISessionService** creates or retrieves an existing session wrapper
 3. **CopilotCLISession.handleRequest()** is called:
    - If session is idle → normal request via `send()`
@@ -231,7 +231,7 @@ Central type representing all workspace/repository/worktree state for a session:
 
 ### `IChatSessionMetadataStore` (`../common/chatSessionMetadataStore.ts`)
 
-Persists VS Code-specific metadata that sits alongside the SDK's own session data. This metadata is **not part of the SDK's `events.jsonl`** — it tracks VS Code concepts like worktree properties, request-to-tool mappings, mode instructions, and checkpoint refs.
+Persists Si Code-specific metadata that sits alongside the SDK's own session data. This metadata is **not part of the SDK's `events.jsonl`** — it tracks Si Code concepts like worktree properties, request-to-tool mappings, mode instructions, and checkpoint refs.
 
 **Key Types:**
 
@@ -313,9 +313,9 @@ Orchestrates the start and end of each chat request turn, coordinating worktree 
 
 ## Critical Pitfalls
 
-- **Shims before SDK import**: For separate Marketplace/VSIX extension installs, `CopilotCLISDK.ensureShims()` in `node/copilotCli.ts` MUST run before any `import('@github/copilot/sdk')`. That runtime path calls both `ensureRipgrepShim()` and `ensureNodePtyShim()` to copy VS Code's native binaries from `envService.appRoot` into the installed extension's SDK layout.
+- **Shims before SDK import**: For separate Marketplace/VSIX extension installs, `CopilotCLISDK.ensureShims()` in `node/copilotCli.ts` MUST run before any `import('@github/copilot/sdk')`. That runtime path calls both `ensureRipgrepShim()` and `ensureNodePtyShim()` to copy Si Code's native binaries from `envService.appRoot` into the installed extension's SDK layout.
 
-- **Bundled/core shim path is different**: When Copilot Chat is bundled together with core VS Code, build-time packaging materializes only the ripgrep shim and writes `node_modules/@github/copilot/shims.txt`. That marker intentionally makes runtime `ensureShims()` return early, so node-pty is not copied in the bundled path; it is resolved from VS Code's own app tree instead.
+- **Bundled/core shim path is different**: When Copilot Chat is bundled together with core Si Code, build-time packaging materializes only the ripgrep shim and writes `node_modules/@github/copilot/shims.txt`. That marker intentionally makes runtime `ensureShims()` return early, so node-pty is not copied in the bundled path; it is resolved from Si Code's own app tree instead.
 
 - **Delayed permission UI**: Tool invocation messages are held in `toolCallWaitingForPermissions` until permission resolves. `flushPendingInvocationMessageForToolCallId()` flushes only the specific approved tool, not all pending tools. This is intentional — don't bypass it.
 
@@ -333,11 +333,11 @@ Orchestrates the start and end of each chat request turn, coordinating worktree 
 **Built-in custom slash commands** (user-facing):
 `/commit`, `/sync`, `/merge`, `/create-pr`, `/create-draft-pr`, `/update-pr`
 
-**VS Code Session commands** (registered via `registerCLIChatCommands` in `vscode-node/copilotCLIChatSessions.ts`):
+**Si Code Session commands** (registered via `registerCLIChatCommands` in `vscode-node/copilotCLIChatSessions.ts`):
 
 ## Configuration
 
-The integration respects these VS Code settings (all under `github.copilot.chat.cli.*`):
+The integration respects these Si Code settings (all under `github.copilot.chat.cli.*`):
 
 | Setting | Default | Description |
 |---------|---------|-------------|

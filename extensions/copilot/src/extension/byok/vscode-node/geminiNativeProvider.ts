@@ -80,7 +80,7 @@ export class GeminiNativeBYOKLMProvider extends AbstractLanguageModelChatProvide
 
 	async provideLanguageModelChatResponse(model: ExtendedLanguageModelChatInformation<LanguageModelChatConfiguration>, messages: Array<LanguageModelChatMessage | LanguageModelChatMessage2>, options: ProvideLanguageModelChatResponseOptions, progress: Progress<LanguageModelResponsePart2>, token: CancellationToken): Promise<any> {
 		// Restore CapturingToken context if correlation ID was passed through modelOptions.
-		// This handles the case where AsyncLocalStorage context was lost crossing VS Code IPC.
+		// This handles the case where AsyncLocalStorage context was lost crossing Si Code IPC.
 		const correlationId = (options as { modelOptions?: OTelModelOptions }).modelOptions?._capturingTokenCorrelationId;
 		const capturingToken = correlationId ? retrieveCapturingTokenByCorrelation(correlationId) : undefined;
 		const telemetryTurn = (options as { modelOptions?: OTelModelOptions }).modelOptions?._telemetryTurn;
@@ -127,7 +127,7 @@ export class GeminiNativeBYOKLMProvider extends AbstractLanguageModelChatProvide
 					}
 				});
 
-			// Convert VS Code tools to Gemini function declarations
+			// Convert Si Code tools to Gemini function declarations
 			const tools: Tool[] = (options.tools ?? []).length > 0 ? [{
 				functionDeclarations: (options.tools ?? []).map(tool => {
 					if (!tool.inputSchema) {
@@ -149,11 +149,11 @@ export class GeminiNativeBYOKLMProvider extends AbstractLanguageModelChatProvide
 				})
 			}] : [];
 
-			// Bridge VS Code cancellation token to Gemini abortSignal for early network termination
+			// Bridge Si Code cancellation token to Gemini abortSignal for early network termination
 			const abortController = new AbortController();
 			const cancelSub = token.onCancellationRequested(() => {
 				abortController.abort();
-				this._logService.trace('Gemini request aborted via VS Code cancellation token');
+				this._logService.trace('Gemini request aborted via Si Code cancellation token');
 			});
 
 			const rawEffort = options.modelConfiguration?.reasoningEffort;
@@ -331,7 +331,7 @@ export class GeminiNativeBYOKLMProvider extends AbstractLanguageModelChatProvide
 						"resumeEventSeen": { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth", "comment": "Whether a system resume event was seen during the request", "isMeasurement": true },
 						"subType": { "classification": "SystemMetaData", "purpose": "FeatureInsight", "comment": "Sub-type of the request" },
 						"modelCallId": { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth", "comment": "Unique identifier for this model call" },
-						"parentRequestId": { "classification": "SystemMetaData", "purpose": "FeatureInsight", "comment": "For a subagent: the VS Code chat request id of the parent turn that invoked this subagent (matches panel.request.parentRequestId)." },
+						"parentRequestId": { "classification": "SystemMetaData", "purpose": "FeatureInsight", "comment": "For a subagent: the Si Code chat request id of the parent turn that invoked this subagent (matches panel.request.parentRequestId)." },
 						"parentModelCallId": { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth", "comment": "Model call ID of the parent request for subagent calls" },
 						"iterationNumber": { "classification": "SystemMetaData", "purpose": "FeatureInsight", "comment": "Iteration number within the tool calling loop" }
 					}

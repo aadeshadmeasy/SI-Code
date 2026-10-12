@@ -75,7 +75,7 @@ export class ExtensionContributedChatTokenizer implements ITokenizer {
 			return 0;
 		}
 
-		// Count tokens for the message using VS Code API
+		// Count tokens for the message using Si Code API
 		const messageTokens = await this.languageModel.countTokens(apiMessages[0]);
 		return BaseTokensPerMessage + messageTokens;
 	}

@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-This is the **GitHub Copilot Chat** extension for Visual Studio Code - a VS Code extension that provides conversational AI assistance, a coding agent with many tools, inline editing capabilities, and advanced AI-powered features for VS Code.
+This is the **GitHub Copilot Chat** extension for Si Code - a Si Code extension that provides conversational AI assistance, a coding agent with many tools, inline editing capabilities, and advanced AI-powered features for Si Code.
 
 ### Key Features
 - **Chat Interface**: Conversational AI assistance with chat participants, variables, and slash commands
@@ -14,11 +14,11 @@ This is the **GitHub Copilot Chat** extension for Visual Studio Code - a VS Code
 - **Context-Aware**: Workspace understanding, semantic search, and code analysis
 
 ### Tech Stack
-- **TypeScript**: Primary language (follows VS Code coding standards)
+- **TypeScript**: Primary language (follows Si Code coding standards)
 - **TSX**: Prompts are built using the @vscode/prompt-tsx library
 - **Node.js**: Runtime for extension host and language server features
 - **WebAssembly**: For performance-critical parsing and tokenization
-- **VS Code Extension API**: Extensive use of proposed APIs for chat, language models, and editing
+- **Si Code Extension API**: Extensive use of proposed APIs for chat, language models, and editing
 - **ESBuild**: Bundling and compilation
 - **Vitest**: Unit testing framework
 - **Python**: For notebooks integration and ML evaluation scripts
@@ -36,13 +36,13 @@ If `start-watch-tasks` is already running, use its diagnostics. Start it or run 
 #### Core Source Code (`src/`)
 - **`src/extension/`**: Main extension implementation, organized by feature
 - **`src/platform/`**: Shared platform services and utilities
-- **`src/util/`**: Common utilities, VS Code API abstractions, and service infrastructure
+- **`src/util/`**: Common utilities, Si Code API abstractions, and service infrastructure
 
 #### Build & Configuration
 - **`.esbuild.mts`**: Build configuration for bundling extension, web worker, and simulation workbench
 - **`tsconfig.json`**: TypeScript configuration extending base config with React JSX settings
 - **`vite.config.ts`**: Test configuration for Vitest unit tests
-- **`package.json`**: Extension manifest with VS Code contributions, dependencies, and scripts
+- **`package.json`**: Extension manifest with Si Code contributions, dependencies, and scripts
 
 #### Testing & Simulation
 - **`test/`**: Comprehensive test suite including unit, integration, and simulation tests
@@ -64,7 +64,7 @@ If `start-watch-tasks` is already running, use its diagnostics. Start it or run 
 
 **Context & Intelligence:**
 - **`context/`**: Context resolution for code understanding and workspace analysis
-- **`contextKeys/`**: VS Code context key management for UI state
+- **`contextKeys/`**: Si Code context key management for UI state
 - **`intents/`**: Chat participant/slash command implementations
 - **`prompts/`**: Prompt engineering and template system
 - **`prompt/`**: Common prompt utilities
@@ -92,7 +92,7 @@ If `start-watch-tasks` is already running, use its diagnostics. Start it or run 
 - **`test/`**: Extension-specific test utilities and helpers
 
 **User Interface & Experience:**
-- **`commands/`**: Service for working with VS Code commands
+- **`commands/`**: Service for working with Si Code commands
 - **`codeBlocks/`**: Streaming code block processing
 - **`linkify/`**: URL and reference linkification
 - **`getting-started/`**: Onboarding and setup experience
@@ -111,8 +111,8 @@ If `start-watch-tasks` is already running, use its diagnostics. Start it or run 
 - **`log/`**: Logging infrastructure and utilities
 - **`telemetry/`**: Analytics and usage tracking
 
-**VS Code API Type Definitions:**
-- Multiple `vscode.proposed.*.d.ts` files for proposed VS Code APIs including chat, language models, embeddings, and various editor integrations
+**Si Code API Type Definitions:**
+- Multiple `vscode.proposed.*.d.ts` files for proposed Si Code APIs including chat, language models, embeddings, and various editor integrations
 
 #### `src/platform/` - Platform Services
 - **`chat/`**: Core chat services and conversation options
@@ -132,14 +132,14 @@ If `start-watch-tasks` is already running, use its diagnostics. Start it or run 
 ### Extension Activation Flow
 
 1. **Base Activation** (`src/extension/extension/vscode/extension.ts`):
-   - Checks VS Code version compatibility
+   - Checks Si Code version compatibility
    - Creates service instantiation infrastructure
    - Initializes contribution system
 
 2. **Service Registration**:
    - Platform services (search, parsing, telemetry, etc.)
    - Extension-specific services (chat, authentication, etc.)
-   - VS Code integrations (commands, providers, etc.)
+   - Si Code integrations (commands, providers, etc.)
 
 3. **Contribution Loading**:
    - Chat participants
@@ -194,21 +194,21 @@ If `start-watch-tasks` is already running, use its diagnostics. Start it or run 
 ### React/JSX Conventions
 - Custom JSX factory: `vscpp` (instead of React.createElement)
 - Fragment factory: `vscppf`
-- Components follow VS Code theming and styling patterns
+- Components follow Si Code theming and styling patterns
 
 ### Architecture Patterns
 - **Service-oriented**: Heavy use of dependency injection via `IInstantiationService`
 - **Contribution-based**: Modular system where features register themselves
-- **Event-driven**: Extensive use of VS Code's event system and disposables
+- **Event-driven**: Extensive use of Si Code's event system and disposables
 - **Layered**: Clear separation between platform services and extension features
 
 ### Dependency Boundaries
-- Do not import directly from the repository's root `src/vs/` tree. The extension is compiled and bundled from its own `src/` tree, and root VS Code internals are not an extension dependency.
+- Do not import directly from the repository's root `src/vs/` tree. The extension is compiled and bundled from its own `src/` tree, and root Si Code internals are not an extension dependency.
 - Use the corresponding implementation under `extensions/copilot/src/` or the vendored compatibility code under `extensions/copilot/src/util/vs/` when it is already available. Keep shared behavior behind the extension's own platform abstractions.
 
 ### Testing Standards
 - **Unit Tests**: Vitest for isolated component testing
-- **Integration Tests**: VS Code extension host tests for API integration
+- **Integration Tests**: Si Code extension host tests for API integration
 - **Simulation Tests**: End-to-end scenario testing with `.stest.ts` files
 - **Fixtures**: Comprehensive test fixtures for various scenarios
 
@@ -258,8 +258,8 @@ function f(x: number, y: string): void { }
 
 ## Key APIs and Integrations
 
-### VS Code Proposed APIs (Enabled)
-The extension uses numerous proposed VS Code APIs for advanced functionality:
+### Si Code Proposed APIs (Enabled)
+The extension uses numerous proposed Si Code APIs for advanced functionality:
 - `chatParticipantPrivate`: Private chat participant features
 - `languageModelSystem`: System messages for LM API
 - `chatProvider`: Custom chat provider implementation
@@ -282,7 +282,7 @@ The extension uses numerous proposed VS Code APIs for advanced functionality:
 
 ### Testing
 - `npm run test:unit`: Unit tests
-- `npm run test:extension`: VS Code integration tests
+- `npm run test:extension`: Si Code integration tests
 - `npm run simulate`: Scenario-based simulation tests
 
 ### Key Entry Points for Edits
@@ -316,7 +316,7 @@ The extension uses numerous proposed VS Code APIs for advanced functionality:
 - **MCP integration**: Update `src/extension/mcp/` for Model Context Protocol features
 
 **User Interface:**
-- **VS Code commands**: Update `src/extension/commands/` for command implementations
+- **Si Code commands**: Update `src/extension/commands/` for command implementations
 - **Code block rendering**: Modify `src/extension/codeBlocks/` for code display
 - **Onboarding flows**: Edit `src/extension/getting-started/` and `src/extension/onboardDebug/`
 - **Cross-tab features**: Update `src/extension/xtab/` for multi-tab coordination
@@ -327,15 +327,15 @@ The extension uses numerous proposed VS Code APIs for advanced functionality:
 
 **Platform Services:**
 - **Core platform services**: Extend `src/platform/` services for cross-cutting functionality
-- **VS Code integration**: Update contribution files and extension activation code
-- **Configuration**: Modify `package.json` contributions for VS Code integration
+- **Si Code integration**: Update contribution files and extension activation code
+- **Configuration**: Modify `package.json` contributions for Si Code integration
 
-This extension is a complex, multi-layered system that provides comprehensive AI assistance within VS Code. Understanding the service architecture, contribution system, and separation between platform and extension layers is crucial for making effective changes.
+This extension is a complex, multi-layered system that provides comprehensive AI assistance within Si Code. Understanding the service architecture, contribution system, and separation between platform and extension layers is crucial for making effective changes.
 
 ## Best Practices
-- Use services and dependency injection over VS Code extension APIs when possible:
+- Use services and dependency injection over Si Code extension APIs when possible:
   - Use `IFileSystemService` instead of Node's `fs` or `vscode.workspace.fs`
   - Use `ILogService` instead of `console.log`
   - Look for existing `I*Service` interfaces before reaching for raw APIs
-  - **Why**: Enables unit testing without VS Code host, supports simulation tests, provides cross-platform abstractions (Node vs web), and adds features like caching and size limits
+  - **Why**: Enables unit testing without Si Code host, supports simulation tests, provides cross-platform abstractions (Node vs web), and adds features like caching and size limits
 - Always use the URI type instead of using string file paths. There are many helpers available for working with URIs.

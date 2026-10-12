@@ -85,7 +85,7 @@ function convertLineEditToEdit(nextLineEdit: LineEdit, document: StringText): St
 	// LineReplacement.toSingleTextEdit always joins newLines with '\n'.
 	// If the document uses '\r\n' line endings, we need to match that in
 	// the replacement text so that applying the edit produces consistent
-	// line endings and the resulting content matches what VS Code reports.
+	// line endings and the resulting content matches what Si Code reports.
 	if (document.value.includes('\r\n')) {
 		return new StringEdit(suggestedEdit.replacements.map(
 			r => new StringReplacement(r.replaceRange, r.newText.replace(/\n/g, '\r\n'))

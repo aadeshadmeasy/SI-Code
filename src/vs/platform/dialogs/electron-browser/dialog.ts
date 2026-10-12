@@ -27,7 +27,7 @@ export function createNativeAboutDialogDetails(productService: IProductService, 
 
 	const getDetails = (useAgo: boolean): string => {
 		return localize({ key: 'aboutDetail', comment: ['Electron, Chromium, Node.js, V8 and Copilot are product names that need no translation'] },
-			"Version: {0}\nCommit: {1}\nDate: {2}\nElectron: {3}\nElectronBuildId: {4}\nChromium: {5}\nNode.js: {6}\nV8: {7}\n@github/copilot: {8}\n@github/copilot-sdk: {9}\nOS: {10}",
+			"Version: {0}\nCommit: {1}\nDate: {2}\nElectron: {3}\nElectronBuildId: {4}\nChromium: {5}\nNode.js: {6}\nV8: {7}\n@github/copilot: {8}\n@github/copilot-sdk: {9}\nOS: {10}\n{11} includes Code - OSS under the MIT License. Copyright (c) Microsoft Corporation.",
 			version,
 			productService.commit || 'Unknown',
 			productService.date ? `${productService.date}${useAgo ? ' (' + fromNow(new Date(productService.date), true) + ')' : ''}` : 'Unknown',
@@ -38,7 +38,8 @@ export function createNativeAboutDialogDetails(productService: IProductService, 
 			process.versions['v8'],
 			copilotRuntimeVersion,
 			copilotSdkVersion,
-			`${osProps.type} ${osProps.arch} ${osProps.release}${isLinuxSnap ? ' snap' : ''}`
+			`${osProps.type} ${osProps.arch} ${osProps.release}${isLinuxSnap ? ' snap' : ''}`,
+			productService.nameShort
 		);
 	};
 

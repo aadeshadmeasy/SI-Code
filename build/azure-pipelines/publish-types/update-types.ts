@@ -67,9 +67,9 @@ function getNewFileContent(content: string, shorttag: string) {
 
 function getNewFileHeader(shorttag: string) {
 	const header = [
-		`// Type definitions for Visual Studio Code ${shorttag}`,
+		`// Type definitions for Si Code ${shorttag}`,
 		`// Project: https://github.com/microsoft/vscode`,
-		`// Definitions by: Visual Studio Code Team, Microsoft <https://github.com/microsoft>`,
+		`// Definitions by: Si Code Team, Microsoft <https://github.com/microsoft>`,
 		`// Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped`,
 		``,
 		`/*---------------------------------------------------------------------------------------------`,
@@ -79,7 +79,7 @@ function getNewFileHeader(shorttag: string) {
 		` *--------------------------------------------------------------------------------------------*/`,
 		``,
 		`/**`,
-		` * Type Definition for Visual Studio Code ${shorttag} Extension API`,
+		` * Type Definition for Si Code ${shorttag} Extension API`,
 		` * See https://code.visualstudio.com/api for more information`,
 		` */`
 	].join('\n');

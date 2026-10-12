@@ -6,7 +6,7 @@ if [ $# -eq 0 ]; then
 	exit 1
 fi
 
-header="// Type definitions for Visual Studio Code ${1}
+header="// Type definitions for Si Code ${1}
 // Project: https://github.com/microsoft/vscode
 // Definitions by: Visual Studio Code Team, Microsoft <https://github.com/microsoft>
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped

@@ -516,10 +516,10 @@ export class McpServerConfigurationForm extends Disposable {
 		}
 		this.envFileField.style.display = this.capabilities.envFile ? '' : 'none';
 		this.cwdField.style.display = this.capabilities.cwd ? '' : 'none';
-		// VS Code variables such as ${workspaceFolder} are only resolved in VS Code's own mcp.json.
+		// Si Code variables such as ${workspaceFolder} are only resolved in Si Code's own mcp.json.
 		this.cwdInput.setPlaceHolder(format === McpResourceFormat.Vscode ? '${workspaceFolder}' : '/path/to/project');
 		this.envHint.textContent = format === McpResourceFormat.CopilotGlobal
-			? localize('mcpForm.env.hintCopilotGlobal', "Values are read by the Copilot CLI. VS Code input variables such as ${input:id} are not supported in this file.")
+			? localize('mcpForm.env.hintCopilotGlobal', "Values are read by the Copilot CLI. Si Code input variables such as ${input:id} are not supported in this file.")
 			: this.capabilities.inputVariables
 				? localize('mcpForm.env.hint', "Use ${input:id} to be prompted for a value, such as an API key, instead of storing it in this file.")
 				: '';

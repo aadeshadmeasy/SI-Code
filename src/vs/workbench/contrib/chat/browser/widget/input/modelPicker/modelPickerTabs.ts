@@ -53,7 +53,7 @@ export interface IModelPickerDestination {
 export interface IModelPickerUnavailableEntry {
 	readonly id: string;
 	readonly entry: IModelControlEntry;
-	/** The model exists for this account but needs a newer VS Code. */
+	/** The model exists for this account but needs a newer Si Code. */
 	readonly needsUpdate: boolean;
 }
 

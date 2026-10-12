@@ -27,21 +27,21 @@ import { IgnoreFile } from '../../../../../../workbench/services/search/common/i
 // Re-export so existing consumers don't need to change their import source.
 export { SYNCED_CUSTOMIZATION_SCHEME };
 
-const DISPLAY_NAME = 'VS Code Synced Data';
+const DISPLAY_NAME = 'Si Code Synced Data';
 const FILE_OPERATION_CONCURRENCY = 10;
 const SKILL_DIRECTORY_IGNORE = new IgnoreFile('.git\nnode_modules\n', '/', undefined, true);
 const bundleSequencer = new SequencerByKey<string>();
 
 const MANIFEST_CONTENT = JSON.stringify({
 	name: DISPLAY_NAME,
-	description: 'Customization data synced from VS Code',
+	description: 'Customization data synced from Si Code',
 }, null, '\t');
 
-const STANDALONE_DISPLAY_NAME = 'VS Code Standalone Customizations';
+const STANDALONE_DISPLAY_NAME = 'Si Code Standalone Customizations';
 
 const STANDALONE_MANIFEST_CONTENT = JSON.stringify({
 	name: STANDALONE_DISPLAY_NAME,
-	description: 'Standalone customizations synced from VS Code',
+	description: 'Standalone customizations synced from Si Code',
 }, null, '\t');
 
 /**
@@ -159,7 +159,7 @@ export interface ISyncedCustomizationOrigin {
 }
 
 /**
- * An MCP server configured directly in VS Code (i.e. not contributed by an
+ * An MCP server configured directly in Si Code (i.e. not contributed by an
  * agent plugin) that should be bundled into the synthetic plugin so the
  * agent host can launch it.
  */
@@ -173,7 +173,7 @@ export interface ISyncableMcpServer {
 export interface ISyncedCustomizationBundlerOptions {
 	/**
 	 * Bundles standalone customizations: user and workspace skills and agents,
-	 * and the MCP servers that VS Code forwards. The bundle is marked so that a
+	 * and the MCP servers that Si Code forwards. The bundle is marked so that a
 	 * host does not deliver its contents as plugin-provided, which lets the
 	 * runtime apply `strictPluginOnlyCustomization` to them.
 	 */
@@ -196,7 +196,7 @@ interface IBundleResult {
  *
  * ```
  * .plugin/plugin.json
- * .mcp.json        ← MCP servers configured in VS Code
+ * .mcp.json        ← MCP servers configured in Si Code
  * rules/          ← instruction files
  * commands/       ← prompt files
  * agents/         ← agent files

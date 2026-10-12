@@ -157,7 +157,7 @@ function convertLinkTags(
 					if (currentLink.target) {
 						const file = filePathConverter.toResource(currentLink.target.file);
 						const args: OpenJsDocLinkCommand_Args = {
-							file: { ...file.toJSON(), $mid: undefined }, // Prevent VS Code from trying to transform the uri,
+							file: { ...file.toJSON(), $mid: undefined }, // Prevent Si Code from trying to transform the uri,
 							position: typeConverters.Position.fromLocation(currentLink.target.start)
 						};
 						const command = `command:${OpenJsDocLinkCommand.id}?${encodeURIComponent(JSON.stringify([args]))}`;

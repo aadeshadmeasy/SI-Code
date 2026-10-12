@@ -500,7 +500,7 @@ export interface IBaseTerminalInstance {
 /**
  * A {@link ITerminalInstance}-like object that emulates a subset of
  * capabilities. This instance is returned from {@link ITerminalService.createDetachedTerminal}
- * to represent terminals that appear in other parts of the VS Code UI outside
+ * to represent terminals that appear in other parts of the Si Code UI outside
  * of the "Terminal" view or editors.
  */
 export interface IDetachedTerminalInstance extends IDisposable, IBaseTerminalInstance {
@@ -1516,7 +1516,7 @@ export interface IXtermTerminal extends IDisposable {
 	selectAll(): void;
 
 	/**
-	 * Selects the content between the two markers by their VS Code OSC `SetMarker`
+	 * Selects the content between the two markers by their Si Code OSC `SetMarker`
 	 * ID. It's a no-op if either of the two markers are not found.
 	 *
 	 * @param fromMarkerId Start marker ID

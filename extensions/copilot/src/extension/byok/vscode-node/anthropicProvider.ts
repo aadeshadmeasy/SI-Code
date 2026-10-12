@@ -94,7 +94,7 @@ export class AnthropicLMProvider extends AbstractLanguageModelChatProvider {
 
 	async provideLanguageModelChatResponse(model: ExtendedLanguageModelChatInformation<LanguageModelChatConfiguration>, messages: Array<LanguageModelChatMessage | LanguageModelChatMessage2>, options: ProvideLanguageModelChatResponseOptions, progress: Progress<LanguageModelResponsePart2>, token: CancellationToken): Promise<void> {
 		// Restore CapturingToken context if correlation ID was passed through modelOptions.
-		// This handles the case where AsyncLocalStorage context was lost crossing VS Code IPC.
+		// This handles the case where AsyncLocalStorage context was lost crossing Si Code IPC.
 		const correlationId = (options as { modelOptions?: OTelModelOptions }).modelOptions?._capturingTokenCorrelationId;
 		const capturingToken = correlationId ? retrieveCapturingTokenByCorrelation(correlationId) : undefined;
 		const telemetryTurn = (options as { modelOptions?: OTelModelOptions }).modelOptions?._telemetryTurn;
@@ -452,7 +452,7 @@ export class AnthropicLMProvider extends AbstractLanguageModelChatProvider {
 						"resumeEventSeen": { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth", "comment": "Whether a system resume event was seen during the request", "isMeasurement": true },
 						"subType": { "classification": "SystemMetaData", "purpose": "FeatureInsight", "comment": "Sub-type of the request" },
 						"modelCallId": { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth", "comment": "Unique identifier for this model call" },
-						"parentRequestId": { "classification": "SystemMetaData", "purpose": "FeatureInsight", "comment": "For a subagent: the VS Code chat request id of the parent turn that invoked this subagent (matches panel.request.parentRequestId)." },
+						"parentRequestId": { "classification": "SystemMetaData", "purpose": "FeatureInsight", "comment": "For a subagent: the Si Code chat request id of the parent turn that invoked this subagent (matches panel.request.parentRequestId)." },
 						"parentModelCallId": { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth", "comment": "Model call ID of the parent request for subagent calls" },
 						"iterationNumber": { "classification": "SystemMetaData", "purpose": "FeatureInsight", "comment": "Iteration number within the tool calling loop" }
 					}

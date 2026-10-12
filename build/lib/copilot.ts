@@ -40,7 +40,7 @@ export function getCopilotRuntimeVersion(nodeModulesRoot = 'node_modules'): stri
 }
 
 /**
- * Converts VS Code build platform/arch to the values that Node.js reports
+ * Converts Si Code build platform/arch to the values that Node.js reports
  * at runtime via `process.platform` and `process.arch`.
  *
  * The copilot SDK's `loadNativeModule` looks up native binaries under
@@ -53,7 +53,7 @@ function toNodePlatformArch(platform: string, arch: string): { nodePlatform: str
 	let nodeArch = arch;
 
 	if (arch === 'armhf') {
-		// VS Code build uses 'armhf'; Node reports process.arch === 'arm'
+		// Si Code build uses 'armhf'; Node reports process.arch === 'arm'
 		nodeArch = 'arm';
 	} else if (arch === 'alpine') {
 		// Legacy: { platform: 'linux', arch: 'alpine' } means alpine-x64
@@ -201,7 +201,7 @@ export function getCopilotRuntimePrebuildFiles(platform: string, arch: string, n
 
 /**
  * Ensures the selected SDK platform package is present before packaging. npm
- * only installs host-compatible optional dependencies, but VS Code packaging
+ * only installs host-compatible optional dependencies, but Si Code packaging
  * can cross-build targets such as darwin-x64 on arm64 hosts.
  */
 export function ensureCopilotPlatformPackage(platform: string, arch: string, nodeModulesRoot = 'node_modules', options: EnsureNpmPackageOptions = {}): void {
@@ -234,7 +234,7 @@ export function ensureCopilotPlatformPackage(platform: string, arch: string, nod
  * natives from the selected @github/copilot-{platform} package.
  *
  * Note: `node-pty` is no longer shimmed. The copilot CLI SDK resolves
- * `node-pty` from the embedder (VS Code) via `hostRequire` and falls back to
+ * `node-pty` from the embedder (Si Code) via `hostRequire` and falls back to
  * its bundled copy only if that fails.
  *
  * Failures throw to fail the build because built-in packaging must guarantee
@@ -250,7 +250,10 @@ export function prepareBuiltInCopilotRipgrepShim(platform: string, arch: string,
 	const copilotBase = path.join(extensionNodeModules, '@github', 'copilot');
 	const copilotSdkBase = path.join(copilotBase, 'sdk');
 	if (!fs.existsSync(copilotSdkBase)) {
-		throw new Error(`[prepareBuiltInCopilotRipgrepShim] Copilot SDK directory not found at ${copilotSdkBase}`);
+		// .moduleignore removes @github/copilot before this step. Si Code's own
+		// agent does not use that SDK shim, so packaging continues.
+		console.warn(`[prepareBuiltInCopilotRipgrepShim] Copilot SDK directory not found at ${copilotSdkBase}; skipping the ripgrep shim.`);
+		return;
 	}
 	materializeBuiltInCopilotSdkPlatformFiles(copilotPackagePlatformArch, tgrepPlatformArch, copilotBase, appNodeModulesDir, options);
 	pruneNonTargetCopilotSdkPrebuilds(copilotPackagePlatformArch, path.join(copilotSdkBase, 'prebuilds'), copilotPlatforms);

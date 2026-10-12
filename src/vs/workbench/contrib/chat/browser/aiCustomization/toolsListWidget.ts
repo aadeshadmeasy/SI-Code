@@ -927,7 +927,7 @@ export class ToolsListWidget extends Disposable {
 			this._createTreeGroup(
 				'builtin',
 				localize('builtInToolsSection', "Built-in Tools"),
-				localize('builtInToolsSectionDescription', "Tools provided by the active agent and VS Code."),
+				localize('builtInToolsSectionDescription', "Tools provided by the active agent and Si Code."),
 				localize('builtInToolsSectionEmpty', "No built-in tool sets are available."),
 				this._currentModel.filter(vm => vm.toolSet.source.type === 'internal' || vm.toolSet.source.type === 'external'),
 			),

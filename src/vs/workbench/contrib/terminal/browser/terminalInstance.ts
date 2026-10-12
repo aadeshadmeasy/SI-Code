@@ -2406,7 +2406,7 @@ export class TerminalInstance extends Disposable implements ITerminalInstance {
 		} else {
 			resource = URI.file(cwd);
 		}
-		// In VS Code web (server-linux-x64-web accessed via browser), remoteAuthority
+		// In Si Code web (server-linux-x64-web accessed via browser), remoteAuthority
 		// is falsy from the terminal's perspective, so URI.file() is used above.
 		// The browser FileService has no file:// provider registered (only the remote
 		// provider), so guard with canHandleResource before calling exists() to avoid

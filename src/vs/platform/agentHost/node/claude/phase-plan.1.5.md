@@ -597,7 +597,7 @@ scripts/test.sh --grep copilotApiService
 
 - **`MessageCreateParamsBase` is not re-exported on the `Anthropic` namespace.** The plan specified `Anthropic.MessageCreateParamsBase` as the request type, but it's an SDK internal. Use the discriminated forms: `Anthropic.MessageCreateParamsStreaming` / `Anthropic.MessageCreateParamsNonStreaming` for the overloads, and the `Anthropic.MessageCreateParams` union for the implementation signature.
 
-- **VS Code DI constructor ordering: non-service params must come first.** `GetLeadingNonServiceArgs` strips `BrandedService`-decorated params from the **end** of the tuple. Putting non-service params (like `fetchFn`) after service params causes `createInstance` to select the wrong overload (`Expected 4 arguments, but got 2`). This contradicts the CLAUDE.md guidance that "non-service parameters come after service parameters."
+- **Si Code DI constructor ordering: non-service params must come first.** `GetLeadingNonServiceArgs` strips `BrandedService`-decorated params from the **end** of the tuple. Putting non-service params (like `fetchFn`) after service params causes `createInstance` to select the wrong overload (`Expected 4 arguments, but got 2`). This contradicts the CLAUDE.md guidance that "non-service parameters come after service parameters."
 
 - **Signal must not be shared across deduped async operations.** The original `_getCopilotToken` forwarded the caller's `AbortSignal` into the shared token mint promise. Because the mint is deduped across concurrent callers via `_pendingTokenMints`, aborting one caller's signal would cancel the mint for all callers sharing it. Fix: omit the signal from the mint call entirely; each caller forwards its signal only to its own API request.
 

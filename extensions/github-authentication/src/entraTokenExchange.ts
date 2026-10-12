@@ -336,7 +336,7 @@ export class EntraTokenExchange {
 			this._logger.error('The GitHub token is for a different account than the one that was asked for. Discarding it.');
 			throw new EntraTokenExchangeError(
 				EntraTokenExchangeFailure.AccountMismatch,
-				vscode.l10n.t('Your Microsoft account is now linked to a different GitHub account.'));
+				vscode.l10n.t('Your work or school account is now linked to a different GitHub account.'));
 		}
 		return account;
 	}
@@ -380,7 +380,7 @@ export class EntraTokenExchange {
 	}
 
 	/**
-	 * Remembers which Microsoft account a GitHub account was reached through. Called only once the
+	 * Remembers which work or school account a GitHub account was reached through. Called only once the
 	 * user has confirmed the identity, because the row is what later authorizes minting a token for
 	 * it with nothing shown.
 	 */
@@ -395,7 +395,7 @@ export class EntraTokenExchange {
 			this._logger.error(`Could not resolve the GitHub account for the Microsoft sign in: ${e?.message ?? e}`);
 			throw new EntraTokenExchangeError(
 				EntraTokenExchangeFailure.Identity,
-				vscode.l10n.t('Could not read the GitHub account linked to your Microsoft account.'));
+				vscode.l10n.t('Could not read the GitHub account linked to your work or school account.'));
 		}
 	}
 
@@ -545,7 +545,7 @@ export class EntraTokenExchange {
 				// the user belongs on GHE.com.
 				return new EntraTokenExchangeError(
 					EntraTokenExchangeFailure.Identity,
-					vscode.l10n.t('GitHub did not accept your Microsoft account for sign in.'));
+					vscode.l10n.t('GitHub did not accept your work or school account for sign in.'));
 			default:
 				return new EntraTokenExchangeError(
 					EntraTokenExchangeFailure.Protocol,

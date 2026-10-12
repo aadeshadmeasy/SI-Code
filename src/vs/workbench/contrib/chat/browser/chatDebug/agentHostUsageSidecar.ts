@@ -22,7 +22,7 @@ import { agentModelCallMetaKey, readAgentModelCallDetail, readAgentModelCallDiag
 
 /**
  * Directory (under the client's user data home) that holds the per-session
- * token-usage sidecar files. Kept separate from VS Code's other user-data
+ * token-usage sidecar files. Kept separate from Si Code's other user-data
  * folders and never written into the CLI's `~/.copilot` tree.
  */
 const USAGE_DIR = 'agentHostUsage';
@@ -285,7 +285,7 @@ abstract class AgentHostActionRecorder extends Disposable {
 
 /**
  * Captures Copilot `ChatUsage` actions on the client and appends them to a
- * stable, client-local per-session sidecar so token metrics survive a VS Code
+ * stable, client-local per-session sidecar so token metrics survive a Si Code
  * restart and feed accurate per-round Cache Explorer numbers.
  *
  * Dedup: a single model call can surface multiple `ChatUsage` actions —

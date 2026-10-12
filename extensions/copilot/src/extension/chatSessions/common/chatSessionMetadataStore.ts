@@ -154,7 +154,7 @@ export interface IChatSessionMetadataStore {
 	updateRequestDetails(sessionId: string, details: (Partial<RequestDetails> & { vscodeRequestId: string })[]): Promise<void>;
 	getSessionAgent(sessionId: string): Promise<string | undefined>;
 	/**
-	 * Copy all VS Code-specific metadata (workspace info, request details, etc.) from
+	 * Copy all Si Code-specific metadata (workspace info, request details, etc.) from
 	 * an existing session to a newly forked session, overriding the custom title.
 	 */
 	storeForkedSessionMetadata(sourceSessionId: string, targetSessionId: string, customTitle: string): Promise<void>;

@@ -38,7 +38,7 @@ type RemoteTunnelConnectedClassification = {
 	comment: 'Reporting when a Remote Tunnel connection is established';
 	tunnelName: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'The name of the connected tunnel' };
 	isAttached: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; isMeasurement: true; comment: 'Whether the connection is attached to an existing tunnel process' };
-	tunnelSessionId?: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; comment: 'The VS Code telemetry session ID supplied to the CLI.' };
+	tunnelSessionId?: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; comment: 'The Si Code telemetry session ID supplied to the CLI.' };
 	operationId?: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; comment: 'The operation ID supplied to the CLI for tunnel service requests.' };
 };
 

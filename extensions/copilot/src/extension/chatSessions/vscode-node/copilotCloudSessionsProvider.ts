@@ -220,7 +220,7 @@ function getLastActivity(session: CloudSessionData): number {
 
 /**
  * Activity time of the second most recently active session that was started or adopted from
- * VS Code. Under the `recent` mode, older external sessions are superseded by these sessions.
+ * Si Code. Under the `recent` mode, older external sessions are superseded by these sessions.
  */
 export function getRecentInternalActivityCutoff(sessions: readonly CloudSessionData[], isExternal: (taskId: string) => boolean): number | undefined {
 	return sessions
@@ -238,7 +238,7 @@ export interface ICloudSessionVisibilityOptions {
 }
 
 /**
- * Sessions started or adopted from VS Code are always visible. External sessions follow
+ * Sessions started or adopted from Si Code are always visible. External sessions follow
  * {@link SHOW_EXTERNAL_SESSIONS_SETTING}, matching the Agent Host's external session catalog.
  * `expiresAt` is the earliest time at which a visible session ages out of the mode.
  */
@@ -1478,7 +1478,7 @@ export class CopilotCloudSessionsProvider extends Disposable implements vscode.C
 						? await this._prFileChangesService.getComparisonChangedFiles(entry.diffRefs)
 						: undefined;
 				const repositoryMetadata = getCloudSessionItemMetadata(entry.repo, entry.diffRefs, pr);
-				// Tells the Agents window that the task was started outside VS Code and not adopted yet.
+				// Tells the Agents window that the task was started outside Si Code and not adopted yet.
 				const metadata = {
 					...repositoryMetadata,
 					event_type: entry.eventType || this._ownership.getApplication(entry.taskId) || (isExternal(entry.taskId) ? 'github/autopilot' : 'vscode'),
@@ -2672,7 +2672,7 @@ export class CopilotCloudSessionsProvider extends Disposable implements vscode.C
 	}
 
 	/**
-	 * Records a task started or messaged from VS Code so that it is not external. Returns whether
+	 * Records a task started or messaged from Si Code so that it is not external. Returns whether
 	 * the task was external before. Failing to record must not fail the request.
 	 */
 	private async recordTaskFromVSCode(taskId: string, created = false): Promise<boolean> {
@@ -2683,7 +2683,7 @@ export class CopilotCloudSessionsProvider extends Disposable implements vscode.C
 					: this._ownership.getOwnedTaskIds().has(taskId) ? 'vscode' : 'github/autopilot';
 			return await this._ownership.record(taskId, Date.now(), application);
 		} catch (e) {
-			this.logService.warn(`Failed to record cloud task ${taskId} as started from VS Code: ${e}`);
+			this.logService.warn(`Failed to record cloud task ${taskId} as started from Si Code: ${e}`);
 			return false;
 		}
 	}

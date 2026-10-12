@@ -15,7 +15,7 @@ This is a decision guide for Agent Host service bootstrapping, not a running imp
 
 ## Primary graph
 
-Each Agent Host process has one primary process-local `ServiceCollection` and strict `InstantiationService`, owned by `AgentHostRuntime`. The closest VS Code analogy is the shared process bootstrap in `src/vs/code/electron-utility/sharedProcess/sharedProcessMain.ts`: concrete pre-DI foundations, local `SyncDescriptor` registrations, strict DI, root composition, then activation.
+Each Agent Host process has one primary process-local `ServiceCollection` and strict `InstantiationService`, owned by `AgentHostRuntime`. The closest Si Code analogy is the shared process bootstrap in `src/vs/code/electron-utility/sharedProcess/sharedProcessMain.ts`: concrete pre-DI foundations, local `SyncDescriptor` registrations, strict DI, root composition, then activation.
 
 Scoped child instantiation services or service collections are allowed when an isolated lifetime or override scope genuinely needs them. They should inherit from the primary graph where possible, have an explicit owner, and must not create competing instances of primary runtime services.
 

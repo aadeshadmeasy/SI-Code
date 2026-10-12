@@ -31,7 +31,7 @@ export interface IToolCallMeta {
 	readonly 'vscode.copilotSandboxNetworkRestrictions'?: ISandboxNetworkRestrictions;
 	readonly 'agentHost.sandboxBypass'?: boolean;
 	/**
-	 * VS Code rendering hint. `terminal` routes the call to the command/output
+	 * Si Code rendering hint. `terminal` routes the call to the command/output
 	 * renderer, `subagent` to the subagent UI, `search` to the search renderer,
 	 * and `read` keeps incomplete resource arguments out of streaming display;
 	 * everything else falls through to the generic invocation renderer. Set by

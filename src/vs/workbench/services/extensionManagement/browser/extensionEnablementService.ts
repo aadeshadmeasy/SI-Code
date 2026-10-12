@@ -160,6 +160,12 @@ export class ExtensionEnablementService extends Disposable implements IWorkbench
 			return;
 		}
 
+		// This migration keeps the Copilot chat extension idle until sign-in.
+		// Si Code's own chat extension is the product, so it stays enabled.
+		if (this._chatExtensionId === 'sicode.sicode') {
+			return;
+		}
+
 		const builtinChatExtensionEnablementMigrationKey = 'builtinChatExtensionEnablementMigration';
 		const builtinChatExtensionEnablementMigration = this.storageService.getBoolean(builtinChatExtensionEnablementMigrationKey, StorageScope.PROFILE) === true;
 		if (builtinChatExtensionEnablementMigration) {

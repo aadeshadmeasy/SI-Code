@@ -318,7 +318,7 @@ export function buildModelEnumerationOptions(): Options {
  * In both modes the agent host's own `NODE_OPTIONS`, `ELECTRON_*`, and
  * `VSCODE_*` variables are stripped (they break the Electron-node subprocess),
  * `ELECTRON_RUN_AS_NODE=1` is set, and `AI_AGENT` is pinned so the sparse
- * proxied env still announces the originating VS Code surface. Mirror of the
+ * proxied env still announces the originating Si Code surface. Mirror of the
  * strip pattern in `CopilotAgent._ensureClient()`.
  *
  * Exported for unit testing as a pure function over `process.env`.

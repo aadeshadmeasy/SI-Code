@@ -1,6 +1,6 @@
 # Trajectory Logging Architecture
 
-This document explains the architecture of trajectory logging in VS Code Copilot Chat, 
+This document explains the architecture of trajectory logging in Si Code Copilot Chat, 
 including how it relates to the existing request logging system.
 
 ## Overview
@@ -185,13 +185,13 @@ The adapter determines session IDs with the following priority:
 │                    Session ID Priority                          │
 ├─────────────────────────────────────────────────────────────────┤
 │  1. token.subAgentInvocationId  │  Explicit subagent linking   │
-│  2. token.chatSessionId         │  VS Code chat session ID     │
+│  2. token.chatSessionId         │  Si Code chat session ID     │
 │  3. generateSessionId(label)    │  Fallback: hash + timestamp  │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
 This enables:
-- **Main trajectories**: Use VS Code's chat session ID for 1:1 mapping
+- **Main trajectories**: Use Si Code's chat session ID for 1:1 mapping
 - **Subagent trajectories**: Use pre-assigned invocation ID for parent↔child linking
 - **Parent references child**: Tool call observation includes `subagent_trajectory_ref`
 

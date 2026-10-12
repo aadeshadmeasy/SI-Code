@@ -235,7 +235,7 @@ export function extractRepoFromMcpTool(toolArgs: unknown): string | undefined {
 
 /**
  * Check whether a tool name is a GitHub MCP server tool.
- * Matches both VS Code-style `mcp_github_*` and CLI-style `github-mcp-server-*` prefixes.
+ * Matches both Si Code-style `mcp_github_*` and CLI-style `github-mcp-server-*` prefixes.
  */
 export function isGitHubMcpTool(toolName: string): boolean {
 	return GH_MCP_PREFIXES.some(prefix => toolName.startsWith(prefix));

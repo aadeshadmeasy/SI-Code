@@ -22,7 +22,7 @@ type TunnelServiceOperationEvent = {
 type TunnelServiceOperationClassification = {
 	owner: 'connor4312';
 	comment: 'Correlates a tunnel service operation with management and relay requests.';
-	tunnelSessionId: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; comment: 'The originating VS Code telemetry session ID.' };
+	tunnelSessionId: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; comment: 'The originating Si Code telemetry session ID.' };
 	operationId: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; comment: 'A random ID shared by requests belonging to this tunnel operation.' };
 	operation: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; comment: 'The kind of tunnel operation.' };
 };

@@ -271,7 +271,7 @@ export interface IVoiceSessionController {
 	finishListeningAndSubmitTo(session: URI): void;
 
 	/**
-	 * Mark a session as having been cancelled by the user from VS Code UI. The
+	 * Mark a session as having been cancelled by the user from Si Code UI. The
 	 * next state-change detected for this session (typically the chat model
 	 * transitioning to `idle`) will be suppressed so the backend doesn't
 	 * narrate a status update the user already knows about.
@@ -653,7 +653,7 @@ export class VoiceSessionController extends Disposable implements IVoiceSessionC
 	// --- Session state tracking for explicit change notifications ---
 	private readonly _prevSessionStates = new Map<string, { state: string; detail: string; pendingId: string; confirmationType?: VoiceConfirmationType; lastResponseSummary: string }>();
 
-	// Sessions the user explicitly cancelled from VS Code UI. We swallow the
+	// Sessions the user explicitly cancelled from Si Code UI. We swallow the
 	// NEXT state change for each (typically the chat model going `idle`) so the
 	// backend doesn't narrate "the session became idle" right after the user
 	// already hit Stop. Stored with a safety expiry in case the cancellation

@@ -219,7 +219,7 @@ export const IAgentHostByokLmHandler = createDecorator<IAgentHostByokLmHandler>(
 
 /**
  * Renderer-side handler that services {@link IByokLmChatRequest}s by calling
- * the VS Code Language Model API. Implemented in the workbench (where
+ * the Si Code Language Model API. Implemented in the workbench (where
  * `ILanguageModelsService` lives) and reached from the node agent host over
  * the reverse bridge.
  */

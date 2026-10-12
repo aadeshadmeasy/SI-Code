@@ -21,7 +21,7 @@ started after workbench restoration, synchronizes immediately when instantiated,
 later keybinding changes.
 
 Open Agents Window force-reveals the window through the native host, because a system-wide trigger
-usually fires while VS Code is inactive or hidden and does not focus any window itself.
+usually fires while Si Code is inactive or hidden and does not focus any window itself.
 
 Rejected Open Agents Window bindings are logged in the Agents Window. OS registration failures are
 reported by each renderer owner so an Agents-only process retains a visible failure surface. When

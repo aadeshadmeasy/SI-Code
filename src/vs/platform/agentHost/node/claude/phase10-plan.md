@@ -56,7 +56,7 @@ behavior the Copilot agent already ships.
   and uses yield-restart for the in-process tool path.
 - MCP gateway (`_gateway` / `_gatewayIdleTimeout`) lifecycle. **Roadmap
   correction (see Decisions):** the production extension's `_gateway` field is
-  the VS Code `McpGateway` adapter exposing external editor MCP servers over
+  the Si Code `McpGateway` adapter exposing external editor MCP servers over
   HTTP — it has nothing to do with in-process tools built from
   `createSdkMcpServer`. There are no external resources to idle out here.
 - `setClientCustomizations` / `setCustomizationEnabled` (Phase 11).

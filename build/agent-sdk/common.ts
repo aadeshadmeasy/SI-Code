@@ -6,7 +6,7 @@
 /**
  * Shared helpers for the per-platform agent SDK build pipeline. Called
  * from `package.ts`, `upload.ts`, and `produce.ts`, plus the gulpfiles'
- * `packageTask` (via `readAgentSdkResults`) so each VS Code build can
+ * `packageTask` (via `readAgentSdkResults`) so each Si Code build can
  * stamp its own `product.agentSdks.<sdk>` into the per-platform
  * `product.json` at packaging time.
  *
@@ -115,7 +115,7 @@ export function getSdkVersion(sdk: Sdk): string {
 	return getAgentMeta(sdk).version;
 }
 
-/** Strict subset of VS Code build platforms — the SDK pipeline only knows
+/** Strict subset of Si Code build platforms — the SDK pipeline only knows
  *  about platforms it can target. `web` is excluded (no SDK on web). */
 export type VscodeBuildPlatform = 'darwin' | 'linux' | 'alpine' | 'win32';
 
@@ -131,7 +131,7 @@ export type VscodeBuildArch = 'x64' | 'arm64';
 
 /**
  * Resolves the SDK's npm `optionalDependencies` suffix for a particular VS
- * Code build. Returns undefined when the VS Code build's `(platform, arch)`
+ * Code build. Returns undefined when the Si Code build's `(platform, arch)`
  * has no compatible SDK (e.g. armhf, web, any combination we don't ship).
  *
  * - Claude ships `linux-{x64,arm64}-musl` packages separately from the glibc

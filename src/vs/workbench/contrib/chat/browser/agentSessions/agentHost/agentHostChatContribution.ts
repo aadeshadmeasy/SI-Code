@@ -432,7 +432,7 @@ export class AgentHostContribution extends Disposable implements IWorkbenchContr
 
 	/**
 	 * Authenticate using protectedResources from agent info in root state.
-	 * Resolves tokens via the standard VS Code authentication service.
+	 * Resolves tokens via the standard Si Code authentication service.
 	 */
 	private async _authenticateWithServer(agents: readonly AgentInfo[]): Promise<void> {
 		const generation = this._authenticationGeneration;

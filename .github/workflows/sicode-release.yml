@@ -115,4 +115,5 @@ jobs:
         with:
           name: Si Code ${{ github.ref_name }}
           generate_release_notes: true
+          overwrite_files: true
           files: dist/*

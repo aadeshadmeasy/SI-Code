@@ -127,10 +127,31 @@ jobs:
           New-Item -ItemType Directory -Force -Path release-artifacts | Out-Null
           Compress-Archive -Path "../${{ matrix.artifact }}" -DestinationPath "release-artifacts/${{ matrix.archive }}"
 
+      - name: Windows user installer
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $arch = if ('${{ matrix.slug }}' -eq 'win32-arm64') { 'arm64' } else { 'x64' }
+          npm run gulp -- "vscode-win32-$arch-inno-updater"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          npm run gulp -- "vscode-win32-$arch-user-setup"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $setup = Get-ChildItem ".build/win32-$arch/user-setup/*.exe" | Select-Object -First 1
+          if (-not $setup) { throw "Inno Setup did not produce an installer for $arch" }
+          Copy-Item $setup.FullName "release-artifacts/SI-Code-win32-$arch-setup.exe"
+          Get-Item "release-artifacts/SI-Code-win32-$arch-setup.exe" | Format-List Name, Length
+
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.archive }}
           path: release-artifacts/${{ matrix.archive }}
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@v4
+        if: runner.os == 'Windows'
+        with:
+          name: SI-Code-${{ matrix.slug }}-setup.exe
+          path: release-artifacts/SI-Code-${{ matrix.slug }}-setup.exe
           if-no-files-found: error
 
       - uses: actions/upload-artifact@v4

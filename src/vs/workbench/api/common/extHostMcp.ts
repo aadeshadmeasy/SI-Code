@@ -767,8 +767,24 @@ export class McpHTTPHandle extends Disposable {
 		} while (!chunk.done);
 	}
 
+	/**
+	 * An Authorization value the user put on the server (API key or personal
+	 * access token). That header is sent as-is and must not start OAuth.
+	 */
+	private _configuredAuthorization(): string | undefined {
+		for (const [name, value] of this._launch.headers) {
+			if (name.toLowerCase() === 'authorization' && value.trim()) {
+				return value;
+			}
+		}
+		return undefined;
+	}
+
 	private _authRejectedMessage(status: number, detail: string): string {
 		const body = detail ? ` ${detail}` : '';
+		if (this._configuredAuthorization()) {
+			return localize('mcp.staticAuthRejected', "The server rejected the Authorization header from mcp.json ({0}). Check the API key or personal access token, then retry.{1}", status, body);
+		}
 		if (status === 403) {
 			return localize('mcp.forbiddenKept', "The server refused the request (403). The saved sign-in was kept. Retry, or sign out of this server if the account is wrong.{0}", body);
 		}
@@ -776,6 +792,9 @@ export class McpHTTPHandle extends Disposable {
 	}
 
 	private async _addAuthHeader(headers: Record<string, string>, options?: { forceNewRegistration?: boolean; errorOnUserInteraction?: boolean; forceRefresh?: boolean }) {
+		if (this._configuredAuthorization()) {
+			return headers;
+		}
 		const errorOnUserInteraction = options?.errorOnUserInteraction ?? this._errorOnUserInteraction;
 		if (this._authMetadata) {
 			try {
@@ -859,6 +878,12 @@ export class McpHTTPHandle extends Disposable {
 		const doFetch = () => this._fetch(mcpUrl, init, { transportHeaders });
 
 		let res = await doFetch();
+		if (this._configuredAuthorization()) {
+			if (isAuthStatusCode(res.status)) {
+				this._log(LogLevel.Warning, `MCP server rejected the configured Authorization header (${res.status}). It was not replaced with a browser sign-in.`);
+			}
+			return res;
+		}
 		if (isAuthStatusCode(res.status)) {
 			if (!this._authMetadata) {
 				const protocolHeaders = { 'MCP-Protocol-Version': MCP.LATEST_PROTOCOL_VERSION };

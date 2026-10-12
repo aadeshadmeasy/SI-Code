@@ -449,6 +449,24 @@ suite('ExtHostMcp', () => {
 			}, { accept: 'text/event-stream, application/json', contentType: 'application/json', apiKey: undefined });
 		});
 
+		test('a configured Authorization header is not replaced with OAuth', async () => {
+			let tokenCalls = 0;
+			const { handle, requests } = createHandle({
+				headers: [['Authorization', 'Bearer pat-token']],
+				onToken: () => {
+					tokenCalls++;
+					return 'oauth-token';
+				},
+				respond: () => createMockResponse({ status: 401, body: 'bad token' }),
+			});
+			const headers: Record<string, string> = { Authorization: 'Bearer pat-token' };
+			const response = await handle['_fetchWithAuthRetry'](TEST_MCP_URL, { method: 'POST', headers }, headers);
+			assert.strictEqual(response.status, 401);
+			assert.strictEqual(tokenCalls, 0);
+			assert.strictEqual(headers.Authorization, 'Bearer pat-token');
+			assert.strictEqual(requests.length, 1);
+		});
+
 		test('a 401 refreshes the saved sign-in and does not force a new registration', async () => {
 			const tokenOptions: Array<{ forceNewRegistration?: boolean; forceRefresh?: boolean } | undefined> = [];
 			let attempt = 0;

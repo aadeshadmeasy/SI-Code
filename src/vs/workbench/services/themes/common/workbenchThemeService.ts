@@ -40,8 +40,8 @@ export enum ThemeSettings {
 }
 
 export namespace ThemeSettingDefaults {
-	export const COLOR_THEME_DARK = 'Si Code';
-	export const COLOR_THEME_LIGHT = 'Si Code Light';
+	export const COLOR_THEME_DARK = 'SI Code';
+	export const COLOR_THEME_LIGHT = 'SI Code Light';
 	export const COLOR_THEME_HC_DARK = 'Default High Contrast';
 	export const COLOR_THEME_HC_LIGHT = 'Default High Contrast Light';
 
@@ -66,6 +66,10 @@ export function migrateThemeSettingsId(settingsId: string): string {
 		case 'Experimental Light':
 		case 'VS Code Light':
 			return ThemeSettingDefaults.COLOR_THEME_LIGHT;
+		case 'Si Code':
+			return 'SI Code';
+		case 'Si Code Light':
+			return 'SI Code Light';
 	}
 	return settingsId;
 }

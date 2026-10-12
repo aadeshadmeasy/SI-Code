@@ -50,7 +50,7 @@ export class SicodeProvider implements vscode.LanguageModelChatProvider {
 			name: modelId,
 			family: this.spec.vendor,
 			version: '1',
-			tooltip: `${this.spec.label} via Si Code`,
+			tooltip: `${this.spec.label} via SI Code`,
 			detail: 'Bring your own key',
 			maxInputTokens: this.spec.maxInputTokens ?? 128_000,
 			maxOutputTokens: 4096,
@@ -81,7 +81,7 @@ export class SicodeProvider implements vscode.LanguageModelChatProvider {
 	): Promise<void> {
 		const credentials = (model as { [credKey]?: Credentials })[credKey];
 		if (!credentials) {
-			throw new Error('Si Code could not find the API key for this model. Run Si Code: Configure AI and try again.');
+			throw new Error('SI Code could not find the API key for this model. Run SI Code: Configure AI and try again.');
 		}
 		const tools = (options as { tools?: vscode.LanguageModelChatTool[] }).tools ?? [];
 		const abort = new AbortController();

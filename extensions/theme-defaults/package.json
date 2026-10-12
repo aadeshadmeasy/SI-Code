@@ -14,13 +14,13 @@
   "contributes": {
     "themes": [
       {
-        "id": "Si Code",
+        "id": "SI Code",
         "label": "%sicodeDarkThemeLabel%",
         "uiTheme": "vs-dark",
         "path": "./themes/sicode-dark.json"
       },
       {
-        "id": "Si Code Light",
+        "id": "SI Code Light",
         "label": "%sicodeLightThemeLabel%",
         "uiTheme": "vs",
         "path": "./themes/sicode-light.json"

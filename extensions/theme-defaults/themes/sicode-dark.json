@@ -1,6 +1,6 @@
 {
 	"$schema": "vscode://schemas/color-theme",
-	"name": "Si Code",
+	"name": "SI Code",
 	"include": "./dark_modern.json",
 	"colors": {
 		"activityBar.activeBorder": "#1F6F6A",

@@ -20,7 +20,7 @@
     ProcessorArchitecture="neutral" />
   <Properties>
     <DisplayName>@@AppxPackageDisplayName@@</DisplayName>
-    <PublisherDisplayName>Si Code</PublisherDisplayName>
+    <PublisherDisplayName>SI Code</PublisherDisplayName>
     <Logo>resources\app\resources\win32\code_150x150.png</Logo>
     <uap10:AllowExternalContent>true</uap10:AllowExternalContent>
     <desktop6:RegistryWriteVirtualization>disabled</desktop6:RegistryWriteVirtualization>

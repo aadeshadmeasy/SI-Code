@@ -1,6 +1,6 @@
 {
-	"nameShort": "Si Code",
-	"nameLong": "Si Code",
+	"nameShort": "SI Code",
+	"nameLong": "SI Code",
 	"applicationName": "sicode",
 	"dataFolderName": ".sicode",
 	"sharedDataFolderName": ".sicode-shared",
@@ -16,15 +16,15 @@
 	"serverApplicationName": "sicode-server",
 	"serverDataFolderName": ".sicode-server",
 	"tunnelApplicationName": "sicode-tunnel",
-	"win32DirName": "Si Code",
-	"win32NameVersion": "Si Code",
+	"win32DirName": "SI Code",
+	"win32NameVersion": "SI Code",
 	"win32RegValueName": "SiCode",
 	"win32x64AppId": "{{7C4E9A21-6B18-4F0D-9E55-2A8C1D0F6B34}",
 	"win32arm64AppId": "{{9E2B7C45-1A60-4D83-B7F1-6C0E8A9D3F12}",
 	"win32x64UserAppId": "{{3F8A1C67-5D24-4B90-A1E6-8C7D2F0B4E59}",
 	"win32arm64UserAppId": "{{B6D04E18-2C97-4A5F-9D31-7E1A8C0F5B26}",
 	"win32AppUserModelId": "SiCode.SiCode",
-	"win32ShellNameShort": "Si &Code",
+	"win32ShellNameShort": "SI &Code",
 	"win32TunnelServiceMutex": "sicode-tunnelservice",
 	"win32TunnelMutex": "sicode-tunnel",
 	"darwinBundleIdentifier": "com.sicode.sicode",
@@ -33,7 +33,11 @@
 	"linuxDesktopName": "com.sicode.SiCode",
 	"linuxIconName": "sicode",
 	"licenseFileName": "LICENSE.txt",
-	"reportIssueUrl": "https://github.com/microsoft/vscode/issues/new",
+	"reportIssueUrl": "https://github.com/aadeshadmeasy/vscode/issues/new",
+	"crashReporter": {
+		"companyName": "SI Code",
+		"productName": "SI Code"
+	},
 	"nodejsArtifactFeed": "",
 	"electronArtifactFeed": "",
 	"urlProtocol": "sicode",
@@ -172,7 +176,7 @@
 	"onboardingKeymaps": [
 		{
 			"id": "vscode",
-			"label": "Si Code",
+			"label": "SI Code",
 			"description": "Default keyboard mapping"
 		},
 		{
@@ -209,14 +213,14 @@
 	"onboardingThemes": [
 		{
 			"id": "sicode",
-			"label": "Si Code",
-			"themeId": "Si Code",
+			"label": "SI Code",
+			"themeId": "SI Code",
 			"type": "dark"
 		},
 		{
 			"id": "sicode-light",
-			"label": "Si Code Light",
-			"themeId": "Si Code Light",
+			"label": "SI Code Light",
+			"themeId": "SI Code Light",
 			"type": "light"
 		},
 		{

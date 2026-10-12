@@ -17,7 +17,7 @@ export function registerChatParticipants(context: vscode.ExtensionContext): void
 		if (mode === 'ask' || mode === 'agent') {
 			participant.additionalWelcomeMessage = new vscode.MarkdownString(mode === 'agent'
 				? 'Agent mode reads and edits files, then runs builds, tests, and linters. Terminal commands ask you before they run.'
-				: 'Ask about the open file, or switch to Agent to let Si Code change the project.');
+				: 'Ask about the open file, or switch to Agent to let SI Code change the project.');
 		}
 		context.subscriptions.push(participant);
 	}
@@ -47,7 +47,7 @@ function createHandler(mode: SiCodeMode): vscode.ChatRequestHandler {
 				return;
 			}
 			const message = err instanceof Error ? err.message : String(err);
-			response.markdown(`Si Code could not complete the request. ${message}`);
+			response.markdown(`SI Code could not complete the request. ${message}`);
 		}
 	};
 }
@@ -118,7 +118,7 @@ function buildMessages(mode: SiCodeMode, request: vscode.ChatRequest, context: v
 
 function systemPrompt(mode: SiCodeMode, request: vscode.ChatRequest): string {
 	const lines = [
-		'You are Si Code, a coding assistant inside the editor. Answer using the open file, the selection, and the conversation.',
+		'You are SI Code, a coding assistant inside the editor. Answer using the open file, the selection, and the conversation.',
 		'When tools are listed, call them to read real data instead of guessing. Tools include the user\'s MCP servers and the built-in editor tools.',
 	];
 	if (mode === 'edit' || mode === 'inline') {
@@ -162,7 +162,7 @@ async function applyEdit(text: string, response: vscode.ChatResponseStream): Pro
 	const code = extractCode(text);
 	if (!editor || editor.selection.isEmpty) {
 		response.markdown(text);
-		response.markdown('\n\nSelect the code to rewrite, then run **Si Code: Inline Edit** (`Ctrl+I` or `Cmd+I`).');
+		response.markdown('\n\nSelect the code to rewrite, then run **SI Code: Inline Edit** (`Ctrl+I` or `Cmd+I`).');
 		return;
 	}
 	response.textEdit(editor.document.uri, vscode.TextEdit.replace(editor.selection, code));

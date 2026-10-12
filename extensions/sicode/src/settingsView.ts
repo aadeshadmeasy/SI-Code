@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
 import { vendors } from './vendors.js';
 
 export async function openSettings(context: vscode.ExtensionContext): Promise<void> {
-	const panel = vscode.window.createWebviewPanel('sicode.configure', 'Si Code AI', vscode.ViewColumn.Active, { enableScripts: true });
+	const panel = vscode.window.createWebviewPanel('sicode.configure', 'SI Code AI', vscode.ViewColumn.Active, { enableScripts: true });
 	const nonce = Math.random().toString(36).slice(2);
 	panel.webview.html = await render(context, nonce);
 	const subscription = panel.webview.onDidReceiveMessage(async message => {
@@ -36,7 +36,7 @@ export async function openSettings(context: vscode.ExtensionContext): Promise<vo
 			}
 		}
 		panel.webview.html = await render(context, nonce);
-		void vscode.window.showInformationMessage('Si Code saved your AI settings.');
+		void vscode.window.showInformationMessage('SI Code saved your AI settings.');
 	});
 	panel.onDidDispose(() => subscription.dispose());
 }
@@ -76,7 +76,7 @@ async function render(context: vscode.ExtensionContext, nonce: string): Promise<
 	</style>
 </head>
 <body>
-	<h1>Si Code AI</h1>
+	<h1>SI Code AI</h1>
 	<p class="lede">Keys stay in secret storage. Chat, inline edit, agent mode, and completions use the model you select in the chat picker. Sarvam uses its OpenAI-compatible chat completions endpoint.</p>
 	${fields}
 	<p><button id="save" type="button">Save</button></p>

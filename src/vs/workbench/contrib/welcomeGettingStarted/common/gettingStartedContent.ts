@@ -229,11 +229,11 @@ function createSiCodeSetupStep(): BuiltinGettingStartedStep {
 	return {
 		id: 'sicode.setup',
 		title: localize('gettingStarted.sicode.title', "Add your {0} API key", product.nameShort),
-		description: localize('gettingStarted.sicode.description', "Bring your own key for OpenAI, Anthropic, Gemini, Sarvam, OpenRouter, or a local OpenAI-compatible server such as Ollama. Agent mode edits files and asks before it runs a command. Add MCP servers from the Si Code view.\n{0}", Button(localize('gettingStarted.sicode.button', "Configure AI"), 'command:sicode.configure')),
+		description: localize('gettingStarted.sicode.description', "Bring your own key for OpenAI, Anthropic, Gemini, Sarvam, OpenRouter, or a local OpenAI-compatible server such as Ollama. Agent mode edits files and asks before it runs a command. Add MCP servers from the SI Code view.\n{0}", Button(localize('gettingStarted.sicode.button', "Configure AI"), 'command:sicode.configure')),
 		when: '!chatSetupHidden && !chatSetupDisabledInWorkspace',
 		completionEvents: ['onCommand:sicode.configure'],
 		media: {
-			type: 'svg', altText: 'Si Code chat', path: 'multi-file-edits.svg'
+			type: 'svg', altText: 'SI Code chat', path: 'multi-file-edits.svg'
 		},
 	};
 }
@@ -265,8 +265,8 @@ export const walkthroughs: GettingStartedWalkthroughContent = [
 				{
 					id: 'videoTutorial',
 					title: localize('gettingStarted.videoTutorial.title', "Watch video tutorials"),
-					description: localize('gettingStarted.videoTutorial.description.interpolated', "Watch the first in a series of short & practical video tutorials for Si Code's key features.\n{0}", Button(localize('watch', "Watch Tutorial"), 'https://aka.ms/vscode-getting-started-video')),
-					media: { type: 'svg', altText: 'Si Code Settings', path: 'learn.svg' },
+					description: localize('gettingStarted.videoTutorial.description.interpolated', "Watch the first in a series of short & practical video tutorials for SI Code's key features.\n{0}", Button(localize('watch', "Watch Tutorial"), 'https://aka.ms/vscode-getting-started-video')),
+					media: { type: 'svg', altText: 'SI Code Settings', path: 'learn.svg' },
 				}
 			]
 		}
@@ -274,13 +274,13 @@ export const walkthroughs: GettingStartedWalkthroughContent = [
 
 	{
 		id: 'SetupWeb',
-		title: localize('gettingStarted.setupWeb.title', "Get Started with Si Code for the Web"),
+		title: localize('gettingStarted.setupWeb.title', "Get Started with SI Code for the Web"),
 		description: localize('gettingStarted.setupWeb.description', "Customize your editor, learn the basics, and start coding"),
 		isFeatured: true,
 		icon: setupIcon,
 		when: 'isWeb',
 		next: 'Beginner',
-		walkthroughPageTitle: localize('gettingStarted.setupWeb.walkthroughPageTitle', 'Setup Si Code Web'),
+		walkthroughPageTitle: localize('gettingStarted.setupWeb.walkthroughPageTitle', 'Setup SI Code Web'),
 		content: {
 			type: 'steps',
 			steps: [
@@ -306,10 +306,10 @@ export const walkthroughs: GettingStartedWalkthroughContent = [
 				{
 					id: 'extensionsWebWeb',
 					title: localize('gettingStarted.extensions.title', "Code with extensions"),
-					description: localize('gettingStarted.extensionsWeb.description.interpolated', "Extensions are Si Code's power-ups. A growing number are becoming available in the web.\n{0}", Button(localize('browsePopularWeb', "Browse Popular Web Extensions"), 'command:workbench.extensions.action.showPopularExtensions')),
+					description: localize('gettingStarted.extensionsWeb.description.interpolated', "Extensions are SI Code's power-ups. A growing number are becoming available in the web.\n{0}", Button(localize('browsePopularWeb', "Browse Popular Web Extensions"), 'command:workbench.extensions.action.showPopularExtensions')),
 					when: 'workspacePlatform == \'webworker\'',
 					media: {
-						type: 'svg', altText: 'Si Code extension marketplace with featured language extensions', path: 'extensions-web.svg'
+						type: 'svg', altText: 'SI Code extension marketplace with featured language extensions', path: 'extensions-web.svg'
 					},
 				},
 				{
@@ -334,13 +334,13 @@ export const walkthroughs: GettingStartedWalkthroughContent = [
 				{
 					id: 'commandPaletteTaskWeb',
 					title: localize('gettingStarted.commandPalette.title', "Unlock productivity with the Command Palette "),
-					description: localize('gettingStarted.commandPalette.description.interpolated', "Run commands without reaching for your mouse to accomplish any task in Si Code.\n{0}", Button(localize('commandPalette', "Open Command Palette"), 'command:workbench.action.showCommands')),
+					description: localize('gettingStarted.commandPalette.description.interpolated', "Run commands without reaching for your mouse to accomplish any task in SI Code.\n{0}", Button(localize('commandPalette', "Open Command Palette"), 'command:workbench.action.showCommands')),
 					media: { type: 'svg', altText: 'Command Palette overlay for searching and executing commands.', path: 'commandPalette.svg' },
 				},
 				{
 					id: 'pickAFolderTask-WebWeb',
 					title: localize('gettingStarted.setup.OpenFolder.title', "Open up your code"),
-					description: localize('gettingStarted.setup.OpenFolderWeb.description.interpolated', "You're all set to start coding. You can open a local project or a remote repository to get your files into Si Code.\n{0}\n{1}", Button(localize('openFolder', "Open Folder"), 'command:workbench.action.addRootFolder'), Button(localize('openRepository', "Open Repository"), 'command:remoteHub.openRepository')),
+					description: localize('gettingStarted.setup.OpenFolderWeb.description.interpolated', "You're all set to start coding. You can open a local project or a remote repository to get your files into SI Code.\n{0}\n{1}", Button(localize('openFolder', "Open Folder"), 'command:workbench.action.addRootFolder'), Button(localize('openRepository', "Open Repository"), 'command:remoteHub.openRepository')),
 					when: 'workspaceFolderCount == 0',
 					media: {
 						type: 'svg', altText: 'Explorer view showing buttons for opening folder and cloning repository.', path: 'openFolder.svg'
@@ -361,12 +361,12 @@ export const walkthroughs: GettingStartedWalkthroughContent = [
 	{
 		id: 'SetupAccessibility',
 		title: localize('gettingStarted.setupAccessibility.title', "Get Started with Accessibility Features"),
-		description: localize('gettingStarted.setupAccessibility.description', "Learn the tools and shortcuts that make Si Code accessible. Note that some actions are not actionable from within the context of the walkthrough."),
+		description: localize('gettingStarted.setupAccessibility.description', "Learn the tools and shortcuts that make SI Code accessible. Note that some actions are not actionable from within the context of the walkthrough."),
 		isFeatured: true,
 		icon: setupIcon,
 		when: CONTEXT_ACCESSIBILITY_MODE_ENABLED.key,
 		next: 'Setup',
-		walkthroughPageTitle: localize('gettingStarted.setupAccessibility.walkthroughPageTitle', 'Setup Si Code Accessibility'),
+		walkthroughPageTitle: localize('gettingStarted.setupAccessibility.walkthroughPageTitle', 'Setup SI Code Accessibility'),
 		content: {
 			type: 'steps',
 			steps: [
@@ -397,7 +397,7 @@ export const walkthroughs: GettingStartedWalkthroughContent = [
 				{
 					id: 'commandPaletteTaskAccessibility',
 					title: localize('gettingStarted.commandPaletteAccessibility.title', "Unlock productivity with the Command Palette "),
-					description: localize('gettingStarted.commandPaletteAccessibility.description.interpolated', "Run commands without reaching for your mouse to accomplish any task in Si Code.\n{0}", Button(localize('commandPalette', "Open Command Palette"), 'command:workbench.action.showCommands')),
+					description: localize('gettingStarted.commandPaletteAccessibility.description.interpolated', "Run commands without reaching for your mouse to accomplish any task in SI Code.\n{0}", Button(localize('commandPalette', "Open Command Palette"), 'command:workbench.action.showCommands')),
 					media: { type: 'markdown', path: 'empty' },
 				},
 				{
@@ -477,20 +477,20 @@ export const walkthroughs: GettingStartedWalkthroughContent = [
 				{
 					id: 'settingsAndSync',
 					title: localize('gettingStarted.settings.title', "Tune your settings"),
-					description: localize('gettingStarted.settingsAndSync.description.interpolated', "Customize every aspect of Si Code and [sync](command:workbench.userDataSync.actions.turnOn) customizations across devices.\n{0}", Button(localize('tweakSettings', "Open Settings"), 'command:toSide:workbench.action.openSettings')),
+					description: localize('gettingStarted.settingsAndSync.description.interpolated', "Customize every aspect of SI Code and [sync](command:workbench.userDataSync.actions.turnOn) customizations across devices.\n{0}", Button(localize('tweakSettings', "Open Settings"), 'command:toSide:workbench.action.openSettings')),
 					when: 'workspacePlatform != \'webworker\' && syncStatus != uninitialized',
 					completionEvents: ['onEvent:sync-enabled'],
 					media: {
-						type: 'svg', altText: 'Si Code Settings', path: 'settings.svg'
+						type: 'svg', altText: 'SI Code Settings', path: 'settings.svg'
 					},
 				},
 				{
 					id: 'extensions',
 					title: localize('gettingStarted.extensions.title', "Code with extensions"),
-					description: localize('gettingStarted.extensions.description.interpolated', "Extensions are Si Code's power-ups. They range from handy productivity hacks, expanding out-of-the-box features, to adding completely new capabilities.\n{0}", Button(localize('browsePopular', "Browse Popular Extensions"), 'command:workbench.extensions.action.showPopularExtensions')),
+					description: localize('gettingStarted.extensions.description.interpolated', "Extensions are SI Code's power-ups. They range from handy productivity hacks, expanding out-of-the-box features, to adding completely new capabilities.\n{0}", Button(localize('browsePopular', "Browse Popular Extensions"), 'command:workbench.extensions.action.showPopularExtensions')),
 					when: 'workspacePlatform != \'webworker\'',
 					media: {
-						type: 'svg', altText: 'Si Code extension marketplace with featured language extensions', path: 'extensions.svg'
+						type: 'svg', altText: 'SI Code extension marketplace with featured language extensions', path: 'extensions.svg'
 					},
 				},
 				{

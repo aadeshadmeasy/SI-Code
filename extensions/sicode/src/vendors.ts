@@ -66,7 +66,7 @@ export const vendors: readonly VendorSpec[] = [
 		defaultModel: 'openai/gpt-4o-mini',
 		kind: 'openai',
 		defaultBaseUrl: 'https://openrouter.ai/api/v1',
-		extraHeaders: { 'X-Title': 'Si Code' },
+		extraHeaders: { 'X-Title': 'SI Code' },
 	},
 	{
 		vendor: 'sicode-compatible',

@@ -1,17 +1,17 @@
 {
 	"displayName": "Default Themes",
-	"description": "The default Si Code light and dark themes",
-	"sicodeDarkThemeLabel": "Si Code",
-	"sicodeLightThemeLabel": "Si Code Light",
+	"description": "The default SI Code light and dark themes",
+	"sicodeDarkThemeLabel": "SI Code",
+	"sicodeLightThemeLabel": "SI Code Light",
 	"light2026ThemeLabel": "Light 2026",
 	"dark2026ThemeLabel": "Dark 2026",
 	"darkPlusColorThemeLabel": "Dark+",
 	"darkModernThemeLabel": "Dark Modern",
 	"lightPlusColorThemeLabel": "Light+",
 	"lightModernThemeLabel": "Light Modern",
-	"darkColorThemeLabel": "Dark (Si Code)",
-	"lightColorThemeLabel": "Light (Si Code)",
+	"darkColorThemeLabel": "Dark (SI Code)",
+	"lightColorThemeLabel": "Light (SI Code)",
 	"hcColorThemeLabel": "Dark High Contrast",
 	"lightHcColorThemeLabel": "Light High Contrast",
-	"minimalIconThemeLabel": "Minimal (Si Code)"
+	"minimalIconThemeLabel": "Minimal (SI Code)"
 }

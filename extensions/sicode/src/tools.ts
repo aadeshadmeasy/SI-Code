@@ -244,7 +244,7 @@ class TerminalTool implements vscode.LanguageModelTool<{ command: string; cwd?: 
 		return {
 			invocationMessage: `Run \`${command}\``,
 			confirmationMessages: {
-				title: 'Si Code wants to run a command',
+				title: 'SI Code wants to run a command',
 				message: command || '(empty command)',
 			},
 		};
@@ -263,12 +263,12 @@ class TerminalTool implements vscode.LanguageModelTool<{ command: string; cwd?: 
 }
 
 async function runInTerminal(command: string, cwd: vscode.Uri | undefined, token: vscode.CancellationToken): Promise<string> {
-	const terminal = vscode.window.createTerminal({ name: 'Si Code', cwd });
+	const terminal = vscode.window.createTerminal({ name: 'SI Code', cwd });
 	terminal.show();
 	const integration = await waitForShellIntegration(terminal, token);
 	if (!integration) {
 		terminal.sendText(command, true);
-		return 'The command was sent to the Si Code terminal. Shell integration did not become ready, so the output was not captured. Inspect the terminal before continuing.';
+		return 'The command was sent to the SI Code terminal. Shell integration did not become ready, so the output was not captured. Inspect the terminal before continuing.';
 	}
 	const execution = integration.executeCommand(command);
 	let output = '';
@@ -283,7 +283,7 @@ async function runInTerminal(command: string, cwd: vscode.Uri | undefined, token
 				return `${output.slice(0, 20_000)}\n…truncated`;
 			}
 			if (Date.now() > deadline) {
-				return `${output}\nTimed out after 120 seconds. The command may still be running in the Si Code terminal.`;
+				return `${output}\nTimed out after 120 seconds. The command may still be running in the SI Code terminal.`;
 			}
 		}
 	} catch (err) {

@@ -1,4 +1,4 @@
-name: Si Code Release
+name: SI Code Release
 
 on:
   workflow_dispatch:
@@ -113,7 +113,7 @@ jobs:
 
       - uses: softprops/action-gh-release@v2
         with:
-          name: Si Code ${{ github.ref_name }}
+          name: SI Code ${{ github.ref_name }}
           generate_release_notes: true
           overwrite_files: true
           files: dist/*

@@ -1,7 +1,7 @@
 {
 	"name": "sicode",
-	"displayName": "Si Code",
-	"description": "Bring-your-own-key chat, inline edit, and completions for Si Code.",
+	"displayName": "SI Code",
+	"description": "Bring-your-own-key chat, inline edit, and completions for SI Code.",
 	"version": "1.0.0",
 	"publisher": "sicode",
 	"license": "MIT",
@@ -34,42 +34,42 @@
 			{
 				"command": "sicode.configure",
 				"title": "Configure AI",
-				"category": "Si Code"
+				"category": "SI Code"
 			},
 			{
 				"command": "sicode.inlineEdit",
 				"title": "Inline Edit",
-				"category": "Si Code"
+				"category": "SI Code"
 			},
 			{
 				"command": "sicode.openMcp",
 				"title": "Open MCP Configuration",
-				"category": "Si Code"
+				"category": "SI Code"
 			},
 			{
 				"command": "sicode.runPython",
 				"title": "Run Python File",
-				"category": "Si Code"
+				"category": "SI Code"
 			},
 			{
 				"command": "sicode.mcp.add",
 				"title": "Add MCP Server",
-				"category": "Si Code"
+				"category": "SI Code"
 			},
 			{
 				"command": "sicode.mcp.browse",
 				"title": "Browse MCP Servers",
-				"category": "Si Code"
+				"category": "SI Code"
 			},
 			{
 				"command": "sicode.mcp.installed",
 				"title": "Show Installed MCP Servers",
-				"category": "Si Code"
+				"category": "SI Code"
 			},
 			{
 				"command": "sicode.mcp.connect",
 				"title": "Connect MCP Servers",
-				"category": "Si Code"
+				"category": "SI Code"
 			}
 		],
 		"menus": {
@@ -97,7 +97,7 @@
 			"activitybar": [
 				{
 					"id": "sicode",
-					"title": "Si Code",
+					"title": "SI Code",
 					"icon": "media/icon.svg"
 				}
 			]
@@ -112,7 +112,7 @@
 			]
 		},
 		"configuration": {
-			"title": "Si Code",
+			"title": "SI Code",
 			"properties": {
 				"sicode.openai.model": {
 					"type": "string",
@@ -152,14 +152,14 @@
 				"sicode.completions.enabled": {
 					"type": "boolean",
 					"default": true,
-					"description": "Offer inline completions from the first configured Si Code model."
+					"description": "Offer inline completions from the first configured SI Code model."
 				}
 			}
 		},
 		"languageModelChatProviders": [
 			{
 				"vendor": "sicode-openai",
-				"displayName": "Si Code OpenAI",
+				"displayName": "SI Code OpenAI",
 				"configuration": {
 					"type": "object",
 					"properties": {
@@ -175,7 +175,7 @@
 			},
 			{
 				"vendor": "sicode-anthropic",
-				"displayName": "Si Code Anthropic",
+				"displayName": "SI Code Anthropic",
 				"configuration": {
 					"type": "object",
 					"properties": {
@@ -191,7 +191,7 @@
 			},
 			{
 				"vendor": "sicode-gemini",
-				"displayName": "Si Code Gemini",
+				"displayName": "SI Code Gemini",
 				"configuration": {
 					"type": "object",
 					"properties": {
@@ -207,7 +207,7 @@
 			},
 			{
 				"vendor": "sicode-sarvam",
-				"displayName": "Si Code Sarvam",
+				"displayName": "SI Code Sarvam",
 				"configuration": {
 					"type": "object",
 					"properties": {
@@ -223,7 +223,7 @@
 			},
 			{
 				"vendor": "sicode-openrouter",
-				"displayName": "Si Code OpenRouter",
+				"displayName": "SI Code OpenRouter",
 				"configuration": {
 					"type": "object",
 					"properties": {
@@ -239,7 +239,7 @@
 			},
 			{
 				"vendor": "sicode-compatible",
-				"displayName": "Si Code Compatible",
+				"displayName": "SI Code Compatible",
 				"configuration": {
 					"type": "object",
 					"properties": {
@@ -263,8 +263,8 @@
 			{
 				"id": "sicode.ask",
 				"name": "sicode",
-				"fullName": "Si Code",
-				"description": "Ask Si Code about the open file.",
+				"fullName": "SI Code",
+				"description": "Ask SI Code about the open file.",
 				"isDefault": true,
 				"locations": ["panel"],
 				"modes": ["ask"]
@@ -272,8 +272,8 @@
 			{
 				"id": "sicode.edit",
 				"name": "sicode",
-				"fullName": "Si Code",
-				"description": "Edit the selection with Si Code.",
+				"fullName": "SI Code",
+				"description": "Edit the selection with SI Code.",
 				"isDefault": true,
 				"locations": ["panel"],
 				"modes": ["edit"]
@@ -281,8 +281,8 @@
 			{
 				"id": "sicode.agent",
 				"name": "sicode",
-				"fullName": "Si Code",
-				"description": "Si Code agent that edits files, runs commands, and calls MCP tools.",
+				"fullName": "SI Code",
+				"description": "SI Code agent that edits files, runs commands, and calls MCP tools.",
 				"isDefault": true,
 				"locations": ["panel"],
 				"modes": ["agent"],
@@ -291,8 +291,8 @@
 			{
 				"id": "sicode.inline",
 				"name": "sicode",
-				"fullName": "Si Code",
-				"description": "Inline edit with Si Code.",
+				"fullName": "SI Code",
+				"description": "Inline edit with SI Code.",
 				"isDefault": true,
 				"locations": ["editor"]
 			}

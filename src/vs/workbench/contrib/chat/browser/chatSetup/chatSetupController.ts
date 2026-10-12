@@ -18,7 +18,7 @@ import { ConfigurationTarget, IConfigurationService } from '../../../../../platf
 import { Extensions as ConfigurationExtensions, IConfigurationRegistry } from '../../../../../platform/configuration/common/configurationRegistry.js';
 import { IDialogService } from '../../../../../platform/dialogs/common/dialogs.js';
 import { ILogService } from '../../../../../platform/log/common/log.js';
-import product from '../../../../../platform/product/common/product.js';
+import product, { isSicodeReleaseProduct } from '../../../../../platform/product/common/product.js';
 import { IProgressService, ProgressLocation } from '../../../../../platform/progress/common/progress.js';
 import { IQuickInputService } from '../../../../../platform/quickinput/common/quickInput.js';
 import { Registry } from '../../../../../platform/registry/common/platform.js';
@@ -293,6 +293,12 @@ export class ChatSetupController extends Disposable {
 	}
 
 	private async doInstall(): Promise<void> {
+		// The built-in SI Code extension is already in the app. Installing it
+		// from the gallery fails with "was not found".
+		if (isSicodeReleaseProduct()) {
+			return;
+		}
+
 		await this.extensionsWorkbenchService.install(defaultChat.chatExtensionId, {
 			enable: true,
 			isApplicationScoped: true, 	// install into all profiles

@@ -338,7 +338,9 @@ export class ExtensionManagementService extends AbstractExtensionManagementServi
 	}
 
 	private async downloadExtension(extension: IGalleryExtension, operation: InstallOperation, verifySignature: boolean, clientTargetPlatform?: TargetPlatform): Promise<{ readonly location: URI; readonly verificationStatus: ExtensionSignatureVerificationCode | undefined }> {
-		if (verifySignature) {
+		if (this.productService.extensionSignatureVerification === false) {
+			verifySignature = false;
+		} else if (verifySignature) {
 			const value = this.configurationService.getValue(VerifyExtensionSignatureConfigKey);
 			verifySignature = isBoolean(value) ? value : true;
 		}

@@ -189,6 +189,12 @@ declare module 'vscode' {
 		readonly configuration?: {
 			readonly [key: string]: any;
 		};
+
+		/**
+		 * Name of the provider group being resolved, when the user added this
+		 * provider from Manage Language Models.
+		 */
+		readonly group?: string;
 	}
 
 	export interface ChatRequest {

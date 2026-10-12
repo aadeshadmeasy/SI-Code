@@ -30,6 +30,7 @@ import { createDecorator } from '../../../../platform/instantiation/common/insta
 import { ILogService } from '../../../../platform/log/common/log.js';
 import { INotificationService, NeverShowAgainScope } from '../../../../platform/notification/common/notification.js';
 import { IOpenerService } from '../../../../platform/opener/common/opener.js';
+import { isSicodeReleaseProduct } from '../../../../platform/product/common/product.js';
 import { IProductService } from '../../../../platform/product/common/productService.js';
 import { asJson, IRequestService } from '../../../../platform/request/common/request.js';
 import { IQuickInputService, IQuickPickItem, QuickInputHideReason } from '../../../../platform/quickinput/common/quickInput.js';
@@ -1257,6 +1258,11 @@ export class LanguageModelsService implements ILanguageModelsService {
 					this._onLanguageModelChange.fire(vendor);
 				}
 			}
+			if (isSicodeReleaseProduct() && addedVendorIds.length > 0) {
+				// Activate every languageModelChatProviders contribution, built-in
+				// or third-party, as soon as it is contributed.
+				void Promise.all(addedVendorIds.map(vendor => this._resolveAllLanguageModels(vendor, true))).catch(error => this._logService.error(error));
+			}
 		}
 	}
 
@@ -1322,7 +1328,7 @@ export class LanguageModelsService implements ILanguageModelsService {
 			const languageModelsGroups: ILanguageModelsGroup[] = [];
 
 			try {
-				const models = await provider.provideLanguageModelChatInfo({ silent }, CancellationToken.None);
+				const models = this._dedupeVendorModels(await provider.provideLanguageModelChatInfo({ silent }, CancellationToken.None), allModels);
 				if (models.length) {
 					allModels.push(...models);
 					const modelIdentifiers = [];
@@ -1378,7 +1384,7 @@ export class LanguageModelsService implements ILanguageModelsService {
 				const configuration = await this._resolveConfiguration(group, vendor.configuration);
 
 				try {
-					const models = await provider.provideLanguageModelChatInfo({ group: group.name, silent, configuration }, CancellationToken.None);
+					const models = this._dedupeVendorModels(await provider.provideLanguageModelChatInfo({ group: group.name, silent, configuration }, CancellationToken.None), allModels);
 					if (models.length) {
 						// Provide a sensible default for `metadata.detail` so that
 						// multiple instances of the same vendor (e.g. multiple
@@ -1453,6 +1459,32 @@ export class LanguageModelsService implements ILanguageModelsService {
 			} else {
 				this._logService.trace(`[LM] No changes in language models for vendor ${vendorId}`);
 			}
+		});
+	}
+
+	/**
+	 * A provider added twice (two Sarvam rows, two copies of the same endpoint)
+	 * publishes the same model id. Keep the first registration.
+	 */
+	private _dedupeVendorModels(models: ILanguageModelChatMetadataAndIdentifier[], already: readonly ILanguageModelChatMetadataAndIdentifier[]): ILanguageModelChatMetadataAndIdentifier[] {
+		if (!isSicodeReleaseProduct()) {
+			return models;
+		}
+		// Only the built-in SI Code providers collapse a model id added twice
+		// (two Sarvam rows). Third-party providers can publish the same id from
+		// two endpoints, and those identifiers differ by group.
+		const seen = new Set(already.filter(model => ExtensionIdentifier.equals(model.metadata.extension, 'sicode.sicode')).map(model => `${model.metadata.vendor}\0${model.metadata.id}`));
+		return models.filter(model => {
+			if (!ExtensionIdentifier.equals(model.metadata.extension, 'sicode.sicode')) {
+				return true;
+			}
+			const key = `${model.metadata.vendor}\0${model.metadata.id}`;
+			if (seen.has(key)) {
+				this._logService.info(`[LM] Skipping duplicate ${model.metadata.vendor} model ${model.metadata.id}`);
+				return false;
+			}
+			seen.add(key);
+			return true;
 		});
 	}
 

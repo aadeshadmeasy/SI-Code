@@ -20,6 +20,7 @@ import { ILogService } from '../../../platform/log/common/log.js';
 import { Progress } from '../../../platform/progress/common/progress.js';
 import { COPILOT_VENDOR_ID, IChatMessage, IChatResponsePart, ILanguageModelChatInfoOptions, ILanguageModelChatMetadata, ILanguageModelChatMetadataAndIdentifier, ILanguageModelChatRequestOptions } from '../../contrib/chat/common/languageModels.js';
 import { INTERNAL_AUTH_PROVIDER_PREFIX } from '../../services/authentication/common/authentication.js';
+import { isSicodeReleaseProduct } from '../../../platform/product/common/product.js';
 import { checkProposedApiEnabled, isProposedApiEnabled } from '../../services/extensions/common/extensions.js';
 import { SerializableObjectWithBuffers } from '../../services/extensions/common/proxyIdentifier.js';
 import { ExtHostLanguageModelsShape, MainContext, MainThreadLanguageModelsShape } from './extHost.protocol.js';
@@ -196,7 +197,7 @@ export class ExtHostLanguageModels implements ExtHostLanguageModelsShape {
 		if (!data) {
 			return [];
 		}
-		const modelInformation: vscode.LanguageModelChatInformation[] = await data.provider.provideLanguageModelChatInformation({ silent: options.silent, configuration: options.configuration }, token) ?? [];
+		const modelInformation: vscode.LanguageModelChatInformation[] = await data.provider.provideLanguageModelChatInformation({ silent: options.silent, configuration: options.configuration, group: options.group }, token) ?? [];
 		if (this._languageModelProviders.get(vendor) !== data) {
 			return [];
 		}
@@ -208,11 +209,16 @@ export class ExtHostLanguageModels implements ExtHostLanguageModelsShape {
 					accountLabel: typeof m.requiresAuthorization === 'object' ? m.requiresAuthorization.label : undefined
 				};
 			}
-			if (m.capabilities.editTools) {
-				checkProposedApiEnabled(data.extension, 'chatProvider');
-			}
-			if (m.capabilities.apiType !== undefined || m.capabilities.adaptiveThinking !== undefined) {
-				checkProposedApiEnabled(data.extension, 'languageModelCapabilities');
+			// Packaged SI Code keeps models from third-party providers that set
+			// these fields without a product.json proposal allow-list. Stock
+			// VS Code still rejects that use.
+			if (!isSicodeReleaseProduct()) {
+				if (m.capabilities.editTools) {
+					checkProposedApiEnabled(data.extension, 'chatProvider');
+				}
+				if (m.capabilities.apiType !== undefined || m.capabilities.adaptiveThinking !== undefined) {
+					checkProposedApiEnabled(data.extension, 'languageModelCapabilities');
+				}
 			}
 
 			const isDefaultForLocation: { [K in ChatAgentLocation]?: boolean } = {};

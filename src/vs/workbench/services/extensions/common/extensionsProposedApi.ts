@@ -8,6 +8,7 @@ import { localize } from '../../../../nls.js';
 import { Disposable } from '../../../../base/common/lifecycle.js';
 import { ExtensionIdentifier, IExtensionDescription, IExtensionManifest } from '../../../../platform/extensions/common/extensions.js';
 import { allApiProposals, ApiProposalName } from '../../../../platform/extensions/common/extensionsApiProposals.js';
+import { isSicodeReleaseProduct } from '../../../../platform/product/common/product.js';
 import { SyncDescriptor } from '../../../../platform/instantiation/common/descriptors.js';
 import { ILogService } from '../../../../platform/log/common/log.js';
 import { IProductService } from '../../../../platform/product/common/productService.js';
@@ -16,6 +17,20 @@ import { IWorkbenchEnvironmentService } from '../../environment/common/environme
 import { Extensions, IExtensionFeatureMarkdownRenderer, IExtensionFeaturesRegistry, IRenderedData } from '../../extensionManagement/common/extensionFeatures.js';
 import { IMarkdownString, MarkdownString } from '../../../../base/common/htmlContent.js';
 import { Mutable } from '../../../../base/common/types.js';
+
+const languageModelProviderProposals = new Set<string>([
+	'chatProvider',
+	'languageModelCapabilities',
+	'languageModelSystem',
+]);
+
+function contributesLanguageModelChatProviders(extension: IExtensionDescription): boolean {
+	const contributed = (extension.contributes as { languageModelChatProviders?: unknown } | undefined)?.languageModelChatProviders;
+	if (Array.isArray(contributed)) {
+		return contributed.length > 0;
+	}
+	return contributed !== undefined && contributed !== null;
+}
 
 export class ExtensionsProposedApi {
 
@@ -108,6 +123,16 @@ export class ExtensionsProposedApi {
 		}
 
 		if (!extension.isBuiltin && isNonEmptyArray(extension.enabledApiProposals)) {
+			// A third-party language-model provider needs these proposals to register
+			// models. Stripping them makes provideLanguageModelChatInformation throw
+			// and the Language Models table stays empty.
+			if (isSicodeReleaseProduct() && contributesLanguageModelChatProviders(extension)) {
+				const kept = extension.enabledApiProposals.filter(name => languageModelProviderProposals.has(name));
+				if (kept.length > 0) {
+					extension.enabledApiProposals = kept;
+					return;
+				}
+			}
 			// restrictive: extension cannot use proposed API in this context and its declaration is nulled
 			this._logService.error(`Extension '${extension.identifier.value} CANNOT USE these API proposals '${extension.enabledApiProposals?.join(', ') || '*'}'. You MUST start in extension development mode or use the --enable-proposed-api command line flag`);
 			extension.enabledApiProposals = [];

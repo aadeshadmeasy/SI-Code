@@ -15,6 +15,7 @@ import { URI, UriComponents } from '../../../base/common/uri.js';
 import { localize } from '../../../nls.js';
 import { ExtensionIdentifier } from '../../../platform/extensions/common/extensions.js';
 import { ILogService } from '../../../platform/log/common/log.js';
+import { isSicodeReleaseProduct } from '../../../platform/product/common/product.js';
 import { IProductService } from '../../../platform/product/common/productService.js';
 import { resizeImage } from '../../contrib/chat/browser/chatImageUtils.js';
 import { ILanguageModelIgnoredFilesService } from '../../contrib/chat/common/ignoredFiles.js';
@@ -102,7 +103,13 @@ export class MainThreadLanguageModels implements MainThreadLanguageModelsShape {
 				onDidChange: Event.filter(this._lmProviderChange.event, e => e.vendor === vendor, disposables) as unknown as Event<void>,
 				provideLanguageModelChatInfo: async (options, token) => {
 					const modelsAndIdentifiers = await this._proxy.$provideLanguageModelChatInfo(vendor, options, token);
-					const copilotExtensionId = this._productService.defaultChatAgent?.chatExtensionId;
+					// SI Code's chatExtensionId is the built-in BYOK extension. Comparing
+					// against it would mark every SI Code model as built-in Copilot and
+					// hide providers that forgot to set isBYOK. The Copilot extension id
+					// is the one that is not bring-your-own-key.
+					const copilotExtensionId = isSicodeReleaseProduct()
+						? this._productService.defaultChatAgent?.extensionId
+						: this._productService.defaultChatAgent?.chatExtensionId;
 					return modelsAndIdentifiers.map(m => {
 						if (m.metadata.auth) {
 							disposables.add(this._registerAuthenticationProvider(m.metadata.extension, m.metadata.auth));

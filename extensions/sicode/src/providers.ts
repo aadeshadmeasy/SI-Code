@@ -34,8 +34,9 @@ export class SicodeProvider implements vscode.LanguageModelChatProvider {
 	) { }
 
 	async provideLanguageModelChatInformation(options: vscode.PrepareLanguageModelChatModelOptions, _token: vscode.CancellationToken): Promise<vscode.LanguageModelChatInformation[]> {
-		const configuredKey = options.configuration ? stringValue(options.configuration['apiKey']) : undefined;
-		const apiKey = options.configuration ? configuredKey : await this.context.secrets.get(this.spec.secretKey);
+		const configuredKey = stringValue(options.configuration?.['apiKey']);
+		const unresolvedSecret = configuredKey?.startsWith('${input:');
+		const apiKey = (!unresolvedSecret && configuredKey) || await this.context.secrets.get(this.spec.secretKey);
 		if (!apiKey) {
 			return [];
 		}

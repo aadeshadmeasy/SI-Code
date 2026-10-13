@@ -31,7 +31,7 @@ Run **SI Code: Configure AI** or **SI Code: Get Free API Keys**. Add asks for th
 
 Providers that offer a free key or free tier are listed in [Get free API keys](docs/free-api-keys.md).
 
-**SI Code: Sign in with Google** opens the browser, listens on `127.0.0.1:33418`, and keeps the session in secret storage. The signed-in email shows in the status bar and the Accounts menu. Provider and model choices sync to your account. API keys stay on this machine.
+**SI Code: Account** opens the account page. Sign in with GitHub, Google, or email and password. You can create an account or reset a password from that page. Google and GitHub use the browser and return to `127.0.0.1:33418`. The session stays in secret storage, the signed-in email shows in the status bar and the Accounts menu, and model choices sync to the account. API keys stay on this machine.
 
 | Provider | Default model | Endpoint |
 | --- | --- | --- |

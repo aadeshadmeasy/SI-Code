@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="resources/readme/sicode-logo.png" alt="SI Code" width="128" />
+</p>
+
 # SI Code
 
 SI Code (Super Intelligence Code) is a free, open-source desktop editor. You bring your own API key. Chat, inline edit, completions, and agent mode use that key. It includes [Code - OSS](https://github.com/microsoft/vscode) under the [MIT License](LICENSE.txt). Copyright (c) Microsoft Corporation.
@@ -6,18 +10,18 @@ The executable and CLI name stay `sicode`. User data is stored in `.sicode`. The
 
 ## Download
 
-[SI Code v0.1.1](https://github.com/aadeshadmeasy/SI-Code/releases/tag/v0.1.1)
+[Download latest](https://github.com/aadeshadmeasy/SI-Code/releases/latest)
 
 | Platform | Archive |
 | --- | --- |
-| Linux x64 | [SiCode-linux-x64.tar.gz](https://github.com/aadeshadmeasy/SI-Code/releases/download/v0.1.1/SiCode-linux-x64.tar.gz) |
-| Linux arm64 | [SiCode-linux-arm64.tar.gz](https://github.com/aadeshadmeasy/SI-Code/releases/download/v0.1.1/SiCode-linux-arm64.tar.gz) |
-| macOS Apple silicon | [SI-Code-darwin-arm64.dmg](https://github.com/aadeshadmeasy/SI-Code/releases/download/v0.1.1/SI-Code-darwin-arm64.dmg) |
-| macOS Intel | [SI-Code-darwin-x64.dmg](https://github.com/aadeshadmeasy/SI-Code/releases/download/v0.1.1/SI-Code-darwin-x64.dmg) |
-| Windows x64 zip | [SiCode-win32-x64.zip](https://github.com/aadeshadmeasy/SI-Code/releases/download/v0.1.1/SiCode-win32-x64.zip) |
-| Windows arm64 zip | [SiCode-win32-arm64.zip](https://github.com/aadeshadmeasy/SI-Code/releases/download/v0.1.1/SiCode-win32-arm64.zip) |
-| Windows x64 installer | [SI-Code-win32-x64-setup.exe](https://github.com/aadeshadmeasy/SI-Code/releases/download/v0.1.1/SI-Code-win32-x64-setup.exe) |
-| Windows arm64 installer | [SI-Code-win32-arm64-setup.exe](https://github.com/aadeshadmeasy/SI-Code/releases/download/v0.1.1/SI-Code-win32-arm64-setup.exe) |
+| Linux x64 | [SiCode-linux-x64.tar.gz](https://github.com/aadeshadmeasy/SI-Code/releases/latest/download/SiCode-linux-x64.tar.gz) |
+| Linux arm64 | [SiCode-linux-arm64.tar.gz](https://github.com/aadeshadmeasy/SI-Code/releases/latest/download/SiCode-linux-arm64.tar.gz) |
+| macOS Apple silicon | [SI-Code-darwin-arm64.dmg](https://github.com/aadeshadmeasy/SI-Code/releases/latest/download/SI-Code-darwin-arm64.dmg) |
+| macOS Intel | [SI-Code-darwin-x64.dmg](https://github.com/aadeshadmeasy/SI-Code/releases/latest/download/SI-Code-darwin-x64.dmg) |
+| Windows x64 zip | [SiCode-win32-x64.zip](https://github.com/aadeshadmeasy/SI-Code/releases/latest/download/SiCode-win32-x64.zip) |
+| Windows arm64 zip | [SiCode-win32-arm64.zip](https://github.com/aadeshadmeasy/SI-Code/releases/latest/download/SiCode-win32-arm64.zip) |
+| Windows x64 installer | [SI-Code-win32-x64-setup.exe](https://github.com/aadeshadmeasy/SI-Code/releases/latest/download/SI-Code-win32-x64-setup.exe) |
+| Windows arm64 installer | [SI-Code-win32-arm64-setup.exe](https://github.com/aadeshadmeasy/SI-Code/releases/latest/download/SI-Code-win32-arm64-setup.exe) |
 
 On macOS, open the disk image and drag `SI Code.app` to Applications. The app is ad-hoc signed and not notarized. First launch: right-click `SI Code.app` and choose Open, or run `xattr -dr com.apple.quarantine "/Applications/SI Code.app"`. On Windows, run the setup exe, or unzip the archive. SmartScreen warns because the build is unsigned. Choose More info, then Run anyway. Linux and macOS archives start with `sicode`. Windows starts with `SI Code.exe`.
 

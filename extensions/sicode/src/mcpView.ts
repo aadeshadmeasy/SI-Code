@@ -4,18 +4,97 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
+import { applySecrets, enablePreset, mcpPresets, missingSecrets, presetButtonsHtml, presetById, secretStorageKey } from './mcpPresets.js';
 
 const viewId = 'sicode.mcp';
+const enabledKey = 'sicode.mcp.enabled';
 
 export function registerMcpView(context: vscode.ExtensionContext): void {
+	const changed = new vscode.EventEmitter<void>();
 	context.subscriptions.push(
+		changed,
+		vscode.lm.registerMcpServerDefinitionProvider('sicode.presets', new PresetProvider(context, changed.event)),
 		vscode.window.registerWebviewViewProvider(viewId, new McpViewProvider(context.extensionUri)),
 		vscode.commands.registerCommand('sicode.mcp.add', () => vscode.commands.executeCommand('workbench.mcp.addConfiguration')),
 		vscode.commands.registerCommand('sicode.mcp.browse', () => vscode.commands.executeCommand('workbench.mcp.browseServers')),
 		vscode.commands.registerCommand('sicode.mcp.installed', () => vscode.commands.executeCommand('workbench.mcp.showInstalledServers')),
 		vscode.commands.registerCommand('sicode.mcp.connect', () => vscode.commands.executeCommand('workbench.mcp.startServer', '*')),
 		vscode.commands.registerCommand('sicode.mcp.workspace', () => vscode.commands.executeCommand('workbench.mcp.openWorkspaceMcpJson')),
+		vscode.commands.registerCommand('sicode.mcp.preset', (id: string) => enableFromPrompt(context, String(id), changed)),
 	);
+}
+
+class PresetProvider implements vscode.McpServerDefinitionProvider {
+	constructor(
+		private readonly context: vscode.ExtensionContext,
+		readonly onDidChangeMcpServerDefinitions: vscode.Event<void>,
+	) { }
+
+	provideMcpServerDefinitions(): vscode.McpServerDefinition[] {
+		const enabled = this.context.globalState.get<string[]>(enabledKey) ?? [];
+		const definitions: vscode.McpServerDefinition[] = [];
+		for (const id of enabled) {
+			const preset = presetById(id);
+			if (!preset) {
+				continue;
+			}
+			if (preset.transport === 'http' && preset.url) {
+				definitions.push(new vscode.McpHttpServerDefinition(preset.label, vscode.Uri.parse(preset.url)));
+			} else {
+				definitions.push(new vscode.McpStdioServerDefinition(preset.label, preset.command, [...preset.args]));
+			}
+		}
+		return definitions;
+	}
+
+	async resolveMcpServerDefinition(server: vscode.McpServerDefinition): Promise<vscode.McpServerDefinition | undefined> {
+		const preset = mcpPresets.find(item => item.label === server.label);
+		if (!preset) {
+			return server;
+		}
+		const secrets: Record<string, string> = {};
+		for (const field of preset.secrets) {
+			secrets[field.name] = await this.context.secrets.get(secretStorageKey(preset.id, field.name)) ?? '';
+		}
+		if (missingSecrets(preset, secrets).length > 0) {
+			return undefined;
+		}
+		const applied = applySecrets(preset, secrets);
+		if (preset.transport === 'http' && 'uri' in server) {
+			server.headers = { ...server.headers, ...applied.headers };
+			return server;
+		}
+		if ('command' in server) {
+			server.env = { ...server.env, ...applied.env };
+			server.args = applied.args;
+		}
+		return server;
+	}
+}
+
+async function enableFromPrompt(context: vscode.ExtensionContext, id: string, changed: vscode.EventEmitter<void>): Promise<void> {
+	const preset = presetById(id);
+	if (!preset) {
+		return;
+	}
+	for (const field of preset.secrets) {
+		const value = await vscode.window.showInputBox({
+			title: preset.label,
+			prompt: field.prompt,
+			password: field.password,
+			ignoreFocusOut: true,
+		});
+		if (value === undefined || (!value && !field.optional)) {
+			return;
+		}
+		if (value) {
+			await context.secrets.store(secretStorageKey(preset.id, field.name), value);
+		}
+	}
+	const enabled = context.globalState.get<string[]>(enabledKey) ?? [];
+	await context.globalState.update(enabledKey, enablePreset(enabled, preset.id));
+	changed.fire();
+	void vscode.window.showInformationMessage(`${preset.label} is saved. The secret stays in secret storage and is applied when the server starts.`);
 }
 
 class McpViewProvider implements vscode.WebviewViewProvider {
@@ -58,6 +137,9 @@ function html(nonce: string): string {
 	<button data-command="workbench.mcp.startServer" data-arg="*" type="button">Retry servers</button>
 	<button data-command="workbench.mcp.openUserMcpJson" type="button">Open user mcp.json</button>
 	<button data-command="workbench.mcp.openWorkspaceMcpJson" type="button">Open workspace mcp.json</button>
+	<h1>Presets</h1>
+	<p>One click asks for the token once. It is stored in secret storage and sent only when that server starts.</p>
+	${presetButtonsHtml()}
 	<script nonce="${nonce}">
 		const vscode = acquireVsCodeApi();
 		for (const button of document.querySelectorAll('button')) {

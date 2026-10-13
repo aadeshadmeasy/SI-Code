@@ -39,7 +39,7 @@ export async function runToolLoop(options: {
 	complete: (messages: LoopMessage[], tools: ToolSpec[]) => Promise<ModelPart[]>;
 	invokeTool: (name: string, input: unknown) => Promise<string>;
 	maxRounds?: number;
-}): Promise<{ text: string; calls: ToolCallRecord[] }> {
+}): Promise<{ text: string; calls: ToolCallRecord[]; messages: LoopMessage[] }> {
 	const messages = options.messages.slice();
 	const calls: ToolCallRecord[] = [];
 	const maxRounds = options.maxRounds ?? 8;
@@ -50,7 +50,10 @@ export async function runToolLoop(options: {
 		const toolParts = parts.filter((part): part is Extract<ModelPart, { type: 'tool' }> => part.type === 'tool');
 		text = parts.filter((part): part is Extract<ModelPart, { type: 'text' }> => part.type === 'text').map(part => part.text).join('');
 		if (toolParts.length === 0) {
-			return { text, calls };
+			if (text) {
+				messages.push({ role: 'assistant', text });
+			}
+			return { text, calls, messages };
 		}
 
 		messages.push({ role: 'assistant', parts });
@@ -72,5 +75,5 @@ export async function runToolLoop(options: {
 		messages.push({ role: 'user', toolResults });
 	}
 
-	return { text: text || 'Stopped after the tool-call limit.', calls };
+	return { text: text || 'Stopped after the tool-call limit.', calls, messages };
 }

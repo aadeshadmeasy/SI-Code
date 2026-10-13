@@ -4,6 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
+import { clearChanges, dropReview, getReview, listChanges, pickCheckCommand, reviewMarkdown, runAgentWithReview, storeReview } from './agentReview.js';
+import { searchWorkspace } from './codeIndex.js';
+import { runProcess } from './proc.js';
+import { formatWhereHits, isWhereQuestion, rulesPrompt } from './projectMemory.js';
+import { estimateCost, estimateTokens, formatMeter, messageChars, pickModel, routeTask, type RouteKind } from './routing.js';
 import { agentTools, readTools } from './tools.js';
 import { runToolLoop, type LoopMessage, type ModelPart, type ToolSpec } from './toolLoop.js';
 
@@ -12,7 +17,7 @@ export type SiCodeMode = 'ask' | 'edit' | 'agent' | 'inline';
 export function registerChatParticipants(context: vscode.ExtensionContext): void {
 	const iconPath = vscode.Uri.joinPath(context.extensionUri, 'media', 'icon.svg');
 	for (const mode of ['ask', 'edit', 'agent', 'inline'] as const) {
-		const participant = vscode.chat.createChatParticipant(`sicode.${mode}`, createHandler(mode));
+		const participant = vscode.chat.createChatParticipant(`sicode.${mode}`, createHandler(mode, context));
 		participant.iconPath = iconPath;
 		if (mode === 'ask' || mode === 'agent') {
 			participant.additionalWelcomeMessage = new vscode.MarkdownString(mode === 'agent'
@@ -21,27 +26,71 @@ export function registerChatParticipants(context: vscode.ExtensionContext): void
 		}
 		context.subscriptions.push(participant);
 	}
+	registerReviewCommands(context);
 }
 
-function createHandler(mode: SiCodeMode): vscode.ChatRequestHandler {
-	return async (request, context, response, token) => {
+function createHandler(mode: SiCodeMode, context: vscode.ExtensionContext): vscode.ChatRequestHandler {
+	return async (request, _chatContext, response, token) => {
 		const tools = toolsFor(mode, request);
-		const messages = buildMessages(mode, request, context);
+		const rules = await readProjectRules();
+		let where = '';
+		if (isWhereQuestion(request.prompt)) {
+			try {
+				where = formatWhereHits(await searchWorkspace(request.prompt));
+			} catch {
+				where = '';
+			}
+		}
+		const messages = buildMessages(mode, request, _chatContext, rules, where);
+		const routed = await resolveModel(request.model, request.prompt, mode);
 		try {
-			const result = await runToolLoop({
-				messages,
-				tools,
-				maxRounds: mode === 'agent' ? 24 : tools.length ? 8 : 1,
-				complete: (next, toolDefs) => completeWithModel(request.model, next, toolDefs, token),
-				invokeTool: (name, input) => invokeChatTool(name, input, request, token),
-			});
-			if (mode === 'edit' || mode === 'inline') {
-				await applyEdit(result.text, response);
-			} else if (result.text) {
-				response.markdown(result.text);
-			} else if (result.calls.length === 0) {
+			let text = '';
+			let calls = 0;
+			if (mode === 'agent') {
+				clearChanges();
+				const checkCommand = await detectCheckCommand();
+				const outcome = await runAgentWithReview({
+					messages,
+					tools,
+					maxRounds: 24,
+					listChanges,
+					checkCommand,
+					runCheck: command => runProcess(command.command, command.args, workspaceDir()),
+					complete: (next, toolDefs) => completeWithModel(routed.model, next, toolDefs, token),
+					invokeTool: (name, input) => invokeChatTool(name, input, request, token),
+				});
+				text = outcome.text;
+				calls = outcome.calls.length;
+				if (text) {
+					response.markdown(text);
+				}
+				if (outcome.changes.length > 0) {
+					const id = storeReview(outcome.changes);
+					clearChanges();
+					response.markdown(reviewMarkdown(outcome.changes, outcome.check));
+					response.button({ command: 'sicode.review.keep', title: 'Keep', arguments: [id] });
+					response.button({ command: 'sicode.review.revert', title: 'Revert', arguments: [id] });
+				}
+			} else {
+				const result = await runToolLoop({
+					messages,
+					tools,
+					maxRounds: tools.length ? 8 : 1,
+					complete: (next, toolDefs) => completeWithModel(routed.model, next, toolDefs, token),
+					invokeTool: (name, input) => invokeChatTool(name, input, request, token),
+				});
+				text = result.text;
+				calls = result.calls.length;
+				if (mode === 'edit' || mode === 'inline') {
+					await applyEdit(text, response);
+				} else if (text) {
+					response.markdown(text);
+				}
+			}
+			if (!text && calls === 0 && mode !== 'edit' && mode !== 'inline') {
 				response.markdown('The model returned an empty response.');
 			}
+			response.markdown(usageLine(context, routed.kind, routed.model, messages, text));
 		} catch (err) {
 			if (token.isCancellationRequested) {
 				return;
@@ -50,6 +99,100 @@ function createHandler(mode: SiCodeMode): vscode.ChatRequestHandler {
 			response.markdown(`SI Code could not complete the request. ${message}`);
 		}
 	};
+}
+
+function registerReviewCommands(context: vscode.ExtensionContext): void {
+	context.subscriptions.push(
+		vscode.commands.registerCommand('sicode.review.keep', (id: string) => {
+			dropReview(String(id));
+			void vscode.window.showInformationMessage('Kept the agent edits.');
+		}),
+		vscode.commands.registerCommand('sicode.review.revert', async (id: string) => {
+			const changes = getReview(String(id));
+			if (!changes) {
+				void vscode.window.showInformationMessage('Those edits are no longer available to revert.');
+				return;
+			}
+			for (const change of changes) {
+				const uri = vscode.Uri.file(change.path);
+				if (change.before === null) {
+					await vscode.workspace.fs.delete(uri);
+				} else {
+					await vscode.workspace.fs.writeFile(uri, new TextEncoder().encode(change.before));
+				}
+			}
+			dropReview(String(id));
+			void vscode.window.showInformationMessage(`Reverted ${changes.length} file${changes.length === 1 ? '' : 's'}.`);
+		}),
+	);
+}
+
+function usageLine(context: vscode.ExtensionContext, kind: RouteKind, model: vscode.LanguageModelChat, messages: LoopMessage[], text: string): string {
+	const inputTokens = Math.ceil(messageChars(messages) / 4);
+	const outputTokens = estimateTokens(text);
+	const cost = estimateCost(model.id, model.vendor, inputTokens, outputTokens);
+	const key = 'sicode.meter';
+	const prev = context.workspaceState.get<{ usd: number }>(key) ?? { usd: 0 };
+	const totalUsd = prev.usd + cost.usd;
+	void context.workspaceState.update(key, { usd: totalUsd });
+	return formatMeter({ kind, modelId: model.id, inputTokens, outputTokens, chatUsd: cost.usd, known: cost.known, totalUsd });
+}
+
+async function resolveModel(fallback: vscode.LanguageModelChat, prompt: string, mode: SiCodeMode): Promise<{ model: vscode.LanguageModelChat; kind: RouteKind }> {
+	const config = vscode.workspace.getConfiguration('sicode.routing');
+	const kind = routeTask(prompt, { mode, preferLocal: config.get<boolean>('preferLocal') === true });
+	let available: vscode.LanguageModelChat[] = [];
+	try {
+		available = await vscode.lm.selectChatModels();
+	} catch {
+		return { model: fallback, kind };
+	}
+	const picked = pickModel(kind, available.map(model => ({ vendor: model.vendor, id: model.id })), {
+		cheap: config.get<string>('cheapModel') ?? '',
+		strong: config.get<string>('strongModel') ?? '',
+		local: config.get<string>('localModel') ?? '',
+	});
+	const match = picked ? available.find(model => model.vendor === picked.vendor && model.id === picked.id) : undefined;
+	return { model: match ?? fallback, kind };
+}
+
+async function readProjectRules(): Promise<string> {
+	const root = vscode.workspace.workspaceFolders?.[0]?.uri;
+	if (!root) {
+		return '';
+	}
+	try {
+		const bytes = await vscode.workspace.fs.readFile(vscode.Uri.joinPath(root, '.sicode', 'rules.md'));
+		return rulesPrompt(new TextDecoder().decode(bytes));
+	} catch {
+		return '';
+	}
+}
+
+async function detectCheckCommand() {
+	const root = vscode.workspace.workspaceFolders?.[0]?.uri;
+	if (!root) {
+		return undefined;
+	}
+	let names: string[] = [];
+	try {
+		names = (await vscode.workspace.fs.readDirectory(root)).map(([name]) => name);
+	} catch {
+		return undefined;
+	}
+	let packageJson: string | undefined;
+	if (names.includes('package.json')) {
+		try {
+			packageJson = new TextDecoder().decode(await vscode.workspace.fs.readFile(vscode.Uri.joinPath(root, 'package.json')));
+		} catch {
+			packageJson = undefined;
+		}
+	}
+	return pickCheckCommand(names, packageJson);
+}
+
+function workspaceDir(): string {
+	return vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? '';
 }
 
 async function completeWithModel(model: vscode.LanguageModelChat, messages: LoopMessage[], tools: ToolSpec[], token: vscode.CancellationToken): Promise<ModelPart[]> {
@@ -99,8 +242,8 @@ function enabledTools(request: vscode.ChatRequest): ToolSpec[] {
 	return tools;
 }
 
-function buildMessages(mode: SiCodeMode, request: vscode.ChatRequest, context: vscode.ChatContext): LoopMessage[] {
-	const messages: LoopMessage[] = [{ role: 'system', text: systemPrompt(mode, request) }];
+function buildMessages(mode: SiCodeMode, request: vscode.ChatRequest, context: vscode.ChatContext, rules: string, where: string): LoopMessage[] {
+	const messages: LoopMessage[] = [{ role: 'system', text: systemPrompt(mode, request, rules) }];
 	for (const turn of context.history) {
 		if (turn instanceof vscode.ChatRequestTurn) {
 			messages.push({ role: 'user', text: turn.prompt });
@@ -112,11 +255,12 @@ function buildMessages(mode: SiCodeMode, request: vscode.ChatRequest, context: v
 		}
 	}
 	const fileContext = activeFileContext();
-	messages.push({ role: 'user', text: fileContext ? `${fileContext}\n\n${request.prompt}` : request.prompt });
+	const parts = [where, fileContext, request.prompt].filter(Boolean);
+	messages.push({ role: 'user', text: parts.join('\n\n') });
 	return messages;
 }
 
-function systemPrompt(mode: SiCodeMode, request: vscode.ChatRequest): string {
+function systemPrompt(mode: SiCodeMode, request: vscode.ChatRequest, rules: string): string {
 	const lines = [
 		'You are SI Code, a coding assistant inside the editor. Answer using the open file, the selection, and the conversation.',
 		'When tools are listed, call them to read real data instead of guessing. Tools include the user\'s MCP servers and the built-in editor tools.',
@@ -127,7 +271,8 @@ function systemPrompt(mode: SiCodeMode, request: vscode.ChatRequest): string {
 		lines.push([
 			'You are in agent mode. Keep going until the task is done or you are blocked.',
 			'Read the relevant files with sicode_readFile before you edit them. Change as many files as the task needs with sicode_editFile and sicode_writeFile.',
-			'Check sicode_diagnostics. Run the project build, tests, and linters with sicode_runTerminal, and run Python with python3 when the task involves Python.',
+			'Check sicode_diagnostics. Use sicode_whereIs for "where is" questions. Run the project build, tests, and linters with sicode_runTerminal, and run Python with python3 when the task involves Python.',
+			'SI Code runs the project test or build after your edits and sends failures back to you before the user reviews the diff.',
 			'If a command fails or diagnostics report errors you introduced, fix them and run the checks again.',
 			'Every terminal command asks the user before it runs. If the user declines, say so and pick another approach.',
 			'Do not claim a file changed or a command succeeded unless a tool result says so.',
@@ -136,6 +281,9 @@ function systemPrompt(mode: SiCodeMode, request: vscode.ChatRequest): string {
 	const instructions = request.modeInstructions2?.content || request.modeInstructions;
 	if (instructions) {
 		lines.push(instructions);
+	}
+	if (rules) {
+		lines.push(rules);
 	}
 	return lines.join('\n\n');
 }

@@ -4,6 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
+import { recordChange } from './agentReview.js';
+import { searchWorkspace } from './codeIndex.js';
 import type { ToolSpec } from './toolLoop.js';
 
 export const readTools: readonly ToolSpec[] = [
@@ -26,6 +28,17 @@ export const readTools: readonly ToolSpec[] = [
 			properties: {
 				path: { type: 'string', description: 'Workspace-relative or absolute directory. Omit for the workspace root.' },
 			},
+		},
+	},
+	{
+		name: 'sicode_whereIs',
+		description: 'Search the local codebase index for a question such as "where is the login handler". Returns matching file paths.',
+		inputSchema: {
+			type: 'object',
+			properties: {
+				query: { type: 'string', description: 'What to look for, in plain words.' },
+			},
+			required: ['query'],
 		},
 	},
 	{
@@ -85,6 +98,7 @@ export function registerAgentTools(context: vscode.ExtensionContext): void {
 	context.subscriptions.push(
 		vscode.lm.registerTool('sicode_readFile', new ReadFileTool()),
 		vscode.lm.registerTool('sicode_listDirectory', new ListDirectoryTool()),
+		vscode.lm.registerTool('sicode_whereIs', new WhereIsTool()),
 		vscode.lm.registerTool('sicode_diagnostics', new DiagnosticsTool()),
 		vscode.lm.registerTool('sicode_writeFile', new WriteFileTool()),
 		vscode.lm.registerTool('sicode_editFile', new EditFileTool()),
@@ -151,6 +165,17 @@ class ListDirectoryTool implements vscode.LanguageModelTool<{ path?: string }> {
 	}
 }
 
+class WhereIsTool implements vscode.LanguageModelTool<{ query: string }> {
+	async invoke(options: vscode.LanguageModelToolInvocationOptions<{ query: string }>): Promise<vscode.LanguageModelToolResult> {
+		const query = stringField(options.input, 'query');
+		const hits = await searchWorkspace(query);
+		if (hits.length === 0) {
+			return textResult('No matching files in the local codebase index.');
+		}
+		return textResult(hits.map(hit => `${hit.path}\t${hit.symbols.slice(0, 8).join(', ')}`).join('\n'));
+	}
+}
+
 class DiagnosticsTool implements vscode.LanguageModelTool<{ path?: string }> {
 	async invoke(options: vscode.LanguageModelToolInvocationOptions<{ path?: string }>): Promise<vscode.LanguageModelToolResult> {
 		const requested = stringField(options.input, 'path');
@@ -192,13 +217,13 @@ class WriteFileTool implements vscode.LanguageModelTool<{ path: string; contents
 		const uri = resolveUri(stringField(options.input, 'path'), false);
 		const contents = stringField(options.input, 'contents');
 		const edit = new vscode.WorkspaceEdit();
-		let exists = true;
+		let before: string | null = null;
 		try {
-			await vscode.workspace.fs.stat(uri);
+			before = await readText(uri);
 		} catch {
-			exists = false;
+			before = null;
 		}
-		if (!exists) {
+		if (before === null) {
 			edit.createFile(uri, { overwrite: true, contents: new TextEncoder().encode(contents) });
 		} else {
 			const document = await vscode.workspace.openTextDocument(uri);
@@ -206,6 +231,9 @@ class WriteFileTool implements vscode.LanguageModelTool<{ path: string; contents
 			edit.replace(uri, new vscode.Range(new vscode.Position(0, 0), end), contents);
 		}
 		const applied = await vscode.workspace.applyEdit(edit);
+		if (applied) {
+			recordChange(uri.fsPath, before, contents);
+		}
 		return textResult(applied ? `Wrote ${uri.fsPath}` : `Could not write ${uri.fsPath}`);
 	}
 }
@@ -224,6 +252,7 @@ class EditFileTool implements vscode.LanguageModelTool<{ path: string; oldText: 
 		}
 		const document = await vscode.workspace.openTextDocument(uri);
 		const text = document.getText();
+		const before = text;
 		const first = text.indexOf(oldText);
 		if (first < 0) {
 			return textResult('oldText was not found. Read the file and copy the exact snippet.');
@@ -234,6 +263,10 @@ class EditFileTool implements vscode.LanguageModelTool<{ path: string; oldText: 
 		const edit = new vscode.WorkspaceEdit();
 		edit.replace(uri, new vscode.Range(document.positionAt(first), document.positionAt(first + oldText.length)), newText);
 		const applied = await vscode.workspace.applyEdit(edit);
+		if (applied) {
+			const after = text.slice(0, first) + newText + text.slice(first + oldText.length);
+			recordChange(uri.fsPath, before, after);
+		}
 		return textResult(applied ? `Edited ${uri.fsPath}` : `Could not edit ${uri.fsPath}`);
 	}
 }

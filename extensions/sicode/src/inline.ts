@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import { vendors } from './vendors.js';
+import { vendors } from './catalog.js';
 
 export function registerInlineCompletions(context: vscode.ExtensionContext): void {
 	context.subscriptions.push(vscode.languages.registerInlineCompletionItemProvider({ pattern: '**' }, {

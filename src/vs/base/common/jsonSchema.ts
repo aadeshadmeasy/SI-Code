@@ -89,6 +89,10 @@ export interface IJSONSchema {
 	allowComments?: boolean;
 	allowTrailingCommas?: boolean;
 	secret?: boolean;
+	/** When set, the model picker loads ids from this provider's `/models` endpoint. */
+	modelList?: 'openai' | 'gemini';
+	/** When true, a string enum prompt also offers a custom value. */
+	allowCustomValue?: boolean;
 }
 
 export interface IJSONSchemaMap {

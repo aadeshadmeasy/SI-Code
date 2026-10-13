@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import { ToolSpec } from './toolLoop.js';
+import type { ToolSpec } from './toolLoop.js';
 
 export const readTools: readonly ToolSpec[] = [
 	{

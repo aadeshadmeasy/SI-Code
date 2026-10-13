@@ -43,6 +43,7 @@ import { ExtensionsRegistry } from '../../../services/extensions/common/extensio
 import { ChatContextKeys } from './actions/chatContextKeys.js';
 import { ChatAgentLocation } from './constants.js';
 import { ILanguageModelsProviderGroup, ILanguageModelsConfigurationService } from './languageModelsConfiguration.js';
+import { defaultsFromVendorSchemas, mergeModelIds, parseGeminiModelIds, parseOpenAIModelIds, planModelMigration } from './sicodeModelMigration.js';
 
 /**
  * Vendor id used for the built-in GitHub Copilot language model provider. Treated as the default
@@ -1126,6 +1127,8 @@ export class LanguageModelsService implements ILanguageModelsService {
 	readonly onDidChangeModelVisibility = this._onDidChangeModelVisibility.event;
 
 	private _modelsControlManifest: IModelsControlManifest = { free: {}, paid: {} };
+	/** Set while SI Code rewrites chatLanguageModels.json so that rewrite does not migrate again. */
+	private _sicodeMigrating = false;
 	private _modelsControlRawResponse: IChatControlResponse['models'] | undefined;
 
 	private _chatControlUrl: string | undefined;
@@ -1258,6 +1261,9 @@ export class LanguageModelsService implements ILanguageModelsService {
 					this._onLanguageModelChange.fire(vendor);
 				}
 			}
+			if (addedVendorIds.some(vendor => vendor.startsWith('sicode-'))) {
+				void this._migrateSicodeGroups().catch(error => this._logService.error(error));
+			}
 			if (isSicodeReleaseProduct() && addedVendorIds.length > 0) {
 				// Activate every languageModelChatProviders contribution, built-in
 				// or third-party, as soon as it is contributed.
@@ -1267,8 +1273,59 @@ export class LanguageModelsService implements ILanguageModelsService {
 	}
 
 	private async _onDidChangeLanguageModelGroups(changedGroups: readonly ILanguageModelsProviderGroup[]): Promise<void> {
+		if (!this._sicodeMigrating) {
+			const migrated = await this._migrateSicodeGroups();
+			if (migrated) {
+				return;
+			}
+		}
 		const changedVendors = new Set(changedGroups.map(g => g.vendor));
 		await Promise.all(Array.from(changedVendors).map(vendor => this._resolveAllLanguageModels(vendor, true)));
+	}
+
+	/**
+	 * Older SI Code builds saved a vendor and a secret reference, and left out
+	 * the endpoint and model id. Fill those from the provider preset and drop
+	 * duplicate rows so the user does not have to edit the JSON file.
+	 */
+	private async _migrateSicodeGroups(): Promise<boolean> {
+		if (this._sicodeMigrating) {
+			return false;
+		}
+		const vendors = [...this._vendors.values()];
+		if (!vendors.some(vendor => vendor.vendor.startsWith('sicode-'))) {
+			return false;
+		}
+		const groups = this._languageModelsConfigurationService.getLanguageModelsProviderGroups();
+		const plan = planModelMigration(groups, defaultsFromVendorSchemas(vendors));
+		if (!plan.changed) {
+			return false;
+		}
+		this._sicodeMigrating = true;
+		try {
+			for (const update of plan.updates) {
+				await this._languageModelsConfigurationService.updateLanguageModelsProviderGroup(update.from, update.to);
+			}
+			const removed = new Set(plan.removals.map(group => `${group.vendor}\0${group.name}`));
+			const keptSecrets = new Set<string>();
+			for (const group of this._languageModelsConfigurationService.getLanguageModelsProviderGroups()) {
+				if (removed.has(`${group.vendor}\0${group.name}`)) {
+					continue;
+				}
+				for (const value of Object.values(group)) {
+					if (typeof value === 'string' && value.includes('${input:')) {
+						keptSecrets.add(value);
+					}
+				}
+			}
+			for (const removal of plan.removals) {
+				await this._deleteSecretsInConfiguration(removal, this._vendors.get(removal.vendor)?.configuration, keptSecrets);
+				await this._languageModelsConfigurationService.removeLanguageModelsProviderGroup(removal);
+			}
+		} finally {
+			this._sicodeMigrating = false;
+		}
+		return true;
 	}
 
 	getVendors(): ILanguageModelProviderDescriptor[] {
@@ -1466,25 +1523,34 @@ export class LanguageModelsService implements ILanguageModelsService {
 	 * A provider added twice (two Sarvam rows, two copies of the same endpoint)
 	 * publishes the same model id. Keep the first registration.
 	 */
-	private _dedupeVendorModels(models: ILanguageModelChatMetadataAndIdentifier[], already: readonly ILanguageModelChatMetadataAndIdentifier[]): ILanguageModelChatMetadataAndIdentifier[] {
+	private _dedupeVendorModels(models: ILanguageModelChatMetadataAndIdentifier[], already: ILanguageModelChatMetadataAndIdentifier[]): ILanguageModelChatMetadataAndIdentifier[] {
 		if (!isSicodeReleaseProduct()) {
 			return models;
 		}
-		// Only the built-in SI Code providers collapse a model id added twice
-		// (two Sarvam rows). Third-party providers can publish the same id from
-		// two endpoints, and those identifiers differ by group.
-		const seen = new Set(already.filter(model => ExtensionIdentifier.equals(model.metadata.extension, 'sicode.sicode')).map(model => `${model.metadata.vendor}\0${model.metadata.id}`));
+		// Built-in SI Code providers publish one entry per saved group. A second
+		// copy of the same model id is skipped. A configured group replaces the
+		// groupless copy that came from an older settings-only key.
+		const seen = new Map(already.flatMap((model, index) => ExtensionIdentifier.equals(model.metadata.extension, 'sicode.sicode')
+			? [[`${model.metadata.vendor}\0${model.metadata.id}`, index] as const]
+			: []));
 		return models.filter(model => {
 			if (!ExtensionIdentifier.equals(model.metadata.extension, 'sicode.sicode')) {
 				return true;
 			}
 			const key = `${model.metadata.vendor}\0${model.metadata.id}`;
-			if (seen.has(key)) {
-				this._logService.info(`[LM] Skipping duplicate ${model.metadata.vendor} model ${model.metadata.id}`);
-				return false;
+			const previousIndex = seen.get(key);
+			if (previousIndex === undefined) {
+				seen.set(key, already.length);
+				return true;
 			}
-			seen.add(key);
-			return true;
+			const previous = already[previousIndex];
+			if (previous && isGroupedModelIdentifier(model.identifier, model.metadata.vendor, model.metadata.id) && !isGroupedModelIdentifier(previous.identifier, previous.metadata.vendor, previous.metadata.id)) {
+				already.splice(previousIndex, 1);
+				seen.set(key, previousIndex);
+				return true;
+			}
+			this._logService.info(`[LM] Skipping duplicate ${model.metadata.vendor} model ${model.metadata.id}`);
+			return false;
 		});
 	}
 
@@ -2121,7 +2187,7 @@ export class LanguageModelsService implements ILanguageModelsService {
 		for (const property of Object.keys(configuration.properties)) {
 			const propertySchema = configuration.properties[property];
 			const required = !!configuration.required?.includes(property);
-			const value = await this.promptForValue(groupName, property, propertySchema, required, existing);
+			const value = await this.promptForValue(groupName, property, propertySchema, required, { ...existing, ...result });
 			if (value !== undefined) {
 				result[property] = value;
 			}
@@ -2145,6 +2211,10 @@ export class LanguageModelsService implements ILanguageModelsService {
 				return undefined;
 			}
 			return selectedItems;
+		}
+
+		if (propertySchema.type === 'string' && (propertySchema.modelList || propertySchema.allowCustomValue)) {
+			return this.promptForListedModels(groupName, property, propertySchema, existing);
 		}
 
 		if (propertySchema.type === 'string' && Array.isArray(propertySchema.enum) && propertySchema.enum.length > 0) {
@@ -2261,6 +2331,108 @@ export class LanguageModelsService implements ILanguageModelsService {
 			});
 		} finally {
 			disposables.dispose();
+		}
+	}
+
+	private async promptForListedModels(groupName: string, property: string, propertySchema: IJSONSchema & { enumItemLabels?: string[] }, existing: IStringDictionary<unknown> | undefined): Promise<string | undefined> {
+		const curated = Array.isArray(propertySchema.enum) ? propertySchema.enum.filter((value): value is string => typeof value === 'string' && value.length > 0) : [];
+		const labels = new Map<string, string>();
+		curated.forEach((id, index) => labels.set(id, propertySchema.enumItemLabels?.[index] ?? id));
+		let values = curated;
+		if (propertySchema.modelList === 'openai' || propertySchema.modelList === 'gemini') {
+			const endpoint = stringConfigValue(existing?.endpoint) ?? stringConfigValue(existing?.baseUrl);
+			const apiKey = stringConfigValue(existing?.apiKey);
+			const key = apiKey && !apiKey.startsWith('${input:') ? apiKey : '';
+			if (endpoint) {
+				const fetched = await this._fetchProviderModelIds(propertySchema.modelList, endpoint.replace(/\/$/, ''), key);
+				const merged = mergeModelIds(curated, fetched);
+				if (merged.length) {
+					values = merged;
+				}
+			}
+		}
+		if (!values.length) {
+			if (!propertySchema.allowCustomValue) {
+				return undefined;
+			}
+			const custom = await this.promptForInput(groupName, property, { ...propertySchema, title: propertySchema.title ?? localize('modelId', "Model") }, true, existing);
+			return typeof custom === 'string' ? custom : undefined;
+		}
+		const customId = '__sicode_custom_model__';
+		const items: IQuickPickItem[] = values.map(id => ({ label: labels.get(id) ?? id, description: labels.has(id) && labels.get(id) !== id ? id : undefined, id }));
+		if (propertySchema.allowCustomValue) {
+			items.push({ label: localize('customModelId', "Enter a custom model id"), id: customId });
+		}
+		const initial = existing?.[property] !== undefined ? String(existing[property]) : (propertySchema.default !== undefined ? String(propertySchema.default) : undefined);
+		const selected = await this._pickString(groupName, propertySchema, items, initial);
+		if (selected === undefined) {
+			return undefined;
+		}
+		if (selected !== customId) {
+			return selected;
+		}
+		const custom = await this.promptForInput(groupName, property, { ...propertySchema, title: localize('customModelId', "Enter a custom model id"), default: undefined }, true, undefined);
+		return typeof custom === 'string' ? custom : undefined;
+	}
+
+	private async _pickString(groupName: string, propertySchema: IJSONSchema, items: IQuickPickItem[], initial: string | undefined): Promise<string | undefined> {
+		const disposables = new DisposableStore();
+		try {
+			return await new Promise<string | undefined>(resolve => {
+				let settled = false;
+				const finish = (value: string | undefined) => {
+					if (settled) {
+						return;
+					}
+					settled = true;
+					resolve(value);
+				};
+				const quickPick = disposables.add(this._quickInputService.createQuickPick<IQuickPickItem>());
+				quickPick.title = `${groupName}: ${propertySchema.title ?? ''}`;
+				quickPick.items = items;
+				quickPick.placeholder = this.getDescriptionPlaintext(propertySchema) ?? localize('selectValue', "Select value for {0}", propertySchema.title ?? '');
+				quickPick.ignoreFocusOut = true;
+				if (initial !== undefined) {
+					const match = items.find(item => item.id === initial);
+					if (match) {
+						quickPick.activeItems = [match];
+					}
+				}
+				disposables.add(quickPick.onDidAccept(() => {
+					finish(quickPick.selectedItems[0]?.id);
+					quickPick.hide();
+				}));
+				disposables.add(quickPick.onDidHide(() => finish(undefined)));
+				quickPick.show();
+			});
+		} finally {
+			disposables.dispose();
+		}
+	}
+
+	private async _fetchProviderModelIds(kind: 'openai' | 'gemini', endpoint: string, apiKey: string): Promise<string[]> {
+		const headers: Record<string, string> = {};
+		if (apiKey && kind === 'gemini') {
+			headers['x-goog-api-key'] = apiKey;
+		} else if (apiKey) {
+			headers['Authorization'] = `Bearer ${apiKey}`;
+		}
+		try {
+			const context = await this._requestService.request({
+				type: 'GET',
+				url: `${endpoint}/models`,
+				headers,
+				timeout: 8000,
+				callSite: 'sicode.listModels',
+			}, CancellationToken.None);
+			if ((context.res.statusCode ?? 0) >= 400) {
+				return [];
+			}
+			const payload = await asJson(context);
+			return kind === 'gemini' ? parseGeminiModelIds(payload) : parseOpenAIModelIds(payload);
+		} catch {
+			this._logService.trace(`[LM] Model list request failed for ${endpoint}`);
+			return [];
 		}
 	}
 
@@ -2410,7 +2582,7 @@ export class LanguageModelsService implements ILanguageModelsService {
 		return { name, vendor, ...result };
 	}
 
-	private async _deleteSecretsInConfiguration(group: ILanguageModelsProviderGroup, schema: IJSONSchema | undefined): Promise<void> {
+	private async _deleteSecretsInConfiguration(group: ILanguageModelsProviderGroup, schema: IJSONSchema | undefined, keep?: ReadonlySet<string>): Promise<void> {
 		if (!schema) {
 			return;
 		}
@@ -2418,6 +2590,9 @@ export class LanguageModelsService implements ILanguageModelsService {
 		const { vendor, name, range, modelsRange, ...configuration } = group;
 		for (const key in configuration) {
 			const value = group[key];
+			if (typeof value === 'string' && keep?.has(value)) {
+				continue;
+			}
 			if (schema.properties?.[key]?.secret) {
 				const secretKey = this.decodeSecretKey(value);
 				if (secretKey) {
@@ -2772,4 +2947,12 @@ export class LanguageModelsService implements ILanguageModelsService {
 		this._providers.clear();
 	}
 
+}
+
+function isGroupedModelIdentifier(identifier: string, vendor: string, modelId: string): boolean {
+	return identifier !== `${vendor}/${modelId}` && identifier.startsWith(`${vendor}/`) && identifier.endsWith(`/${modelId}`);
+}
+
+function stringConfigValue(value: unknown): string | undefined {
+	return typeof value === 'string' && value.trim() ? value.trim() : undefined;
 }

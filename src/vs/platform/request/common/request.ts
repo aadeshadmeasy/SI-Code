@@ -71,7 +71,8 @@ class LoggableHeaders {
 		if (!this.headers) {
 			const headers = Object.create(null);
 			for (const key in this.original) {
-				if (key.toLowerCase() === 'authorization' || key.toLowerCase() === 'proxy-authorization') {
+				const lower = key.toLowerCase();
+				if (lower === 'authorization' || lower === 'proxy-authorization' || lower === 'x-goog-api-key' || lower === 'api-key' || lower === 'api-subscription-key' || lower === 'x-api-key' || lower === 'x-amz-security-token') {
 					headers[key] = '*****';
 				} else {
 					headers[key] = this.original[key];

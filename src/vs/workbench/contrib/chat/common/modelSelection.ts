@@ -5,6 +5,7 @@
 
 import { ILanguageModelChatMetadata, ILanguageModelChatMetadataAndIdentifier, ILanguageModelsService, isLanguageModelVendorAbsenceConclusive } from './languageModels.js';
 import { isAgentHostTarget } from './chatSessionsService.js';
+import { isSicodeReleaseProduct } from '../../../../platform/product/common/product.js';
 
 export type ModelIdentifierResolution =
 	| { readonly kind: 'notRequested' }
@@ -77,11 +78,35 @@ export function getRegisteredLanguageModels(languageModelsService: Pick<ILanguag
 }
 
 /** Filters a target's model catalog using both host-specific and underlying BYOK visibility. */
+export function isSicodeUserModel(model: ILanguageModelChatMetadataAndIdentifier): boolean {
+	const vendor = model.metadata.vendor ?? '';
+	const bridged = model.metadata.byokModelIdentifier ?? '';
+	return vendor.startsWith('sicode-') || bridged.startsWith('sicode-');
+}
+
+/** Packaged SI Code lists only models the user configured, never the built-in catalog. */
+export function sicodePickerModels(
+	models: readonly ILanguageModelChatMetadataAndIdentifier[],
+	sessionType: string | undefined,
+): ILanguageModelChatMetadataAndIdentifier[] {
+	const user = models.filter(model => isSicodeUserModel(model) && model.metadata.isUserSelectable !== false);
+	if (sessionType) {
+		const targeted = user.filter(model => model.metadata.targetChatSessionType === sessionType);
+		if (targeted.length) {
+			return targeted;
+		}
+	}
+	return user.filter(model => !model.metadata.targetChatSessionType);
+}
+
 export function getVisibleLanguageModelsForTarget(
 	models: readonly ILanguageModelChatMetadataAndIdentifier[],
 	targetChatSessionType: string,
 	languageModelsService: Pick<ILanguageModelsService, 'isModelHidden'>,
 ): ILanguageModelChatMetadataAndIdentifier[] {
+	if (isSicodeReleaseProduct()) {
+		return sicodePickerModels(models, targetChatSessionType).filter(model => !languageModelsService.isModelHidden(model.identifier));
+	}
 	return models.filter(model => {
 		if (model.metadata.targetChatSessionType !== targetChatSessionType || languageModelsService.isModelHidden(model.identifier)) {
 			return false;

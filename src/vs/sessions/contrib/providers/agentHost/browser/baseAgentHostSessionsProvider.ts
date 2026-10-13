@@ -23,6 +23,7 @@ import { newAgentHostSessionUri } from '../../../../../platform/agentHost/common
 import { getAgentHostChatId } from '../../../../../platform/agentHost/common/agentHostChatIdentity.js';
 import { isNativeAgentHost } from '../../../../../platform/agentHost/common/meta/agentHostSessionUrisMeta.js';
 import { localize } from '../../../../../nls.js';
+import { isSicodeReleaseProduct } from '../../../../../platform/product/common/product.js';
 import { AgentSession, AuthenticateParams, AuthenticateResult, CODEX_AGENT_PROVIDER_ID, type IAgentSessionChatMetadata, IAgentSessionMetadata, protectedResourcesRequireGitHubCopilotSignIn } from '../../../../../platform/agentHost/common/agent.js';
 import { AgentMergeSessionOverrides, AgentMergeSessionState, readAgentMergeFolderState, readAgentMergeFolderStates } from '../../../../../platform/agentHost/common/agentMerge.js';
 import { readAgentSdkSetupInfos } from '../../../../../platform/agentHost/common/agentSdkSetup.js';
@@ -6011,6 +6012,9 @@ export abstract class BaseAgentHostSessionsProvider extends Disposable implement
 	}
 
 	getModelPickerOptions(sessionId: string): ISessionModelPickerOptions {
+		if (isSicodeReleaseProduct()) {
+			return { showUnavailableFeatured: false, showManageModelsAction: true, showAutoModel: false };
+		}
 		// A session type that requires an explicit model selection cannot fall
 		// back to Auto. When it has no models (e.g. the Claude agent host for a
 		// Copilot Free / Student user), the picker shows a "No models available"

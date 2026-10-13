@@ -1648,7 +1648,9 @@ export class ChatModelsWidget extends Disposable {
 
 		const entitlement = this.chatEntitlementService.entitlement;
 		const isManagedEntitlement = entitlement === ChatEntitlement.Business || entitlement === ChatEntitlement.Enterprise;
-		const supportsAddingModels = this.chatEntitlementService.isInternal
+		const hasSicodeVendors = configurableVendors.some(vendor => vendor.vendor.startsWith('sicode-'));
+		const supportsAddingModels = hasSicodeVendors
+			|| this.chatEntitlementService.isInternal
 			|| this.chatEntitlementService.clientByokEnabled
 			|| (entitlement !== ChatEntitlement.Unknown
 				&& entitlement !== ChatEntitlement.Available

@@ -9,7 +9,7 @@ import { explainChange, explainError } from './explain.js';
 import { searchWorkspace } from './codeIndex.js';
 import { runProcess } from './proc.js';
 import { formatWhereHits, isWhereQuestion, rulesPrompt } from './projectMemory.js';
-import { estimateCost, estimateTokens, formatMeter, messageChars, pickModel, routeTask, type RouteKind } from './routing.js';
+import { estimateCost, estimateTokens, formatMeter, messageChars, pickModel, routeTask, userConfiguredModels, type RouteKind } from './routing.js';
 import { agentTools, readTools } from './tools.js';
 import { runToolLoop, type LoopMessage, type ModelPart, type ToolSpec } from './toolLoop.js';
 
@@ -149,9 +149,15 @@ async function resolveModel(fallback: vscode.LanguageModelChat, prompt: string, 
 	const kind = routeTask(prompt, { mode, preferLocal: config.get<boolean>('preferLocal') === true });
 	let available: vscode.LanguageModelChat[] = [];
 	try {
-		available = await vscode.lm.selectChatModels();
+		available = userConfiguredModels(await vscode.lm.selectChatModels());
 	} catch {
-		return { model: fallback, kind };
+		available = [];
+	}
+	if (available.length === 0) {
+		if (fallback.vendor.startsWith('sicode-')) {
+			return { model: fallback, kind };
+		}
+		throw new Error('No SI Code model is configured. Run SI Code: Get Free API Keys, add the model, and try again.');
 	}
 	const picked = pickModel(kind, available.map(model => ({ vendor: model.vendor, id: model.id })), {
 		cheap: config.get<string>('cheapModel') ?? '',

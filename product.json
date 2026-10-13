@@ -260,6 +260,14 @@
 			"type": "light"
 		}
 	],
+	"extensionEnabledApiProposals": {
+		"sicode.sicode": [
+			"chatProvider",
+			"chatParticipantAdditions",
+			"defaultChatParticipant",
+			"languageModelSystem"
+		]
+	},
 	"builtInExtensionsEnabledWithAutoUpdates": [],
 	"sessionsWindowAllowedExtensions": [],
 	"extensionSignatureVerification": false,

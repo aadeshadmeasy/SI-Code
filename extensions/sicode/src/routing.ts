@@ -39,6 +39,11 @@ export function routeTask(prompt: string, options: { mode?: string; preferLocal?
 	return 'cheap';
 }
 
+/** Routing and the picker may only use models the user configured in SI Code. */
+export function userConfiguredModels<T extends ModelRef>(models: readonly T[]): T[] {
+	return models.filter(model => model.vendor.startsWith('sicode-'));
+}
+
 export function pickModel(kind: RouteKind, available: readonly ModelRef[], prefs: { cheap?: string; strong?: string; local?: string }): ModelRef | undefined {
 	const pref = kind === 'cheap' ? prefs.cheap : kind === 'strong' ? prefs.strong : prefs.local;
 	const parsed = parsePref(pref ?? '');

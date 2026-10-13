@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import { clearChanges, decideAgentTurn, interpretCheck, listChanges, pickCheckCommand, recordChange, reviewMarkdown, runAgentWithReview, selfFixMessage, unifiedDiff } from '../src/agentReview.ts';
 import { applySecrets, enablePreset, mcpPresets, missingSecrets, presetButtonsHtml, requiredSecretNames } from '../src/mcpPresets.ts';
 import { buildIndex, isWhereQuestion, rulesPrompt, shouldIndex, whereIs } from '../src/projectMemory.ts';
-import { estimateCost, formatMeter, pickModel, routeTask } from '../src/routing.ts';
+import { estimateCost, formatMeter, pickModel, routeTask, userConfiguredModels } from '../src/routing.ts';
 import { awsPlan, extractPreviewUrl, vercelPlan } from '../src/ship.ts';
 import type { LoopMessage, ModelPart } from '../src/toolLoop.ts';
 
@@ -90,7 +90,8 @@ test('routing picks cheap, strong, and local models and prices the reply', () =>
 });
 
 test('mcp presets persist auth names and do not duplicate or embed secrets', () => {
-	assert.deepEqual(mcpPresets.map(preset => preset.id), ['supabase', 'github', 'figma', 'aws', 'postgres']);
+	assert.deepEqual(mcpPresets.map(preset => preset.id), ['supabase', 'github', 'figma', 'aws', 'postgres', 'chrome']);
+	assert.equal(mcpPresets.find(preset => preset.id === 'chrome')?.secrets.length, 0);
 	const published = JSON.stringify(mcpPresets);
 	assert.equal(published.includes('Bearer '), false);
 	assert.equal(published.includes('postgres://'), false);
@@ -118,10 +119,15 @@ test('mcp presets persist auth names and do not duplicate or embed secrets', () 
 	assert.equal(Object.hasOwn(aws.env, 'AWS_SESSION_TOKEN'), false);
 	assert.deepEqual(enablePreset(enablePreset([], 'github'), 'github'), ['github']);
 	const buttons = presetButtonsHtml();
-	for (const id of ['supabase', 'github', 'figma', 'aws', 'postgres']) {
+	for (const id of ['supabase', 'github', 'figma', 'aws', 'postgres', 'chrome']) {
 		assert.match(buttons, new RegExp(`data-arg="${id}"`));
+		assert.match(buttons, new RegExp(`Connect ${mcpPresets.find(preset => preset.id === id)?.label}`));
 	}
 	assert.equal(buttons.includes(token), false);
+	assert.deepEqual(userConfiguredModels([
+		{ vendor: 'copilot', id: 'MAI-Code-1.1-Flash' },
+		{ vendor: 'sicode-sarvam', id: 'sarvam-105b' },
+	]).map(model => model.id), ['sarvam-105b']);
 });
 
 test('project rules and the codebase index answer where-is questions', () => {

@@ -14,7 +14,7 @@ export function registerMcpView(context: vscode.ExtensionContext): void {
 	context.subscriptions.push(
 		changed,
 		vscode.lm.registerMcpServerDefinitionProvider('sicode.presets', new PresetProvider(context, changed.event)),
-		vscode.window.registerWebviewViewProvider(viewId, new McpViewProvider(context.extensionUri)),
+		vscode.window.registerWebviewViewProvider(viewId, new McpViewProvider(context)),
 		vscode.commands.registerCommand('sicode.mcp.add', () => vscode.commands.executeCommand('workbench.mcp.addConfiguration')),
 		vscode.commands.registerCommand('sicode.mcp.browse', () => vscode.commands.executeCommand('workbench.mcp.browseServers')),
 		vscode.commands.registerCommand('sicode.mcp.installed', () => vscode.commands.executeCommand('workbench.mcp.showInstalledServers')),
@@ -98,12 +98,16 @@ async function enableFromPrompt(context: vscode.ExtensionContext, id: string, ch
 }
 
 class McpViewProvider implements vscode.WebviewViewProvider {
-	constructor(private readonly extensionUri: vscode.Uri) { }
+	constructor(private readonly context: vscode.ExtensionContext) { }
 
 	resolveWebviewView(webviewView: vscode.WebviewView): void {
 		const nonce = Math.random().toString(36).slice(2);
-		webviewView.webview.options = { enableScripts: true, localResourceRoots: [this.extensionUri] };
-		webviewView.webview.html = html(nonce);
+		webviewView.webview.options = { enableScripts: true, localResourceRoots: [this.context.extensionUri] };
+		const render = (servers: readonly string[]) => {
+			webviewView.webview.html = html(nonce, servers);
+		};
+		render(enabledPresetLabels(this.context));
+		void configuredServerNames().then(names => render([...enabledPresetLabels(this.context), ...names]));
 		webviewView.webview.onDidReceiveMessage(message => {
 			const command = typeof message?.command === 'string' ? message.command : '';
 			if (command) {
@@ -113,7 +117,28 @@ class McpViewProvider implements vscode.WebviewViewProvider {
 	}
 }
 
-function html(nonce: string): string {
+function enabledPresetLabels(context: vscode.ExtensionContext): string[] {
+	const enabled = context.globalState.get<string[]>(enabledKey) ?? [];
+	return enabled.map(id => presetById(id)?.label).filter((label): label is string => !!label);
+}
+
+async function configuredServerNames(): Promise<string[]> {
+	const names: string[] = [];
+	for (const folder of vscode.workspace.workspaceFolders ?? []) {
+		for (const relative of [['.vscode', 'mcp.json'], ['mcp.json']]) {
+			try {
+				const raw = await vscode.workspace.fs.readFile(vscode.Uri.joinPath(folder.uri, ...relative));
+				const parsed = JSON.parse(new TextDecoder().decode(raw)) as { servers?: Record<string, unknown>; mcpServers?: Record<string, unknown> };
+				names.push(...Object.keys(parsed.servers ?? {}), ...Object.keys(parsed.mcpServers ?? {}));
+			} catch {
+				// The file is optional.
+			}
+		}
+	}
+	return [...new Set(names)];
+}
+
+function html(nonce: string, servers: readonly string[]): string {
 	return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -138,8 +163,10 @@ function html(nonce: string): string {
 	<button data-command="workbench.mcp.openUserMcpJson" type="button">Open user mcp.json</button>
 	<button data-command="workbench.mcp.openWorkspaceMcpJson" type="button">Open workspace mcp.json</button>
 	<h1>Presets</h1>
-	<p>One click asks for the token once. It is stored in secret storage and sent only when that server starts.</p>
+	<p>Connect asks for the token once. It is stored in secret storage and sent only when that server starts.</p>
 	${presetButtonsHtml()}
+	<h1>Your servers</h1>
+	${servers.length ? `<ul>${servers.map(name => `<li>${escapeHtml(name)}</li>`).join('')}</ul>` : '<p>No connected presets or mcp.json servers yet. Connect a preset above, or add a server.</p>'}
 	<script nonce="${nonce}">
 		const vscode = acquireVsCodeApi();
 		for (const button of document.querySelectorAll('button')) {
@@ -150,4 +177,8 @@ function html(nonce: string): string {
 	</script>
 </body>
 </html>`;
+}
+
+function escapeHtml(value: string): string {
+	return value.replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char] ?? char);
 }

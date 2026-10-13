@@ -16,6 +16,7 @@ import { constObservable, derived, IObservable, ISettableObservable, ITransactio
 import { ThemeIcon } from '../../../../../base/common/themables.js';
 import { URI } from '../../../../../base/common/uri.js';
 import { ICommandService } from '../../../../../platform/commands/common/commands.js';
+import { isSicodeReleaseProduct } from '../../../../../platform/product/common/product.js';
 import { IInstantiationService } from '../../../../../platform/instantiation/common/instantiation.js';
 import { AgentSession } from '../../../../../platform/agentHost/common/agent.js';
 import { getGitHubRepositoryId, parseGitHubIssueUrl } from '../../../../../platform/github/common/githubUrls.js';
@@ -1548,6 +1549,9 @@ export class CopilotChatSessionsProvider extends Disposable implements ISessions
 	}
 
 	getModelPickerOptions(sessionId: string): ISessionModelPickerOptions {
+		if (isSicodeReleaseProduct()) {
+			return { showUnavailableFeatured: false, showManageModelsAction: true, showAutoModel: false };
+		}
 		const draft = this._newSessions.get(sessionId);
 		if (draft && this._usesSandbox(draft)) {
 			return { showUnavailableFeatured: false, showManageModelsAction: false, showAutoModel: false };

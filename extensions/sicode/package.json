@@ -34,7 +34,14 @@
 		"onCommand:sicode.template.dashboard",
 		"onCommand:sicode.explainProblem",
 		"onCommand:sicode.fixIt",
-		"onCommand:sicode.simpleView"
+		"onCommand:sicode.simpleView",
+		"onCommand:sicode.rules",
+		"onCommand:sicode.whereIs",
+		"onCommand:sicode.cost",
+		"onCommand:sicode.review.keep",
+		"onCommand:sicode.review.revert",
+		"onView:sicode.mcp",
+		"onAuthenticationRequest:sicode"
 	],
 	"main": "./out/extension",
 	"capabilities": {
@@ -92,7 +99,7 @@
 			},
 			{
 				"command": "sicode.signIn",
-				"title": "Account",
+				"title": "Sign in with GitHub, Google, or Email",
 				"category": "SI Code"
 			},
 			{
@@ -164,6 +171,27 @@
 				"command": "sicode.simpleView",
 				"title": "Simple View",
 				"category": "SI Code"
+			},
+			{
+				"command": "sicode.rules",
+				"title": "Open Project Rules",
+				"category": "SI Code"
+			},
+			{
+				"command": "sicode.whereIs",
+				"title": "Where is this?",
+				"category": "SI Code"
+			},
+			{
+				"command": "sicode.cost",
+				"title": "Show Chat Cost",
+				"category": "SI Code"
+			}
+		],
+		"authentication": [
+			{
+				"id": "sicode",
+				"label": "SI Code"
 			}
 		],
 		"menus": {

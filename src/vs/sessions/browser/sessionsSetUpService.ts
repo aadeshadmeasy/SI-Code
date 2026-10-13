@@ -16,6 +16,7 @@ import { ServiceCollection } from '../../platform/instantiation/common/serviceCo
 import { ChatEntitlementContext, IChatEntitlementService } from '../../workbench/services/chat/common/chatEntitlementService.js';
 import { isWeb } from '../../base/common/platform.js';
 import { GitHubPaths, IDefaultAccountService } from '../../platform/defaultAccount/common/defaultAccount.js';
+import { isSicodeReleaseProduct } from '../../platform/product/common/product.js';
 import { IProductService } from '../../platform/product/common/productService.js';
 import { IContextKeyService } from '../../platform/contextkey/common/contextkey.js';
 import { IWorkbenchEnvironmentService } from '../../workbench/services/environment/common/environmentService.js';
@@ -295,6 +296,11 @@ class SessionsSetUpWidget extends Disposable {
 	}
 
 	private _canInitializeWithoutGitHub(sessionTypes = this.sessionsManagementService.getAllProviderSessionTypes().map(({ sessionType }) => sessionType)): boolean {
+		// SI Code signs in through its own account page. The Agents window must
+		// not block the composer behind GitHub/Google/Apple.
+		if (isSicodeReleaseProduct()) {
+			return true;
+		}
 		return sessionTypes.some(sessionType => sessionType.initializationOnSelection?.canInitializeWithoutGitHub === true);
 	}
 

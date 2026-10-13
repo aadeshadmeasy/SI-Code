@@ -14,11 +14,13 @@ import { IStorageService, StorageScope } from '../../../../platform/storage/comm
 import { ChatInputModelSelectionController, IChatInputModelSelectionRuntime } from '../../../../workbench/contrib/chat/browser/widget/input/chatInputModelSelectionController.js';
 import { ChatModelSelectionDiagnostics } from '../../../../workbench/contrib/chat/browser/widget/input/chatModelSelectionDiagnostics.js';
 import { getSelectedModelStorageKey, getStoredSelectedModel, storeSelectedModel } from '../../../../workbench/contrib/chat/common/chatSelectedModel.js';
+import { isSicodeReleaseProduct } from '../../../../platform/product/common/product.js';
 import { ChatAgentLocation, ChatConfiguration } from '../../../../workbench/contrib/chat/common/constants.js';
-import { ILanguageModelChatMetadataAndIdentifier, type IModelConfigurationAccess } from '../../../../workbench/contrib/chat/common/languageModels.js';
+import { localChatSessionType } from '../../../../workbench/contrib/chat/common/chatSessionsService.js';
+import { ILanguageModelChatMetadataAndIdentifier, ILanguageModelsService, type IModelConfigurationAccess } from '../../../../workbench/contrib/chat/common/languageModels.js';
 import { IntendedModelSlot } from '../../../../workbench/contrib/chat/common/model/chatModel.js';
 import { IModelPickerWorkflow } from '../../../../workbench/contrib/chat/browser/widget/input/modelPicker/modelPickerWorkflow.js';
-import { IPendingModelSelection, isInConversationModelChoice, ModelSelectionReason, RestoredModelReason } from '../../../../workbench/contrib/chat/common/modelSelection.js';
+import { getRegisteredLanguageModels, IPendingModelSelection, isInConversationModelChoice, ModelSelectionReason, RestoredModelReason, sicodePickerModels } from '../../../../workbench/contrib/chat/common/modelSelection.js';
 import { ISessionsProvidersService } from '../../../services/sessions/browser/sessionsProvidersService.js';
 import { ChatModelSource, SessionStatus } from '../../../services/sessions/common/session.js';
 import { ISessionsProvider } from '../../../services/sessions/common/sessionsProvider.js';
@@ -122,6 +124,7 @@ export class SessionModelSelection extends Disposable implements ISessionModelSe
 		@IStorageService private readonly _storageService: IStorageService,
 		@IConfigurationService private readonly _configurationService: IConfigurationService,
 		@ILogService logService: ILogService,
+		@ILanguageModelsService private readonly _languageModelsService?: ILanguageModelsService,
 	) {
 		super();
 		this.workflow = options.workflow;
@@ -166,6 +169,9 @@ export class SessionModelSelection extends Disposable implements ISessionModelSe
 			}
 		}));
 		this._register(this._sessionsProvidersService.onDidChangeProviders(() => this._refresh('providers')));
+		if (this._languageModelsService) {
+			this._register(this._languageModelsService.onDidChangeLanguageModels(() => this._refresh('models')));
+		}
 		this._register(this._storageService.onDidChangeValue(StorageScope.PROFILE, undefined, this._store)(event => {
 			this._diagnostics.logStorageChange(event, this._state.get().currentModel?.identifier);
 		}));
@@ -175,6 +181,9 @@ export class SessionModelSelection extends Disposable implements ISessionModelSe
 		const session = this._session.get();
 		const provider = session ? this._sessionsProvidersService.getProvider(session.providerId) : undefined;
 		if (!session || !provider) {
+			if (this._selectUnboundSicodeModel(modelIdentifier)) {
+				return true;
+			}
 			this._diagnostics.report('selection-rejected', {
 				requestedModel: modelIdentifier,
 				reason: !session ? 'noSession' : 'noProvider',
@@ -291,6 +300,9 @@ export class SessionModelSelection extends Disposable implements ISessionModelSe
 			// Nothing to clear: each conversation's state lives in its own record.
 			this._models = [];
 			this._modelTarget = undefined;
+			if (this._publishUnboundSicodeModels()) {
+				return;
+			}
 			this._state.set(EMPTY_MODEL_SELECTION_STATE, undefined);
 			return;
 		}
@@ -481,6 +493,59 @@ export class SessionModelSelection extends Disposable implements ISessionModelSe
 			providerModelBefore,
 			providerModelAfter: session.modelId.get(),
 		}, 'info');
+	}
+
+	/** Welcome composer, before a draft session exists. Lists the user's SI Code models. */
+	private _sicodePickerOptions(): INormalizedSessionModelPickerOptions {
+		return normalizeModelPickerOptions({
+			showUnavailableFeatured: false,
+			showManageModelsAction: true,
+			showAutoModel: false,
+		});
+	}
+
+	private _unboundSicodeModels(): readonly ILanguageModelChatMetadataAndIdentifier[] {
+		if (!isSicodeReleaseProduct() || !this._languageModelsService) {
+			return [];
+		}
+		return sicodePickerModels(getRegisteredLanguageModels(this._languageModelsService), localChatSessionType);
+	}
+
+	private _publishUnboundSicodeModels(): boolean {
+		const models = this._unboundSicodeModels();
+		if (!models.length) {
+			return false;
+		}
+		this._models = models;
+		this._modelTarget = localChatSessionType;
+		this._chatIsEmpty = true;
+		const options = this._sicodePickerOptions();
+		if (!this._unboundConversation.seeded) {
+			this._unboundConversation.seeded = true;
+			const remembered = getStoredSelectedModel(this._storageService, ChatAgentLocation.Chat, localChatSessionType);
+			this._controller.initialize(remembered);
+			this._unboundConversation.seeded = this._isShowingSelectableModel();
+		} else {
+			this._controller.reconcileModelListChange(models);
+		}
+		this._publish(options, undefined);
+		return true;
+	}
+
+	private _selectUnboundSicodeModel(modelIdentifier: string): boolean {
+		const models = this._unboundSicodeModels();
+		const model = models.find(candidate => candidate.identifier === modelIdentifier);
+		if (!model) {
+			return false;
+		}
+		this._models = models;
+		this._modelTarget = localChatSessionType;
+		this._controller.applySelection(model, () => {
+			storeSelectedModel(this._storageService, ChatAgentLocation.Chat, localChatSessionType, model.identifier);
+		}, true, true);
+		this._unboundConversation.seeded = true;
+		this._publish(this._sicodePickerOptions(), undefined);
+		return true;
 	}
 
 	private _publish(

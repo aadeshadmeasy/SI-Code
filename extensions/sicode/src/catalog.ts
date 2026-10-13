@@ -501,6 +501,14 @@ export interface ResolvedCredentials {
  * rows still appear. Keys stay out of the return value's logs: callers
  * pass them in and the result is not serialized.
  */
+/** A model is configured only when the user saved a group or a key. Preset defaults alone do not count. */
+export function hasSavedModelConfiguration(configuration: Readonly<Record<string, unknown>> | undefined): boolean {
+	if (!configuration) {
+		return false;
+	}
+	return Object.values(configuration).some(value => value !== undefined && value !== '');
+}
+
 export function resolveCredentials(spec: VendorSpec, configuration: Readonly<Record<string, unknown>> | undefined, extensionSecret: string | undefined): ResolvedCredentials | undefined {
 	const config = configuration ?? {};
 	const endpoint = stringValue(config.endpoint) ?? stringValue(config.baseUrl) ?? spec.defaultBaseUrl;

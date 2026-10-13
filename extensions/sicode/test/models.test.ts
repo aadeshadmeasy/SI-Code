@@ -1,10 +1,15 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import assert from 'node:assert/strict';
 import { createHash, createHmac } from 'node:crypto';
 import { createServer, type Server } from 'node:http';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import { BedrockEventDecoder, converseBody, encodeEventMessage, signBedrock } from '../src/bedrock.ts';
-import { languageModelContribution, resolveCredentials, vendorById, vendors } from '../src/catalog.ts';
+import { hasSavedModelConfiguration, languageModelContribution, resolveCredentials, vendorById, vendors } from '../src/catalog.ts';
 import { postJson, readSse } from '../src/http.ts';
 import { fetchListedModels } from '../src/modelsFetch.ts';
 import { defaultsFromVendorSchemas, mergeModelIds, planModelMigration } from '../src/modelPlan.ts';
@@ -52,6 +57,9 @@ test('credentials fall back to the preset endpoint and model', () => {
 	assert.equal(resolved.model, 'sarvam-105b');
 	assert.equal(resolved.apiKey, 'stored-key');
 	assert.equal(resolveCredentials(sarvam, {}, undefined), undefined);
+	assert.equal(hasSavedModelConfiguration(undefined), false);
+	assert.equal(hasSavedModelConfiguration({}), false);
+	assert.equal(hasSavedModelConfiguration({ endpoint: 'http://127.0.0.1:9/v1', model: 'sicode-demo' }), true);
 
 	const bedrock = vendorById('sicode-bedrock');
 	assert.ok(bedrock);

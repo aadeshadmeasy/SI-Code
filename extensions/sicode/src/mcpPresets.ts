@@ -73,6 +73,14 @@ export const mcpPresets: readonly McpPreset[] = [
 		secretArg: 'POSTGRES_CONNECTION_STRING',
 		secrets: [{ name: 'POSTGRES_CONNECTION_STRING', prompt: 'Postgres connection string', password: true }],
 	},
+	{
+		id: 'chrome',
+		label: 'Chrome DevTools',
+		transport: 'stdio',
+		command: 'npx',
+		args: ['-y', 'chrome-devtools-mcp@latest'],
+		secrets: [],
+	},
 ];
 
 export function presetById(id: string): McpPreset | undefined {
@@ -119,6 +127,6 @@ export function applySecrets(preset: McpPreset, secrets: Readonly<Record<string,
 
 export function presetButtonsHtml(): string {
 	return mcpPresets.map(preset =>
-		`<button data-command="sicode.mcp.preset" data-arg="${preset.id}" type="button">${preset.label}</button>`
+		`<button data-command="sicode.mcp.preset" data-arg="${preset.id}" type="button">Connect ${preset.label}</button>`
 	).join('\n\t');
 }

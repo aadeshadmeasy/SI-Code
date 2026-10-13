@@ -16,6 +16,7 @@ import { constObservable, derived, IObservable, ISettableObservable, ITransactio
 import { ThemeIcon } from '../../../../../base/common/themables.js';
 import { URI } from '../../../../../base/common/uri.js';
 import { ICommandService } from '../../../../../platform/commands/common/commands.js';
+import { isSicodeReleaseProduct } from '../../../../../platform/product/common/product.js';
 import { IInstantiationService } from '../../../../../platform/instantiation/common/instantiation.js';
 import { AgentSession } from '../../../../../platform/agentHost/common/agent.js';
 import { getGitHubRepositoryId, parseGitHubIssueUrl } from '../../../../../platform/github/common/githubUrls.js';
@@ -39,7 +40,7 @@ import { UNIFIED_WORKSPACE_PICKER_SETTING } from '../../../chat/common/constants
 import { CancellationToken, CancellationTokenSource, cancelOnDispose } from '../../../../../base/common/cancellation.js';
 import { generateUuid } from '../../../../../base/common/uuid.js';
 import { COPILOT_VENDOR_ID, ILanguageModelChatMetadataAndIdentifier, ILanguageModelsService } from '../../../../../workbench/contrib/chat/common/languageModels.js';
-import { getRegisteredLanguageModels, resolveModelIdentifier, resolveModelIdentifierFromLanguageModels } from '../../../../../workbench/contrib/chat/common/modelSelection.js';
+import { getRegisteredLanguageModels, resolveModelIdentifier, resolveModelIdentifierFromLanguageModels, sicodePickerModels } from '../../../../../workbench/contrib/chat/common/modelSelection.js';
 import { IContextKeyService, ContextKeyExpr } from '../../../../../platform/contextkey/common/contextkey.js';
 import { ExtensionIdentifier } from '../../../../../platform/extensions/common/extensions.js';
 import { IChatRequestVariableEntry } from '../../../../../workbench/contrib/chat/common/attachments/chatVariableEntries.js';
@@ -1501,6 +1502,10 @@ export class CopilotChatSessionsProvider extends Disposable implements ISessions
 	}
 
 	getModelsSnapshot(sessionId: string, desiredModelId?: string): ISessionModelsSnapshot {
+		if (isSicodeReleaseProduct()) {
+			const sessionType = this.getSession(sessionId)?.sessionType ?? this._newSessions.get(sessionId)?.sessionType;
+			return this._sicodeModelsSnapshot(sessionType, desiredModelId);
+		}
 		const draft = this._newSessions.get(sessionId);
 		if (draft && this._usesSandbox(draft)) {
 			return this._sandboxModelsSnapshot(desiredModelId);
@@ -1532,6 +1537,9 @@ export class CopilotChatSessionsProvider extends Disposable implements ISessions
 	}
 
 	getModelsSnapshotForCreation(_workspaceUri: URI, sessionTypeId: string, desiredModelId?: string): ISessionModelsSnapshot {
+		if (isSicodeReleaseProduct()) {
+			return this._sicodeModelsSnapshot(sessionTypeId, desiredModelId);
+		}
 		if (this.providerMode !== 'sandbox' && sessionTypeId !== CopilotCloudSessionType.id) {
 			return { models: [], desiredModelResolution: resolveModelIdentifier([], desiredModelId, true), modelTarget: undefined };
 		}
@@ -1548,6 +1556,9 @@ export class CopilotChatSessionsProvider extends Disposable implements ISessions
 	}
 
 	getModelPickerOptions(sessionId: string): ISessionModelPickerOptions {
+		if (isSicodeReleaseProduct()) {
+			return { showUnavailableFeatured: false, showManageModelsAction: true, showAutoModel: false };
+		}
 		const draft = this._newSessions.get(sessionId);
 		if (draft && this._usesSandbox(draft)) {
 			return { showUnavailableFeatured: false, showManageModelsAction: false, showAutoModel: false };
@@ -1563,6 +1574,17 @@ export class CopilotChatSessionsProvider extends Disposable implements ISessions
 			showUnavailableFeatured: false,
 			showManageModelsAction: false,
 			showAutoModel,
+		};
+	}
+
+	/** Packaged SI Code lists the user's configured models, not the Copilot catalog. */
+	private _sicodeModelsSnapshot(sessionType: string | undefined, desiredModelId?: string): ISessionModelsSnapshot {
+		const allModels = getRegisteredLanguageModels(this.languageModelsService);
+		const models = sicodePickerModels(allModels, sessionType);
+		return {
+			models,
+			desiredModelResolution: resolveModelIdentifierFromLanguageModels(models, desiredModelId, this.languageModelsService, allModels),
+			modelTarget: sessionType,
 		};
 	}
 

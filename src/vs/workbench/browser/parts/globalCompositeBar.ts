@@ -469,6 +469,14 @@ export class AccountsActivityActionViewItem extends AbstractGlobalActivityAction
 		if (!this.initialized) {
 			menus.push(disposables.add(new Action('noAccountsAvailable', localize('loading', "Loading..."), undefined, false)));
 		} else {
+			if (this.productService.nameShort === 'SI Code' && !(this.groupedAccounts.get('sicode')?.length)) {
+				menus.push(toAction({
+					id: 'sicode.signIn',
+					label: localize('sicodeSignIn', "Sign in to SI Code (GitHub, Google, or Email)"),
+					enabled: true,
+					run: () => this.commandService.executeCommand('sicode.signIn'),
+				}));
+			}
 
 			for (const providerId of registeredProviders) {
 				const provider = this.authenticationService.getProvider(providerId);

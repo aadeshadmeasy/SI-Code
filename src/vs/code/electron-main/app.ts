@@ -1621,6 +1621,16 @@ export class CodeApplication extends Disposable {
 		// Started without file/folder arguments
 		if (!hasCliArgs && !hasFolderURIs && !hasFileURIs) {
 
+			// Packaged SI Code opens the Agents window first. Source checkouts
+			// have no commit stamp, so tests keep the normal editor window.
+			if (this.productService.nameShort === 'SI Code' && this.productService.commit && !args['new-window'] && !forceProfile && !forceTempProfile && macOpenFiles.length === 0) {
+				return windowsMainService.openAgentsWindow({
+					context,
+					cli: args,
+					initialStartup: true,
+				});
+			}
+
 			// Force new window
 			if (args['new-window'] || forceProfile || forceTempProfile) {
 				return windowsMainService.open({

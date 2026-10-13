@@ -1167,7 +1167,7 @@ export class GettingStartedPage extends EditorPane {
 			{
 				title: localize('start', "Start"),
 				klass: 'start-container',
-				limit: 10,
+				limit: 24,
 				renderElement: renderStartEntry,
 				rankElement: e => -e.order,
 				contextService: this.contextService

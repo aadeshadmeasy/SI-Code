@@ -110,6 +110,27 @@ export class PromptLaunchersAICustomizationWelcomePage extends Disposable implem
 		},
 	];
 
+	private readonly sicodeActions: IStandaloneCustomizationDescription[] = [
+		{ label: localize('sicodeSignIn', "Sign in to SI Code"), icon: Codicon.account, description: localize('sicodeSignInDesc', "GitHub, Google, or email. The accounts menu has the same entry when you are signed out."), commandId: 'sicode.signIn' },
+		{ label: localize('sicodeDescribe', "Describe your app"), icon: Codicon.sparkle, description: localize('sicodeDescribeDesc', "Write a project and open a local preview."), commandId: 'sicode.describe' },
+		{ label: localize('sicodeWebsite', "New Website"), icon: Codicon.browser, description: localize('sicodeWebsiteDesc', "Start from the website template."), commandId: 'sicode.template.website' },
+		{ label: localize('sicodeLanding', "New Landing Page"), icon: Codicon.rocket, description: localize('sicodeLandingDesc', "Start from the landing page template."), commandId: 'sicode.template.landing' },
+		{ label: localize('sicodeWhatsapp', "New WhatsApp Bot"), icon: Codicon.commentDiscussion, description: localize('sicodeWhatsappDesc', "Start from the WhatsApp bot template."), commandId: 'sicode.template.whatsapp' },
+		{ label: localize('sicodeDashboard', "New Data Dashboard"), icon: Codicon.graph, description: localize('sicodeDashboardDesc', "Start from the data dashboard template."), commandId: 'sicode.template.dashboard' },
+		{ label: localize('sicodeFreeKeys', "Get Free API Keys"), icon: Codicon.key, description: localize('sicodeFreeKeysDesc', "Open the free-keys page used on first launch."), commandId: 'sicode.freeModels' },
+		{ label: localize('sicodeMcp', "MCP Presets"), icon: Codicon.server, description: localize('sicodeMcpDesc', "Connect Supabase, GitHub, Figma, AWS, Postgres, or Chrome DevTools."), commandId: 'sicode.mcp.focus' },
+		{ label: localize('sicodeVercel', "Ship to Vercel"), icon: Codicon.cloudUpload, description: localize('sicodeVercelDesc', "Deploy the folder and show the preview link."), commandId: 'sicode.ship.vercel' },
+		{ label: localize('sicodeAws', "Ship to AWS"), icon: Codicon.cloud, description: localize('sicodeAwsDesc', "Deploy the folder and show the preview link."), commandId: 'sicode.ship.aws' },
+		{ label: localize('sicodeExplain', "Explain the Error"), icon: Codicon.warning, description: localize('sicodeExplainDesc', "Plain-English explanation, with Fix it."), commandId: 'sicode.explainProblem' },
+		{ label: localize('sicodeFix', "Fix it"), icon: Codicon.wrench, description: localize('sicodeFixDesc', "Send the current error to the agent."), commandId: 'sicode.fixIt' },
+		{ label: localize('sicodeSimple', "Simple View"), icon: Codicon.layout, description: localize('sicodeSimpleDesc', "Hide the terminal, git, and advanced panels."), commandId: 'sicode.simpleView' },
+		{ label: localize('sicodeRules', "Project Rules"), icon: Codicon.book, description: localize('sicodeRulesDesc', "Open .sicode/rules.md. The agent follows it on every request."), commandId: 'sicode.rules' },
+		{ label: localize('sicodeWhere', "Where is this?"), icon: Codicon.search, description: localize('sicodeWhereDesc', "Search the local codebase index."), commandId: 'sicode.whereIs' },
+		{ label: localize('sicodeCost', "Chat Cost"), icon: Codicon.dashboard, description: localize('sicodeCostDesc', "Cheap, strong, or local routing, plus tokens and cost."), commandId: 'sicode.cost' },
+		{ label: localize('sicodeKeep', "Keep Agent Edits"), icon: Codicon.check, description: localize('sicodeKeepDesc', "Keep the multi-file agent diff after the test-fix loop."), commandId: 'sicode.review.keep' },
+		{ label: localize('sicodeRevert', "Revert Agent Edits"), icon: Codicon.discard, description: localize('sicodeRevertDesc', "Revert the multi-file agent diff."), commandId: 'sicode.review.revert' },
+	];
+
 	private readonly standaloneCustomizations: IStandaloneCustomizationDescription[] = [
 		{
 			label: localize('voiceModeInstructions', "Voice Mode Instructions"),
@@ -305,6 +326,15 @@ export class PromptLaunchersAICustomizationWelcomePage extends Disposable implem
 			this.cardDisposables.add(DOM.addDisposableListener(card, 'click', () => {
 				this.callbacks.selectSection(category.id);
 			}));
+		}
+
+		const sicodeGrid = this.renderOverviewSection(
+			localize('sicodeSection', "SI Code"),
+			localize('sicodeSectionDescription', "Sign in, describe an app, start from a template, connect MCP, ship, and fix errors. The same actions are on the welcome page and in the command palette as SI Code: commands."),
+			'welcome-prompts-sicode-section',
+		);
+		for (const action of this.sicodeActions) {
+			this.renderStandaloneCustomization(sicodeGrid, action);
 		}
 
 		if (!this.workspaceService.isSessionsWindow) {

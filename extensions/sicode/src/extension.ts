@@ -13,7 +13,9 @@ import { registerSupabaseAuth } from './auth.js';
 import { openSettings } from './settingsView.js';
 import { registerAgentTools } from './tools.js';
 import { vendors } from './catalog.js';
+import { searchWorkspace } from './codeIndex.js';
 import { openFreeModels } from './freeModels.js';
+import { formatWhereHits } from './projectMemory.js';
 import { explainError, fixPrompt } from './explain.js';
 import { shouldOfferFreeKeys } from './firstRun.js';
 import { runProcess } from './proc.js';
@@ -21,6 +23,15 @@ import { awsPlan, extractPreviewUrl, vercelPlan, type ShipPlan } from './ship.js
 import { simpleViewCommands } from './simpleView.js';
 
 export function activate(context: vscode.ExtensionContext): void {
+	const failures: string[] = [];
+	const step = (name: string, run: () => void) => {
+		try {
+			run();
+		} catch (err) {
+			failures.push(`${name}: ${err instanceof Error ? err.message : String(err)}`);
+		}
+	};
+
 	const modelsChanged = new vscode.EventEmitter<void>();
 	context.subscriptions.push(modelsChanged);
 	context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(event => {
@@ -34,28 +45,78 @@ export function activate(context: vscode.ExtensionContext): void {
 		}
 	}));
 
-	for (const spec of vendors) {
-		context.subscriptions.push(vscode.lm.registerLanguageModelChatProvider(spec.vendor, new SicodeProvider(context, spec, modelsChanged.event)));
-	}
-	registerChatParticipants(context);
-	registerInlineCompletions(context);
-	registerAgentTools(context);
-	registerMcpView(context);
-	registerSupabaseAuth(context);
-	registerDescribe(context);
-	registerSimpleView(context);
+	step('models', () => {
+		for (const spec of vendors) {
+			context.subscriptions.push(vscode.lm.registerLanguageModelChatProvider(spec.vendor, new SicodeProvider(context, spec, modelsChanged.event)));
+		}
+	});
+	step('chat', () => registerChatParticipants(context));
+	step('inline', () => registerInlineCompletions(context));
+	step('tools', () => registerAgentTools(context));
+	step('mcp', () => registerMcpView(context));
+	step('account', () => registerSupabaseAuth(context));
+	step('describe', () => registerDescribe(context));
+	step('simple view', () => registerSimpleView(context));
+	step('commands', () => {
+		context.subscriptions.push(
+			vscode.commands.registerCommand('sicode.configure', () => openSettings(context)),
+			vscode.commands.registerCommand('sicode.freeModels', () => openFreeModels()),
+			vscode.commands.registerCommand('sicode.inlineEdit', () => vscode.commands.executeCommand('inlineChat.start')),
+			vscode.commands.registerCommand('sicode.openMcp', () => vscode.commands.executeCommand('workbench.mcp.openUserMcpJson')),
+			vscode.commands.registerCommand('sicode.runPython', () => runPython()),
+			vscode.commands.registerCommand('sicode.ship.vercel', () => ship('vercel')),
+			vscode.commands.registerCommand('sicode.ship.aws', () => ship('aws')),
+			vscode.commands.registerCommand('sicode.explainProblem', () => explainActiveProblem()),
+			vscode.commands.registerCommand('sicode.fixIt', (message?: string, file?: string) => fixIt(message, file)),
+			vscode.commands.registerCommand('sicode.rules', () => openRules()),
+			vscode.commands.registerCommand('sicode.whereIs', () => whereIsPrompt()),
+			vscode.commands.registerCommand('sicode.cost', () => showCost(context)),
+		);
+	});
 	void offerFreeKeysOnFirstRun(context);
-	context.subscriptions.push(
-		vscode.commands.registerCommand('sicode.configure', () => openSettings(context)),
-		vscode.commands.registerCommand('sicode.freeModels', () => openFreeModels()),
-		vscode.commands.registerCommand('sicode.inlineEdit', () => vscode.commands.executeCommand('inlineChat.start')),
-		vscode.commands.registerCommand('sicode.openMcp', () => vscode.commands.executeCommand('workbench.mcp.openUserMcpJson')),
-		vscode.commands.registerCommand('sicode.runPython', () => runPython()),
-		vscode.commands.registerCommand('sicode.ship.vercel', () => ship('vercel')),
-		vscode.commands.registerCommand('sicode.ship.aws', () => ship('aws')),
-		vscode.commands.registerCommand('sicode.explainProblem', () => explainActiveProblem()),
-		vscode.commands.registerCommand('sicode.fixIt', (message?: string, file?: string) => fixIt(message, file)),
-	);
+	if (failures.length > 0) {
+		const channel = vscode.window.createOutputChannel('SI Code');
+		channel.appendLine('SI Code started with some features unavailable:');
+		channel.appendLine(failures.join('\n'));
+		context.subscriptions.push(channel);
+	}
+}
+
+async function openRules(): Promise<void> {
+	const folder = vscode.workspace.workspaceFolders?.[0];
+	if (!folder) {
+		void vscode.window.showInformationMessage('Open a folder to edit .sicode/rules.md. The agent follows that file on every request.');
+		return;
+	}
+	const dir = vscode.Uri.joinPath(folder.uri, '.sicode');
+	const uri = vscode.Uri.joinPath(dir, 'rules.md');
+	try {
+		await vscode.workspace.fs.stat(uri);
+	} catch {
+		await vscode.workspace.fs.createDirectory(dir);
+		await vscode.workspace.fs.writeFile(uri, new TextEncoder().encode('# Project rules\n\nThe agent follows this file on every request.\n'));
+	}
+	await vscode.window.showTextDocument(uri);
+}
+
+async function whereIsPrompt(): Promise<void> {
+	const query = await vscode.window.showInputBox({
+		title: 'Where is',
+		prompt: 'A file name or symbol. SI Code searches the local codebase index.',
+		ignoreFocusOut: true,
+	});
+	if (!query?.trim()) {
+		return;
+	}
+	const hits = formatWhereHits(await searchWorkspace(query.trim()));
+	void vscode.window.showInformationMessage(hits || 'Nothing in the local index matched.');
+}
+
+function showCost(context: vscode.ExtensionContext): void {
+	const meter = context.workspaceState.get<{ usd: number }>('sicode.meter');
+	void vscode.window.showInformationMessage(meter
+		? `This workspace has used about $${meter.usd.toFixed(4)} across SI Code chats. Each reply also shows the model, tokens, and cost.`
+		: 'No SI Code chat cost yet. Send a message with one of your models. The reply shows the route, tokens, and cost.');
 }
 
 const firstRunKey = 'sicode.firstRun.freeKeys';

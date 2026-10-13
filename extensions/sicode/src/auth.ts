@@ -3,16 +3,13 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { createClient, type Session } from '@supabase/supabase-js';
+import { type Session } from '@supabase/supabase-js';
 import * as vscode from 'vscode';
+import { accountLabel, CALLBACK_HOST, CALLBACK_PORT, createSicodeAuthClient, credentialError, parseAuthCallback, REDIRECT_URI, renderAccountPage, type OAuthProvider } from './authFlow.js';
 
 const SUPABASE_URL = 'https://abtmqyqptjcmrplkkpii.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_2MFaZ69JOF4iPiHrBM_ATw_s3AX2ijn';
 const STORAGE_SECRET = 'sicode.supabase.auth';
-const CALLBACK_HOST = '127.0.0.1';
-const CALLBACK_PORT = 33418;
-const CALLBACK_PATH = '/auth/callback';
-const REDIRECT_URI = `http://${CALLBACK_HOST}:${CALLBACK_PORT}${CALLBACK_PATH}`;
 const AUTH_PROVIDER_ID = 'sicode';
 
 const SYNC_KEYS = [
@@ -54,24 +51,15 @@ export function registerSupabaseAuth(context: vscode.ExtensionContext): void {
 			.catch(() => undefined)
 			.then(() => context.secrets.store(STORAGE_SECRET, snapshot));
 	};
-	const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-		auth: {
-			flowType: 'pkce',
-			detectSessionInUrl: false,
-			autoRefreshToken: true,
-			persistSession: true,
-			skipAutoInitialize: true,
-			storage: {
-				getItem: key => cache[key] ?? null,
-				setItem: (key, value) => {
-					cache[key] = value;
-					persist();
-				},
-				removeItem: key => {
-					delete cache[key];
-					persist();
-				},
-			},
+	const supabase = createSicodeAuthClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+		getItem: key => cache[key] ?? null,
+		setItem: (key, value) => {
+			cache[key] = value;
+			persist();
+		},
+		removeItem: key => {
+			delete cache[key];
+			persist();
 		},
 	});
 
@@ -80,7 +68,10 @@ export function registerSupabaseAuth(context: vscode.ExtensionContext): void {
 	status.show();
 	let suppressPushUntil = 0;
 	let pushTimer: ReturnType<typeof setTimeout> | undefined;
-	let inFlight: Promise<Session> | undefined;
+	let inFlight: Promise<Session | undefined> | undefined;
+	let panel: vscode.WebviewPanel | undefined;
+	let sessionResolve: ((session: Session) => void) | undefined;
+	let sessionReject: ((err: Error) => void) | undefined;
 
 	const ready = (async () => {
 		try {
@@ -102,18 +93,18 @@ export function registerSupabaseAuth(context: vscode.ExtensionContext): void {
 	const toAuthSession = (session: Session): vscode.AuthenticationSession => ({
 		id: session.user.id,
 		accessToken: session.access_token,
-		account: { id: session.user.id, label: session.user.email || 'Google' },
+		account: { id: session.user.id, label: accountLabel(session.user) },
 		scopes: ['email'],
 	});
 
 	const showStatus = (session: Session | null) => {
-		if (session?.user.email) {
-			status.text = `$(account) ${session.user.email}`;
+		if (session) {
+			status.text = `$(account) ${accountLabel(session.user)}`;
 			status.tooltip = 'SI Code — Sign out';
 			status.command = 'sicode.signOut';
 		} else {
 			status.text = '$(account) SI Code';
-			status.tooltip = 'SI Code: Sign in with Google';
+			status.tooltip = 'SI Code account';
 			status.command = 'sicode.signIn';
 		}
 	};
@@ -174,14 +165,27 @@ export function registerSupabaseAuth(context: vscode.ExtensionContext): void {
 		}, 400);
 	};
 
-	const signIn = (): Promise<Session> => {
+	const finish = async (session: Session): Promise<Session> => {
+		sessions.fire({ added: [toAuthSession(session)], removed: [], changed: [] });
+		showStatus(session);
+		sessionResolve?.(session);
+		sessionResolve = undefined;
+		sessionReject = undefined;
+		void vscode.window.showInformationMessage(`Signed in to SI Code as ${accountLabel(session.user)}.`);
+		await pullSettings(session);
+		render();
+		return session;
+	};
+
+	const signInWithProvider = (provider: OAuthProvider): Promise<Session | undefined> => {
 		if (inFlight) {
 			return inFlight;
 		}
+		const label = provider === 'github' ? 'GitHub' : 'Google';
 		inFlight = (async () => {
 			await ready;
 			const { data, error } = await supabase.auth.signInWithOAuth({
-				provider: 'google',
+				provider,
 				options: {
 					redirectTo: REDIRECT_URI,
 					skipBrowserRedirect: true,
@@ -190,23 +194,87 @@ export function registerSupabaseAuth(context: vscode.ExtensionContext): void {
 			if (error || !data.url) {
 				throw error ?? new Error('Supabase did not return a sign-in URL.');
 			}
-			const pending = waitForCode();
+			const pending = waitForCode(3 * 60 * 1000);
 			const opened = await vscode.env.openExternal(vscode.Uri.parse(data.url));
 			if (!opened) {
-				throw new Error('The browser did not open for Google sign-in.');
+				throw new Error(`The browser did not open for ${label} sign-in.`);
 			}
 			const code = await pending;
 			const exchanged = await supabase.auth.exchangeCodeForSession(code);
 			if (exchanged.error || !exchanged.data.session) {
 				throw exchanged.error ?? new Error('Supabase did not return a session.');
 			}
-			const session = exchanged.data.session;
-			sessions.fire({ added: [toAuthSession(session)], removed: [], changed: [] });
-			showStatus(session);
-			await pullSettings(session);
-			const who = session.user.email || 'your Google account';
-			void vscode.window.showInformationMessage(`Signed in to SI Code as ${who}.`);
-			return session;
+			return finish(exchanged.data.session);
+		})().finally(() => {
+			inFlight = undefined;
+		});
+		return inFlight;
+	};
+
+	const signInWithEmail = async (email: string, password: string, mode: 'signIn' | 'signUp' | 'reset'): Promise<Session | undefined> => {
+		const problem = credentialError({ email, password, mode });
+		if (problem) {
+			throw new Error(problem);
+		}
+		await ready;
+		if (mode === 'reset') {
+			return resetPassword(email.trim());
+		}
+		if (mode === 'signUp') {
+			const { data, error } = await supabase.auth.signUp({
+				email: email.trim(),
+				password,
+				options: { emailRedirectTo: REDIRECT_URI },
+			});
+			if (error) {
+				throw error;
+			}
+			if (!data.session) {
+				panel?.webview.postMessage({ notice: 'Account created. Confirm the email, then sign in.' });
+				void vscode.window.showInformationMessage('Account created. Confirm the email, then sign in.');
+				return undefined;
+			}
+			return finish(data.session);
+		}
+		const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+		if (error || !data.session) {
+			throw error ?? new Error('Supabase did not return a session.');
+		}
+		return finish(data.session);
+	};
+
+	const resetPassword = (email: string): Promise<Session | undefined> => {
+		if (inFlight) {
+			return inFlight;
+		}
+		inFlight = (async () => {
+			const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: REDIRECT_URI });
+			if (error) {
+				throw error;
+			}
+			panel?.webview.postMessage({ notice: 'Check your email for the reset link. Keep SI Code open, then choose a new password.' });
+			const code = await waitForCode(10 * 60 * 1000);
+			const exchanged = await supabase.auth.exchangeCodeForSession(code);
+			if (exchanged.error || !exchanged.data.session) {
+				throw exchanged.error ?? new Error('Supabase did not return a session.');
+			}
+			const next = await vscode.window.showInputBox({
+				title: 'SI Code',
+				prompt: 'New password',
+				password: true,
+				ignoreFocusOut: true,
+				validateInput: value => credentialError({ password: value, mode: 'newPassword' }),
+			});
+			if (!next) {
+				await supabase.auth.signOut({ scope: 'local' });
+				throw new Error('Password reset was cancelled.');
+			}
+			const updated = await supabase.auth.updateUser({ password: next });
+			if (updated.error) {
+				throw updated.error;
+			}
+			const session = (await currentSession()) ?? exchanged.data.session;
+			return finish(session);
 		})().finally(() => {
 			inFlight = undefined;
 		});
@@ -220,7 +288,63 @@ export function registerSupabaseAuth(context: vscode.ExtensionContext): void {
 		if (existing) {
 			sessions.fire({ added: [], removed: [toAuthSession(existing)], changed: [] });
 		}
+		render();
 		void vscode.window.showInformationMessage('Signed out of SI Code.');
+	};
+
+	const render = () => {
+		if (!panel) {
+			return;
+		}
+		const target = panel;
+		const nonce = Math.random().toString(36).slice(2);
+		void currentSession().then(session => {
+			if (panel === target) {
+				target.webview.html = renderAccountPage(nonce, session ? accountLabel(session.user) : undefined);
+			}
+		});
+	};
+
+	const openAccount = async () => {
+		if (panel) {
+			panel.reveal();
+			render();
+			return;
+		}
+		panel = vscode.window.createWebviewPanel('sicode.account', 'SI Code account', vscode.ViewColumn.Active, { enableScripts: true });
+		const current = panel;
+		context.subscriptions.push(current);
+		context.subscriptions.push(current.onDidDispose(() => {
+			if (panel === current) {
+				panel = undefined;
+			}
+			sessionReject?.(new Error('Sign-in was cancelled.'));
+			sessionResolve = undefined;
+			sessionReject = undefined;
+		}));
+		context.subscriptions.push(current.webview.onDidReceiveMessage(async message => {
+			if (!message || typeof message !== 'object' || typeof message.type !== 'string') {
+				return;
+			}
+			try {
+				if (message.type === 'signOut') {
+					await signOut();
+					return;
+				}
+				if (message.type === 'github' || message.type === 'google') {
+					await signInWithProvider(message.type);
+					return;
+				}
+				if (message.type === 'signIn' || message.type === 'signUp' || message.type === 'reset') {
+					await signInWithEmail(typeof message.email === 'string' ? message.email : '', typeof message.password === 'string' ? message.password : '', message.type);
+				}
+			} catch (err) {
+				const text = err instanceof Error ? err.message : String(err);
+				current.webview.postMessage({ notice: text });
+				void vscode.window.showErrorMessage(`SI Code account: ${text}`);
+			}
+		}));
+		render();
 	};
 
 	context.subscriptions.push(
@@ -232,13 +356,21 @@ export function registerSupabaseAuth(context: vscode.ExtensionContext): void {
 				const session = await currentSession();
 				return session ? [toAuthSession(session)] : [];
 			},
-			createSession: async () => toAuthSession(await signIn()),
+			createSession: async () => {
+				const existing = await currentSession();
+				if (existing) {
+					return toAuthSession(existing);
+				}
+				const signedIn = new Promise<Session>((resolve, reject) => {
+					sessionResolve = resolve;
+					sessionReject = reject;
+				});
+				await openAccount();
+				return toAuthSession(await signedIn);
+			},
 			removeSession: async () => { await signOut(); },
 		}),
-		vscode.commands.registerCommand('sicode.signIn', () => signIn().catch(err => {
-			const message = err instanceof Error ? err.message : String(err);
-			void vscode.window.showErrorMessage(`SI Code sign-in failed. ${message}`);
-		})),
+		vscode.commands.registerCommand('sicode.signIn', () => openAccount()),
 		vscode.commands.registerCommand('sicode.signOut', () => signOut()),
 		vscode.workspace.onDidChangeConfiguration(event => {
 			if (SYNC_KEYS.some(key => event.affectsConfiguration(`sicode.${key}`))) {
@@ -259,36 +391,30 @@ export function registerSupabaseAuth(context: vscode.ExtensionContext): void {
 	});
 }
 
-function waitForCode(): Promise<string> {
+function waitForCode(timeoutMs: number): Promise<string> {
 	const http = require('http');
 	return new Promise((resolve, reject) => {
 		let server: HttpServer | undefined;
 		const timer = setTimeout(() => {
 			server?.close();
 			reject(new Error('Sign-in timed out waiting for the browser.'));
-		}, 3 * 60 * 1000);
+		}, timeoutMs);
 		const created = http.createServer((req, res) => {
-			const url = new URL(req.url ?? '/', REDIRECT_URI);
-			if (url.pathname !== CALLBACK_PATH) {
+			const parsed = parseAuthCallback(req.url ?? '/');
+			if (parsed.kind === 'ignore') {
 				res.writeHead(404);
 				res.end();
 				return;
 			}
-			const oauthError = url.searchParams.get('error_description') ?? url.searchParams.get('error');
 			res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
 			res.end('<p>SI Code sign-in finished. You can close this window.</p>');
 			clearTimeout(timer);
 			created.close();
-			if (oauthError) {
-				reject(new Error(oauthError));
+			if (parsed.kind === 'error') {
+				reject(new Error(parsed.message));
 				return;
 			}
-			const code = url.searchParams.get('code');
-			if (!code) {
-				reject(new Error('Supabase did not return an authorization code.'));
-				return;
-			}
-			resolve(code);
+			resolve(parsed.code);
 		});
 		server = created;
 		created.on('error', err => {

@@ -251,6 +251,15 @@ export const walkthroughs: GettingStartedWalkthroughContent = [
 		content: {
 			type: 'steps',
 			steps: [
+				{
+					id: 'sicode.account',
+					title: localize('gettingStarted.sicode.account.title', "Sign in to {0}", product.nameShort),
+					description: localize('gettingStarted.sicode.account.description', "Sign in with GitHub, Google, or email. Model choices sync to the account. API keys stay on this machine.\n{0}", Button(localize('gettingStarted.sicode.account.button', "Open account"), 'command:sicode.signIn')),
+					completionEvents: ['onCommand:sicode.signIn'],
+					media: {
+						type: 'svg', altText: 'SI Code account', path: 'learn.svg'
+					},
+				},
 				createSiCodeSetupStep(),
 				{
 					id: 'pickColorTheme',

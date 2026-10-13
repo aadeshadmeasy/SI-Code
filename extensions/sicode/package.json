@@ -81,7 +81,7 @@
 			},
 			{
 				"command": "sicode.signIn",
-				"title": "Sign in with Google",
+				"title": "Account",
 				"category": "SI Code"
 			},
 			{

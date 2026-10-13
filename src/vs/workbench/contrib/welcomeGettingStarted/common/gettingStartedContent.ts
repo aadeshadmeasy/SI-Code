@@ -262,6 +262,15 @@ export const walkthroughs: GettingStartedWalkthroughContent = [
 				},
 				createSiCodeSetupStep(),
 				{
+					id: 'sicode.describe',
+					title: localize('gettingStarted.sicode.describe.title', "Describe your app"),
+					description: localize('gettingStarted.sicode.describe.description', "Tell {0} what you want. It builds a website, landing page, WhatsApp bot, or dashboard and opens a preview.\n{1}", product.nameShort, Button(localize('gettingStarted.sicode.describe.button', "Describe your app"), 'command:sicode.describe')),
+					completionEvents: ['onCommand:sicode.describe'],
+					media: {
+						type: 'svg', altText: 'Describe your app', path: 'multi-file-edits.svg'
+					},
+				},
+				{
 					id: 'pickColorTheme',
 					title: localize('gettingStarted.pickColor.title', "Choose your theme"),
 					description: localize('gettingStarted.pickColor.description.interpolated', "The right theme helps you focus on your code, is easy on your eyes, and is simply more fun to use.\n{0}", Button(localize('titleID', "Browse Color Themes"), 'command:workbench.action.selectTheme')),

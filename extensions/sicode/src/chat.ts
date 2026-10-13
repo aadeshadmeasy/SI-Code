@@ -5,6 +5,7 @@
 
 import * as vscode from 'vscode';
 import { clearChanges, dropReview, getReview, listChanges, pickCheckCommand, reviewMarkdown, runAgentWithReview, storeReview } from './agentReview.js';
+import { explainChange, explainError } from './explain.js';
 import { searchWorkspace } from './codeIndex.js';
 import { runProcess } from './proc.js';
 import { formatWhereHits, isWhereQuestion, rulesPrompt } from './projectMemory.js';
@@ -68,8 +69,13 @@ function createHandler(mode: SiCodeMode, context: vscode.ExtensionContext): vsco
 					const id = storeReview(outcome.changes);
 					clearChanges();
 					response.markdown(reviewMarkdown(outcome.changes, outcome.check));
+					response.markdown(outcome.changes.map(change => explainChange(change.path, change.before === null)).join('\n\n'));
 					response.button({ command: 'sicode.review.keep', title: 'Keep', arguments: [id] });
 					response.button({ command: 'sicode.review.revert', title: 'Revert', arguments: [id] });
+					if (outcome.check && !outcome.check.ok) {
+						response.markdown(explainError(outcome.check.errors));
+						response.button({ command: 'sicode.fixIt', title: 'Fix it', arguments: [outcome.check.errors] });
+					}
 				}
 			} else {
 				const result = await runToolLoop({

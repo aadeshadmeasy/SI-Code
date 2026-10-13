@@ -26,7 +26,15 @@
 		"onCommand:sicode.signOut",
 		"onCommand:sicode.ship.vercel",
 		"onCommand:sicode.ship.aws",
-		"onCommand:sicode.mcp.preset"
+		"onCommand:sicode.mcp.preset",
+		"onCommand:sicode.describe",
+		"onCommand:sicode.template.website",
+		"onCommand:sicode.template.landing",
+		"onCommand:sicode.template.whatsapp",
+		"onCommand:sicode.template.dashboard",
+		"onCommand:sicode.explainProblem",
+		"onCommand:sicode.fixIt",
+		"onCommand:sicode.simpleView"
 	],
 	"main": "./out/extension",
 	"capabilities": {
@@ -115,6 +123,46 @@
 			{
 				"command": "sicode.review.revert",
 				"title": "Revert Agent Edits",
+				"category": "SI Code"
+			},
+			{
+				"command": "sicode.describe",
+				"title": "Describe your app",
+				"category": "SI Code"
+			},
+			{
+				"command": "sicode.template.website",
+				"title": "New Website",
+				"category": "SI Code"
+			},
+			{
+				"command": "sicode.template.landing",
+				"title": "New Landing Page",
+				"category": "SI Code"
+			},
+			{
+				"command": "sicode.template.whatsapp",
+				"title": "New WhatsApp Bot",
+				"category": "SI Code"
+			},
+			{
+				"command": "sicode.template.dashboard",
+				"title": "New Data Dashboard",
+				"category": "SI Code"
+			},
+			{
+				"command": "sicode.explainProblem",
+				"title": "Explain the Error",
+				"category": "SI Code"
+			},
+			{
+				"command": "sicode.fixIt",
+				"title": "Fix it",
+				"category": "SI Code"
+			},
+			{
+				"command": "sicode.simpleView",
+				"title": "Simple View",
 				"category": "SI Code"
 			}
 		],

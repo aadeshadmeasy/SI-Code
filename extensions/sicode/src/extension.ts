@@ -5,6 +5,7 @@
 
 import * as vscode from 'vscode';
 import { registerChatParticipants } from './chat.js';
+import { registerDescribe } from './describe.js';
 import { registerInlineCompletions } from './inline.js';
 import { registerMcpView } from './mcpView.js';
 import { SicodeProvider } from './providers.js';
@@ -13,8 +14,11 @@ import { openSettings } from './settingsView.js';
 import { registerAgentTools } from './tools.js';
 import { vendors } from './catalog.js';
 import { openFreeModels } from './freeModels.js';
+import { explainError, fixPrompt } from './explain.js';
+import { shouldOfferFreeKeys } from './firstRun.js';
 import { runProcess } from './proc.js';
 import { awsPlan, extractPreviewUrl, vercelPlan, type ShipPlan } from './ship.js';
+import { simpleViewCommands } from './simpleView.js';
 
 export function activate(context: vscode.ExtensionContext): void {
 	const modelsChanged = new vscode.EventEmitter<void>();
@@ -38,6 +42,9 @@ export function activate(context: vscode.ExtensionContext): void {
 	registerAgentTools(context);
 	registerMcpView(context);
 	registerSupabaseAuth(context);
+	registerDescribe(context);
+	registerSimpleView(context);
+	void offerFreeKeysOnFirstRun(context);
 	context.subscriptions.push(
 		vscode.commands.registerCommand('sicode.configure', () => openSettings(context)),
 		vscode.commands.registerCommand('sicode.freeModels', () => openFreeModels()),
@@ -46,7 +53,99 @@ export function activate(context: vscode.ExtensionContext): void {
 		vscode.commands.registerCommand('sicode.runPython', () => runPython()),
 		vscode.commands.registerCommand('sicode.ship.vercel', () => ship('vercel')),
 		vscode.commands.registerCommand('sicode.ship.aws', () => ship('aws')),
+		vscode.commands.registerCommand('sicode.explainProblem', () => explainActiveProblem()),
+		vscode.commands.registerCommand('sicode.fixIt', (message?: string, file?: string) => fixIt(message, file)),
 	);
+}
+
+const firstRunKey = 'sicode.firstRun.freeKeys';
+
+async function offerFreeKeysOnFirstRun(context: vscode.ExtensionContext): Promise<void> {
+	const prompted = context.globalState.get<boolean>(firstRunKey) === true;
+	let configuredVendors = 0;
+	for (const spec of vendors) {
+		if (await context.secrets.get(spec.secretKey)) {
+			configuredVendors++;
+		}
+	}
+	if (!shouldOfferFreeKeys({ prompted, configuredVendors })) {
+		if (!prompted) {
+			await context.globalState.update(firstRunKey, true);
+		}
+		return;
+	}
+	await context.globalState.update(firstRunKey, true);
+	openFreeModels();
+}
+
+function registerSimpleView(context: vscode.ExtensionContext): void {
+	const key = 'sicode.simpleView';
+	const item = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 90);
+	item.command = 'sicode.simpleView';
+	const refresh = () => {
+		const enabled = context.globalState.get<boolean>(key) === true;
+		item.text = enabled ? 'Simple view' : 'Full view';
+		item.tooltip = enabled ? 'Terminal, git, and the advanced bar are hidden' : 'Hide the terminal, git, and advanced panels';
+	};
+	refresh();
+	item.show();
+	context.subscriptions.push(item);
+	context.subscriptions.push(vscode.commands.registerCommand('sicode.simpleView', async () => {
+		const enabled = context.globalState.get<boolean>(key) !== true;
+		await context.globalState.update(key, enabled);
+		refresh();
+		await applySimpleView(enabled);
+	}));
+	if (context.globalState.get<boolean>(key) === true) {
+		void applySimpleView(true);
+	}
+}
+
+async function applySimpleView(enabled: boolean): Promise<void> {
+	await vscode.commands.executeCommand('setContext', 'sicode.simpleView', enabled);
+	for (const command of simpleViewCommands(enabled)) {
+		try {
+			await vscode.commands.executeCommand(command);
+		} catch {
+			// A layout command can be missing in some hosts. The rest still run.
+		}
+	}
+}
+
+async function explainActiveProblem(): Promise<void> {
+	const problem = activeProblem();
+	if (!problem) {
+		void vscode.window.showInformationMessage('There is no error to explain.');
+		return;
+	}
+	const choice = await vscode.window.showInformationMessage(explainError(problem.message, problem.file), 'Fix it');
+	if (choice === 'Fix it') {
+		await fixIt(problem.message, problem.file);
+	}
+}
+
+async function fixIt(message?: string, file?: string): Promise<void> {
+	const problem = message?.trim() ? { message: message.trim(), file } : activeProblem();
+	if (!problem) {
+		void vscode.window.showInformationMessage('There is no error to fix.');
+		return;
+	}
+	await vscode.commands.executeCommand('workbench.action.chat.open', {
+		query: fixPrompt(problem.message, problem.file),
+		mode: 'agent',
+	});
+}
+
+function activeProblem(): { message: string; file?: string } | undefined {
+	const editor = vscode.window.activeTextEditor;
+	const diagnostics = editor
+		? vscode.languages.getDiagnostics(editor.document.uri)
+		: vscode.languages.getDiagnostics().flatMap(([, items]) => [...items]);
+	const item = diagnostics.find(entry => entry.severity === vscode.DiagnosticSeverity.Error) ?? diagnostics[0];
+	if (!item) {
+		return undefined;
+	}
+	return { message: item.message, file: editor?.document.uri.fsPath };
 }
 
 let shipChannel: vscode.OutputChannel | undefined;

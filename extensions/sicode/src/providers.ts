@@ -5,7 +5,7 @@
 
 import * as vscode from 'vscode';
 import { BedrockEventDecoder, converseBody, signBedrock, type WireMessage } from './bedrock.js';
-import { resolveCredentials, type VendorSpec } from './catalog.js';
+import { hasSavedModelConfiguration, resolveCredentials, type VendorSpec } from './catalog.js';
 import { postJson, readSse } from './http.js';
 import { authHeaders, noteOpenAIDelta, type ToolCallState } from './openaiWire.js';
 
@@ -22,6 +22,9 @@ export class SicodeProvider implements vscode.LanguageModelChatProvider {
 
 	async provideLanguageModelChatInformation(options: vscode.PrepareLanguageModelChatModelOptions, _token: vscode.CancellationToken): Promise<vscode.LanguageModelChatInformation[]> {
 		const extensionSecret = await this.context.secrets.get(this.spec.secretKey);
+		if (!hasSavedModelConfiguration(options.configuration) && !extensionSecret) {
+			return [];
+		}
 		const settings = vscode.workspace.getConfiguration('sicode');
 		const fromSettings: Record<string, unknown> = {};
 		const settingsModel = settings.get<string>(this.spec.modelSetting);

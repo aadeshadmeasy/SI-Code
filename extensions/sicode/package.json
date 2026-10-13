@@ -17,6 +17,7 @@
 	"activationEvents": [
 		"onStartupFinished",
 		"onCommand:sicode.configure",
+		"onCommand:sicode.freeModels",
 		"onCommand:sicode.inlineEdit",
 		"onCommand:sicode.openMcp",
 		"onCommand:sicode.runPython",
@@ -36,6 +37,11 @@
 			{
 				"command": "sicode.configure",
 				"title": "Configure AI",
+				"category": "SI Code"
+			},
+			{
+				"command": "sicode.freeModels",
+				"title": "Get Free API Keys",
 				"category": "SI Code"
 			},
 			{
@@ -171,103 +177,937 @@
 		"languageModelChatProviders": [
 			{
 				"vendor": "sicode-openai",
-				"displayName": "SI Code OpenAI",
+				"displayName": "OpenAI",
 				"configuration": {
 					"type": "object",
 					"properties": {
+						"endpoint": {
+							"type": "string",
+							"title": "Endpoint",
+							"description": "Base URL for the provider. SI Code fills this in for known providers.",
+							"default": "https://api.openai.com/v1"
+						},
 						"apiKey": {
 							"type": "string",
 							"secret": true,
 							"title": "API Key",
-							"description": "OpenAI API key"
+							"description": "API key. Stored in secret storage."
+						},
+						"model": {
+							"type": "string",
+							"title": "Model",
+							"description": "Model id sent to the provider. The list is refreshed from the provider when it publishes one.",
+							"default": "gpt-4o-mini",
+							"enum": [
+								"gpt-4o-mini",
+								"gpt-4o",
+								"gpt-4.1-mini",
+								"gpt-4.1",
+								"o4-mini",
+								"o3-mini"
+							],
+							"enumItemLabels": [
+								"GPT-4o mini",
+								"GPT-4o",
+								"GPT-4.1 mini",
+								"GPT-4.1",
+								"o4-mini",
+								"o3-mini"
+							],
+							"modelList": "openai",
+							"allowCustomValue": true
 						}
 					},
-					"required": ["apiKey"]
+					"required": [
+						"endpoint",
+						"apiKey",
+						"model"
+					]
 				}
 			},
 			{
 				"vendor": "sicode-anthropic",
-				"displayName": "SI Code Anthropic",
+				"displayName": "Anthropic",
 				"configuration": {
 					"type": "object",
 					"properties": {
+						"endpoint": {
+							"type": "string",
+							"title": "Endpoint",
+							"description": "Base URL for the provider. SI Code fills this in for known providers.",
+							"default": "https://api.anthropic.com"
+						},
 						"apiKey": {
 							"type": "string",
 							"secret": true,
 							"title": "API Key",
-							"description": "Anthropic API key"
+							"description": "API key. Stored in secret storage."
+						},
+						"model": {
+							"type": "string",
+							"title": "Model",
+							"description": "Model id sent to the provider. The list is refreshed from the provider when it publishes one.",
+							"default": "claude-sonnet-4-5",
+							"enum": [
+								"claude-sonnet-4-5",
+								"claude-haiku-4-5",
+								"claude-3-5-haiku-latest",
+								"claude-opus-4-5",
+								"claude-sonnet-4-5-20250929"
+							],
+							"enumItemLabels": [
+								"Claude Sonnet 4.5",
+								"Claude Haiku 4.5",
+								"Claude 3.5 Haiku",
+								"Claude Opus 4.5",
+								"Claude Sonnet 4.5 (dated)"
+							],
+							"modelList": "none",
+							"allowCustomValue": true
 						}
 					},
-					"required": ["apiKey"]
+					"required": [
+						"endpoint",
+						"apiKey",
+						"model"
+					]
 				}
 			},
 			{
 				"vendor": "sicode-gemini",
-				"displayName": "SI Code Gemini",
+				"displayName": "Google Gemini",
 				"configuration": {
 					"type": "object",
 					"properties": {
+						"endpoint": {
+							"type": "string",
+							"title": "Endpoint",
+							"description": "Base URL for the provider. SI Code fills this in for known providers.",
+							"default": "https://generativelanguage.googleapis.com/v1beta"
+						},
 						"apiKey": {
 							"type": "string",
 							"secret": true,
 							"title": "API Key",
-							"description": "Google Gemini API key"
-						}
-					},
-					"required": ["apiKey"]
-				}
-			},
-			{
-				"vendor": "sicode-sarvam",
-				"displayName": "SI Code Sarvam",
-				"configuration": {
-					"type": "object",
-					"properties": {
-						"apiKey": {
+							"description": "API key. Stored in secret storage."
+						},
+						"model": {
 							"type": "string",
-							"secret": true,
-							"title": "API Key",
-							"description": "Sarvam API subscription key"
+							"title": "Model",
+							"description": "Model id sent to the provider. The list is refreshed from the provider when it publishes one.",
+							"default": "gemini-2.5-flash",
+							"enum": [
+								"gemini-2.5-flash",
+								"gemini-2.5-pro",
+								"gemini-2.0-flash",
+								"gemini-flash-latest"
+							],
+							"enumItemLabels": [
+								"Gemini 2.5 Flash",
+								"Gemini 2.5 Pro",
+								"Gemini 2.0 Flash",
+								"Gemini Flash (latest)"
+							],
+							"modelList": "gemini",
+							"allowCustomValue": true
 						}
 					},
-					"required": ["apiKey"]
+					"required": [
+						"endpoint",
+						"apiKey",
+						"model"
+					]
 				}
 			},
 			{
 				"vendor": "sicode-openrouter",
-				"displayName": "SI Code OpenRouter",
+				"displayName": "OpenRouter",
 				"configuration": {
 					"type": "object",
 					"properties": {
+						"endpoint": {
+							"type": "string",
+							"title": "Endpoint",
+							"description": "Base URL for the provider. SI Code fills this in for known providers.",
+							"default": "https://openrouter.ai/api/v1"
+						},
 						"apiKey": {
 							"type": "string",
 							"secret": true,
 							"title": "API Key",
-							"description": "OpenRouter API key"
+							"description": "API key. Stored in secret storage."
+						},
+						"model": {
+							"type": "string",
+							"title": "Model",
+							"description": "Model id sent to the provider. The list is refreshed from the provider when it publishes one.",
+							"default": "openrouter/free",
+							"enum": [
+								"openrouter/free",
+								"meta-llama/llama-3.3-70b-instruct:free",
+								"google/gemini-2.0-flash-exp:free",
+								"deepseek/deepseek-chat-v3-0324:free",
+								"qwen/qwen3-coder:free"
+							],
+							"enumItemLabels": [
+								"Free model router",
+								"Llama 3.3 70B (free)",
+								"Gemini 2.0 Flash (free)",
+								"DeepSeek Chat (free)",
+								"Qwen3 Coder (free)"
+							],
+							"modelList": "openai",
+							"allowCustomValue": true
 						}
 					},
-					"required": ["apiKey"]
+					"required": [
+						"endpoint",
+						"apiKey",
+						"model"
+					]
+				}
+			},
+			{
+				"vendor": "sicode-groq",
+				"displayName": "Groq",
+				"configuration": {
+					"type": "object",
+					"properties": {
+						"endpoint": {
+							"type": "string",
+							"title": "Endpoint",
+							"description": "Base URL for the provider. SI Code fills this in for known providers.",
+							"default": "https://api.groq.com/openai/v1"
+						},
+						"apiKey": {
+							"type": "string",
+							"secret": true,
+							"title": "API Key",
+							"description": "API key. Stored in secret storage."
+						},
+						"model": {
+							"type": "string",
+							"title": "Model",
+							"description": "Model id sent to the provider. The list is refreshed from the provider when it publishes one.",
+							"default": "llama-3.3-70b-versatile",
+							"enum": [
+								"llama-3.3-70b-versatile",
+								"llama-3.1-8b-instant",
+								"openai/gpt-oss-120b",
+								"mixtral-8x7b-32768"
+							],
+							"enumItemLabels": [
+								"Llama 3.3 70B",
+								"Llama 3.1 8B",
+								"GPT-OSS 120B",
+								"Mixtral 8x7B"
+							],
+							"modelList": "openai",
+							"allowCustomValue": true
+						}
+					},
+					"required": [
+						"endpoint",
+						"apiKey",
+						"model"
+					]
+				}
+			},
+			{
+				"vendor": "sicode-mistral",
+				"displayName": "Mistral",
+				"configuration": {
+					"type": "object",
+					"properties": {
+						"endpoint": {
+							"type": "string",
+							"title": "Endpoint",
+							"description": "Base URL for the provider. SI Code fills this in for known providers.",
+							"default": "https://api.mistral.ai/v1"
+						},
+						"apiKey": {
+							"type": "string",
+							"secret": true,
+							"title": "API Key",
+							"description": "API key. Stored in secret storage."
+						},
+						"model": {
+							"type": "string",
+							"title": "Model",
+							"description": "Model id sent to the provider. The list is refreshed from the provider when it publishes one.",
+							"default": "mistral-small-latest",
+							"enum": [
+								"mistral-small-latest",
+								"open-mistral-nemo",
+								"codestral-latest",
+								"mistral-large-latest"
+							],
+							"enumItemLabels": [
+								"Mistral Small",
+								"Mistral Nemo",
+								"Codestral",
+								"Mistral Large"
+							],
+							"modelList": "openai",
+							"allowCustomValue": true
+						}
+					},
+					"required": [
+						"endpoint",
+						"apiKey",
+						"model"
+					]
+				}
+			},
+			{
+				"vendor": "sicode-deepseek",
+				"displayName": "DeepSeek",
+				"configuration": {
+					"type": "object",
+					"properties": {
+						"endpoint": {
+							"type": "string",
+							"title": "Endpoint",
+							"description": "Base URL for the provider. SI Code fills this in for known providers.",
+							"default": "https://api.deepseek.com"
+						},
+						"apiKey": {
+							"type": "string",
+							"secret": true,
+							"title": "API Key",
+							"description": "API key. Stored in secret storage."
+						},
+						"model": {
+							"type": "string",
+							"title": "Model",
+							"description": "Model id sent to the provider. The list is refreshed from the provider when it publishes one.",
+							"default": "deepseek-chat",
+							"enum": [
+								"deepseek-chat",
+								"deepseek-reasoner"
+							],
+							"enumItemLabels": [
+								"DeepSeek Chat",
+								"DeepSeek Reasoner"
+							],
+							"modelList": "openai",
+							"allowCustomValue": true
+						}
+					},
+					"required": [
+						"endpoint",
+						"apiKey",
+						"model"
+					]
+				}
+			},
+			{
+				"vendor": "sicode-xai",
+				"displayName": "xAI",
+				"configuration": {
+					"type": "object",
+					"properties": {
+						"endpoint": {
+							"type": "string",
+							"title": "Endpoint",
+							"description": "Base URL for the provider. SI Code fills this in for known providers.",
+							"default": "https://api.x.ai/v1"
+						},
+						"apiKey": {
+							"type": "string",
+							"secret": true,
+							"title": "API Key",
+							"description": "API key. Stored in secret storage."
+						},
+						"model": {
+							"type": "string",
+							"title": "Model",
+							"description": "Model id sent to the provider. The list is refreshed from the provider when it publishes one.",
+							"default": "grok-3-mini",
+							"enum": [
+								"grok-3-mini",
+								"grok-3"
+							],
+							"enumItemLabels": [
+								"Grok 3 Mini",
+								"Grok 3"
+							],
+							"modelList": "openai",
+							"allowCustomValue": true
+						}
+					},
+					"required": [
+						"endpoint",
+						"apiKey",
+						"model"
+					]
+				}
+			},
+			{
+				"vendor": "sicode-together",
+				"displayName": "Together",
+				"configuration": {
+					"type": "object",
+					"properties": {
+						"endpoint": {
+							"type": "string",
+							"title": "Endpoint",
+							"description": "Base URL for the provider. SI Code fills this in for known providers.",
+							"default": "https://api.together.xyz/v1"
+						},
+						"apiKey": {
+							"type": "string",
+							"secret": true,
+							"title": "API Key",
+							"description": "API key. Stored in secret storage."
+						},
+						"model": {
+							"type": "string",
+							"title": "Model",
+							"description": "Model id sent to the provider. The list is refreshed from the provider when it publishes one.",
+							"default": "meta-llama/Llama-3.3-70B-Instruct-Turbo",
+							"enum": [
+								"meta-llama/Llama-3.3-70B-Instruct-Turbo",
+								"meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo",
+								"Qwen/Qwen2.5-Coder-32B-Instruct"
+							],
+							"enumItemLabels": [
+								"Llama 3.3 70B Turbo",
+								"Llama 3.1 8B Turbo",
+								"Qwen 2.5 Coder 32B"
+							],
+							"modelList": "openai",
+							"allowCustomValue": true
+						}
+					},
+					"required": [
+						"endpoint",
+						"apiKey",
+						"model"
+					]
+				}
+			},
+			{
+				"vendor": "sicode-fireworks",
+				"displayName": "Fireworks",
+				"configuration": {
+					"type": "object",
+					"properties": {
+						"endpoint": {
+							"type": "string",
+							"title": "Endpoint",
+							"description": "Base URL for the provider. SI Code fills this in for known providers.",
+							"default": "https://api.fireworks.ai/inference/v1"
+						},
+						"apiKey": {
+							"type": "string",
+							"secret": true,
+							"title": "API Key",
+							"description": "API key. Stored in secret storage."
+						},
+						"model": {
+							"type": "string",
+							"title": "Model",
+							"description": "Model id sent to the provider. The list is refreshed from the provider when it publishes one.",
+							"default": "accounts/fireworks/models/llama-v3p3-70b-instruct",
+							"enum": [
+								"accounts/fireworks/models/llama-v3p3-70b-instruct",
+								"accounts/fireworks/models/llama-v3p1-8b-instruct"
+							],
+							"enumItemLabels": [
+								"Llama 3.3 70B",
+								"Llama 3.1 8B"
+							],
+							"modelList": "openai",
+							"allowCustomValue": true
+						}
+					},
+					"required": [
+						"endpoint",
+						"apiKey",
+						"model"
+					]
+				}
+			},
+			{
+				"vendor": "sicode-cerebras",
+				"displayName": "Cerebras",
+				"configuration": {
+					"type": "object",
+					"properties": {
+						"endpoint": {
+							"type": "string",
+							"title": "Endpoint",
+							"description": "Base URL for the provider. SI Code fills this in for known providers.",
+							"default": "https://api.cerebras.ai/v1"
+						},
+						"apiKey": {
+							"type": "string",
+							"secret": true,
+							"title": "API Key",
+							"description": "API key. Stored in secret storage."
+						},
+						"model": {
+							"type": "string",
+							"title": "Model",
+							"description": "Model id sent to the provider. The list is refreshed from the provider when it publishes one.",
+							"default": "llama3.1-8b",
+							"enum": [
+								"llama3.1-8b",
+								"llama-3.3-70b",
+								"gpt-oss-120b"
+							],
+							"enumItemLabels": [
+								"Llama 3.1 8B",
+								"Llama 3.3 70B",
+								"GPT-OSS 120B"
+							],
+							"modelList": "openai",
+							"allowCustomValue": true
+						}
+					},
+					"required": [
+						"endpoint",
+						"apiKey",
+						"model"
+					]
+				}
+			},
+			{
+				"vendor": "sicode-azure",
+				"displayName": "Azure OpenAI",
+				"configuration": {
+					"type": "object",
+					"properties": {
+						"endpoint": {
+							"type": "string",
+							"title": "Endpoint",
+							"description": "Base URL for the provider. SI Code fills this in for known providers.",
+							"default": "https://YOUR_RESOURCE.openai.azure.com/openai/v1"
+						},
+						"apiKey": {
+							"type": "string",
+							"secret": true,
+							"title": "API Key",
+							"description": "API key. Stored in secret storage."
+						},
+						"model": {
+							"type": "string",
+							"title": "Model",
+							"description": "Model id sent to the provider. The list is refreshed from the provider when it publishes one.",
+							"default": "gpt-4o-mini",
+							"enum": [
+								"gpt-4o-mini",
+								"gpt-4o",
+								"gpt-4.1"
+							],
+							"enumItemLabels": [
+								"gpt-4o-mini deployment",
+								"gpt-4o deployment",
+								"gpt-4.1 deployment"
+							],
+							"modelList": "openai",
+							"allowCustomValue": true
+						}
+					},
+					"required": [
+						"endpoint",
+						"apiKey",
+						"model"
+					]
+				}
+			},
+			{
+				"vendor": "sicode-sarvam",
+				"displayName": "Sarvam",
+				"configuration": {
+					"type": "object",
+					"properties": {
+						"endpoint": {
+							"type": "string",
+							"title": "Endpoint",
+							"description": "Base URL for the provider. SI Code fills this in for known providers.",
+							"default": "https://api.sarvam.ai/v1"
+						},
+						"apiKey": {
+							"type": "string",
+							"secret": true,
+							"title": "API Key",
+							"description": "API key. Stored in secret storage."
+						},
+						"model": {
+							"type": "string",
+							"title": "Model",
+							"description": "Model id sent to the provider. The list is refreshed from the provider when it publishes one.",
+							"default": "sarvam-105b",
+							"enum": [
+								"sarvam-105b",
+								"sarvam-105b-conversations"
+							],
+							"enumItemLabels": [
+								"Sarvam 105B",
+								"Sarvam 105B Conversations"
+							],
+							"modelList": "none",
+							"allowCustomValue": true
+						}
+					},
+					"required": [
+						"endpoint",
+						"apiKey",
+						"model"
+					]
+				}
+			},
+			{
+				"vendor": "sicode-huggingface",
+				"displayName": "Hugging Face",
+				"configuration": {
+					"type": "object",
+					"properties": {
+						"endpoint": {
+							"type": "string",
+							"title": "Endpoint",
+							"description": "Base URL for the provider. SI Code fills this in for known providers.",
+							"default": "https://router.huggingface.co/v1"
+						},
+						"apiKey": {
+							"type": "string",
+							"secret": true,
+							"title": "API Key",
+							"description": "API key. Stored in secret storage."
+						},
+						"model": {
+							"type": "string",
+							"title": "Model",
+							"description": "Model id sent to the provider. The list is refreshed from the provider when it publishes one.",
+							"default": "meta-llama/Llama-3.3-70B-Instruct",
+							"enum": [
+								"meta-llama/Llama-3.3-70B-Instruct",
+								"Qwen/Qwen2.5-Coder-32B-Instruct",
+								"mistralai/Mistral-7B-Instruct-v0.3"
+							],
+							"enumItemLabels": [
+								"Llama 3.3 70B",
+								"Qwen 2.5 Coder 32B",
+								"Mistral 7B Instruct"
+							],
+							"modelList": "openai",
+							"allowCustomValue": true
+						}
+					},
+					"required": [
+						"endpoint",
+						"apiKey",
+						"model"
+					]
+				}
+			},
+			{
+				"vendor": "sicode-nvidia",
+				"displayName": "NVIDIA NIM",
+				"configuration": {
+					"type": "object",
+					"properties": {
+						"endpoint": {
+							"type": "string",
+							"title": "Endpoint",
+							"description": "Base URL for the provider. SI Code fills this in for known providers.",
+							"default": "https://integrate.api.nvidia.com/v1"
+						},
+						"apiKey": {
+							"type": "string",
+							"secret": true,
+							"title": "API Key",
+							"description": "API key. Stored in secret storage."
+						},
+						"model": {
+							"type": "string",
+							"title": "Model",
+							"description": "Model id sent to the provider. The list is refreshed from the provider when it publishes one.",
+							"default": "meta/llama-3.3-70b-instruct",
+							"enum": [
+								"meta/llama-3.3-70b-instruct",
+								"meta/llama-3.1-8b-instruct",
+								"mistralai/mistral-small-24b-instruct"
+							],
+							"enumItemLabels": [
+								"Llama 3.3 70B",
+								"Llama 3.1 8B",
+								"Mistral Small"
+							],
+							"modelList": "openai",
+							"allowCustomValue": true
+						}
+					},
+					"required": [
+						"endpoint",
+						"apiKey",
+						"model"
+					]
+				}
+			},
+			{
+				"vendor": "sicode-cloudflare",
+				"displayName": "Cloudflare Workers AI",
+				"configuration": {
+					"type": "object",
+					"properties": {
+						"endpoint": {
+							"type": "string",
+							"title": "Endpoint",
+							"description": "Base URL for the provider. SI Code fills this in for known providers.",
+							"default": "https://api.cloudflare.com/client/v4/accounts/ACCOUNT_ID/ai/v1"
+						},
+						"apiKey": {
+							"type": "string",
+							"secret": true,
+							"title": "API Key",
+							"description": "API key. Stored in secret storage."
+						},
+						"model": {
+							"type": "string",
+							"title": "Model",
+							"description": "Model id sent to the provider. The list is refreshed from the provider when it publishes one.",
+							"default": "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
+							"enum": [
+								"@cf/meta/llama-3.3-70b-instruct-fp8-fast",
+								"@cf/meta/llama-3.1-8b-instruct",
+								"@cf/qwen/qwen2.5-coder-32b-instruct"
+							],
+							"enumItemLabels": [
+								"Llama 3.3 70B",
+								"Llama 3.1 8B",
+								"Qwen 2.5 Coder 32B"
+							],
+							"modelList": "openai",
+							"allowCustomValue": true
+						}
+					},
+					"required": [
+						"endpoint",
+						"apiKey",
+						"model"
+					]
+				}
+			},
+			{
+				"vendor": "sicode-bedrock",
+				"displayName": "Amazon Bedrock",
+				"configuration": {
+					"type": "object",
+					"properties": {
+						"region": {
+							"type": "string",
+							"title": "Region",
+							"description": "AWS Region for the Bedrock Runtime endpoint.",
+							"default": "us-east-1",
+							"enum": [
+								"us-east-1",
+								"us-east-2",
+								"us-west-2",
+								"eu-west-1",
+								"eu-central-1",
+								"ap-south-1",
+								"ap-northeast-1",
+								"ap-southeast-2"
+							],
+							"enumItemLabels": [
+								"US East (N. Virginia)",
+								"US East (Ohio)",
+								"US West (Oregon)",
+								"Europe (Ireland)",
+								"Europe (Frankfurt)",
+								"Asia Pacific (Mumbai)",
+								"Asia Pacific (Tokyo)",
+								"Asia Pacific (Sydney)"
+							]
+						},
+						"accessKey": {
+							"type": "string",
+							"secret": true,
+							"title": "Access Key",
+							"description": "AWS access key id. Stored in secret storage."
+						},
+						"secretKey": {
+							"type": "string",
+							"secret": true,
+							"title": "Secret Key",
+							"description": "AWS secret access key. Stored in secret storage."
+						},
+						"sessionToken": {
+							"type": "string",
+							"secret": true,
+							"title": "Session Token",
+							"description": "Optional AWS session token for temporary credentials."
+						},
+						"model": {
+							"type": "string",
+							"title": "Model",
+							"description": "Model id sent to the provider. The list is refreshed from the provider when it publishes one.",
+							"default": "global.anthropic.claude-sonnet-4-5-20250929-v1:0",
+							"enum": [
+								"global.anthropic.claude-sonnet-4-5-20250929-v1:0",
+								"global.anthropic.claude-haiku-4-5-20251001-v1:0",
+								"us.anthropic.claude-3-5-haiku-20241022-v1:0",
+								"us.anthropic.claude-opus-4-1-20250805-v1:0",
+								"us.meta.llama3-3-70b-instruct-v1:0",
+								"us.meta.llama3-2-11b-instruct-v1:0",
+								"us.mistral.mistral-large-2407-v1:0",
+								"us.amazon.nova-pro-v1:0",
+								"us.amazon.nova-lite-v1:0",
+								"us.amazon.nova-micro-v1:0"
+							],
+							"enumItemLabels": [
+								"Claude Sonnet 4.5",
+								"Claude Haiku 4.5",
+								"Claude 3.5 Haiku",
+								"Claude Opus 4.1",
+								"Llama 3.3 70B",
+								"Llama 3.2 11B",
+								"Mistral Large",
+								"Amazon Nova Pro",
+								"Amazon Nova Lite",
+								"Amazon Nova Micro"
+							],
+							"modelList": "none",
+							"allowCustomValue": true
+						}
+					},
+					"required": [
+						"region",
+						"accessKey",
+						"secretKey",
+						"model"
+					]
+				}
+			},
+			{
+				"vendor": "sicode-ollama",
+				"displayName": "Ollama",
+				"configuration": {
+					"type": "object",
+					"properties": {
+						"endpoint": {
+							"type": "string",
+							"title": "Endpoint",
+							"description": "Base URL for the provider. SI Code fills this in for known providers.",
+							"default": "http://127.0.0.1:11434/v1"
+						},
+						"apiKey": {
+							"type": "string",
+							"secret": true,
+							"title": "API Key",
+							"description": "Optional API key. Stored in secret storage. Local servers can keep the placeholder.",
+							"default": "ollama"
+						},
+						"model": {
+							"type": "string",
+							"title": "Model",
+							"description": "Model id sent to the provider. The list is refreshed from the provider when it publishes one.",
+							"default": "llama3.2",
+							"enum": [
+								"llama3.2",
+								"llama3.1",
+								"qwen2.5-coder",
+								"mistral"
+							],
+							"enumItemLabels": [
+								"Llama 3.2",
+								"Llama 3.1",
+								"Qwen 2.5 Coder",
+								"Mistral"
+							],
+							"modelList": "openai",
+							"allowCustomValue": true
+						}
+					},
+					"required": [
+						"endpoint",
+						"model"
+					]
+				}
+			},
+			{
+				"vendor": "sicode-lmstudio",
+				"displayName": "LM Studio",
+				"configuration": {
+					"type": "object",
+					"properties": {
+						"endpoint": {
+							"type": "string",
+							"title": "Endpoint",
+							"description": "Base URL for the provider. SI Code fills this in for known providers.",
+							"default": "http://127.0.0.1:1234/v1"
+						},
+						"apiKey": {
+							"type": "string",
+							"secret": true,
+							"title": "API Key",
+							"description": "Optional API key. Stored in secret storage. Local servers can keep the placeholder.",
+							"default": "lm-studio"
+						},
+						"model": {
+							"type": "string",
+							"title": "Model",
+							"description": "Model id sent to the provider. The list is refreshed from the provider when it publishes one.",
+							"default": "local-model",
+							"enum": [
+								"local-model"
+							],
+							"enumItemLabels": [
+								"Loaded model"
+							],
+							"modelList": "openai",
+							"allowCustomValue": true
+						}
+					},
+					"required": [
+						"endpoint",
+						"model"
+					]
 				}
 			},
 			{
 				"vendor": "sicode-compatible",
-				"displayName": "SI Code Compatible",
+				"displayName": "OpenAI-compatible",
 				"configuration": {
 					"type": "object",
 					"properties": {
+						"endpoint": {
+							"type": "string",
+							"title": "Endpoint",
+							"description": "Base URL for the provider. SI Code fills this in for known providers.",
+							"default": "http://127.0.0.1:11434/v1"
+						},
 						"apiKey": {
 							"type": "string",
 							"secret": true,
 							"title": "API Key",
-							"description": "API key for an OpenAI-compatible server. Ollama can use any non-empty value."
+							"description": "Optional API key. Stored in secret storage. Local servers can keep the placeholder.",
+							"default": "local"
 						},
-						"baseUrl": {
+						"model": {
 							"type": "string",
-							"title": "Base URL",
-							"description": "OpenAI-compatible base URL, for example http://127.0.0.1:11434/v1"
+							"title": "Model",
+							"description": "Model id sent to the provider. The list is refreshed from the provider when it publishes one.",
+							"default": "llama3.2",
+							"enum": [
+								"llama3.2",
+								"local-model"
+							],
+							"enumItemLabels": [
+								"llama3.2",
+								"local-model"
+							],
+							"modelList": "openai",
+							"allowCustomValue": true
 						}
 					},
-					"required": ["apiKey"]
+					"required": [
+						"endpoint",
+						"model"
+					]
 				}
 			}
 		],
@@ -278,8 +1118,12 @@
 				"fullName": "SI Code",
 				"description": "Ask SI Code about the open file.",
 				"isDefault": true,
-				"locations": ["panel"],
-				"modes": ["ask"]
+				"locations": [
+					"panel"
+				],
+				"modes": [
+					"ask"
+				]
 			},
 			{
 				"id": "sicode.edit",
@@ -287,8 +1131,12 @@
 				"fullName": "SI Code",
 				"description": "Edit the selection with SI Code.",
 				"isDefault": true,
-				"locations": ["panel"],
-				"modes": ["edit"]
+				"locations": [
+					"panel"
+				],
+				"modes": [
+					"edit"
+				]
 			},
 			{
 				"id": "sicode.agent",
@@ -296,8 +1144,12 @@
 				"fullName": "SI Code",
 				"description": "SI Code agent that edits files, runs commands, and calls MCP tools.",
 				"isDefault": true,
-				"locations": ["panel"],
-				"modes": ["agent"],
+				"locations": [
+					"panel"
+				],
+				"modes": [
+					"agent"
+				],
 				"when": "config.chat.agent.enabled"
 			},
 			{
@@ -306,7 +1158,9 @@
 				"fullName": "SI Code",
 				"description": "Inline edit with SI Code.",
 				"isDefault": true,
-				"locations": ["editor"]
+				"locations": [
+					"editor"
+				]
 			}
 		],
 		"languageModelTools": [
@@ -321,9 +1175,14 @@
 				"inputSchema": {
 					"type": "object",
 					"properties": {
-						"path": { "type": "string", "description": "Workspace-relative or absolute path." }
+						"path": {
+							"type": "string",
+							"description": "Workspace-relative or absolute path."
+						}
 					},
-					"required": ["path"]
+					"required": [
+						"path"
+					]
 				}
 			},
 			{
@@ -337,7 +1196,10 @@
 				"inputSchema": {
 					"type": "object",
 					"properties": {
-						"path": { "type": "string", "description": "Workspace-relative or absolute directory." }
+						"path": {
+							"type": "string",
+							"description": "Workspace-relative or absolute directory."
+						}
 					}
 				}
 			},
@@ -352,7 +1214,10 @@
 				"inputSchema": {
 					"type": "object",
 					"properties": {
-						"path": { "type": "string", "description": "Optional file path." }
+						"path": {
+							"type": "string",
+							"description": "Optional file path."
+						}
 					}
 				}
 			},
@@ -367,10 +1232,19 @@
 				"inputSchema": {
 					"type": "object",
 					"properties": {
-						"path": { "type": "string", "description": "Workspace-relative or absolute path." },
-						"contents": { "type": "string", "description": "The full new contents of the file." }
+						"path": {
+							"type": "string",
+							"description": "Workspace-relative or absolute path."
+						},
+						"contents": {
+							"type": "string",
+							"description": "The full new contents of the file."
+						}
 					},
-					"required": ["path", "contents"]
+					"required": [
+						"path",
+						"contents"
+					]
 				}
 			},
 			{
@@ -384,11 +1258,24 @@
 				"inputSchema": {
 					"type": "object",
 					"properties": {
-						"path": { "type": "string", "description": "Workspace-relative or absolute path." },
-						"oldText": { "type": "string", "description": "Exact text to replace." },
-						"newText": { "type": "string", "description": "Replacement text." }
+						"path": {
+							"type": "string",
+							"description": "Workspace-relative or absolute path."
+						},
+						"oldText": {
+							"type": "string",
+							"description": "Exact text to replace."
+						},
+						"newText": {
+							"type": "string",
+							"description": "Replacement text."
+						}
 					},
-					"required": ["path", "oldText", "newText"]
+					"required": [
+						"path",
+						"oldText",
+						"newText"
+					]
 				}
 			},
 			{
@@ -402,10 +1289,18 @@
 				"inputSchema": {
 					"type": "object",
 					"properties": {
-						"command": { "type": "string", "description": "The shell command to run." },
-						"cwd": { "type": "string", "description": "Optional working directory." }
+						"command": {
+							"type": "string",
+							"description": "The shell command to run."
+						},
+						"cwd": {
+							"type": "string",
+							"description": "Optional working directory."
+						}
 					},
-					"required": ["command"]
+					"required": [
+						"command"
+					]
 				}
 			}
 		]

@@ -5,7 +5,7 @@
 
 import * as vscode from 'vscode';
 import { agentTools, readTools } from './tools.js';
-import { LoopMessage, ModelPart, runToolLoop, ToolSpec } from './toolLoop.js';
+import { runToolLoop, type LoopMessage, type ModelPart, type ToolSpec } from './toolLoop.js';
 
 export type SiCodeMode = 'ask' | 'edit' | 'agent' | 'inline';
 

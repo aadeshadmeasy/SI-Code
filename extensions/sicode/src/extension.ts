@@ -11,7 +11,8 @@ import { SicodeProvider } from './providers.js';
 import { registerSupabaseAuth } from './auth.js';
 import { openSettings } from './settingsView.js';
 import { registerAgentTools } from './tools.js';
-import { vendors } from './vendors.js';
+import { vendors } from './catalog.js';
+import { openFreeModels } from './freeModels.js';
 
 export function activate(context: vscode.ExtensionContext): void {
 	const modelsChanged = new vscode.EventEmitter<void>();
@@ -37,6 +38,7 @@ export function activate(context: vscode.ExtensionContext): void {
 	registerSupabaseAuth(context);
 	context.subscriptions.push(
 		vscode.commands.registerCommand('sicode.configure', () => openSettings(context)),
+		vscode.commands.registerCommand('sicode.freeModels', () => openFreeModels()),
 		vscode.commands.registerCommand('sicode.inlineEdit', () => vscode.commands.executeCommand('inlineChat.start')),
 		vscode.commands.registerCommand('sicode.openMcp', () => vscode.commands.executeCommand('workbench.mcp.openUserMcpJson')),
 		vscode.commands.registerCommand('sicode.runPython', () => runPython()),

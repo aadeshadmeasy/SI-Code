@@ -4,25 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
+import { BedrockEventDecoder, converseBody, signBedrock, type WireMessage } from './bedrock.js';
+import { resolveCredentials, type VendorSpec } from './catalog.js';
 import { postJson, readSse } from './http.js';
-import { VendorSpec } from './vendors.js';
+import { authHeaders, noteOpenAIDelta, type ToolCallState } from './openaiWire.js';
 
 const credKey = Symbol('sicode.credentials');
-
-interface Credentials {
-	apiKey: string;
-	baseUrl: string;
-	kind: VendorSpec['kind'];
-	extraHeaders?: Record<string, string>;
-	model: string;
-	subscriptionKeyHeader?: boolean;
-}
-
-interface ToolCallState {
-	id: string;
-	name: string;
-	args: string;
-}
 
 type RequestMessage = vscode.LanguageModelChatRequestMessage;
 
@@ -34,42 +21,38 @@ export class SicodeProvider implements vscode.LanguageModelChatProvider {
 	) { }
 
 	async provideLanguageModelChatInformation(options: vscode.PrepareLanguageModelChatModelOptions, _token: vscode.CancellationToken): Promise<vscode.LanguageModelChatInformation[]> {
-		const configuredKey = stringValue(options.configuration?.['apiKey']);
-		const unresolvedSecret = configuredKey?.startsWith('${input:');
-		const apiKey = (!unresolvedSecret && configuredKey) || await this.context.secrets.get(this.spec.secretKey);
-		if (!apiKey) {
+		const extensionSecret = await this.context.secrets.get(this.spec.secretKey);
+		const settings = vscode.workspace.getConfiguration('sicode');
+		const fromSettings: Record<string, unknown> = {};
+		const settingsModel = settings.get<string>(this.spec.modelSetting);
+		if (settingsModel) {
+			fromSettings.model = settingsModel;
+		}
+		if (this.spec.vendor === 'sicode-compatible') {
+			const baseUrl = settings.get<string>('compatible.baseUrl');
+			if (baseUrl) {
+				fromSettings.endpoint = baseUrl;
+			}
+		}
+		const credentials = resolveCredentials(this.spec, { ...fromSettings, ...options.configuration }, extensionSecret);
+		if (!credentials) {
 			return [];
 		}
-
-		const config = vscode.workspace.getConfiguration('sicode');
-		const baseUrl = (options.configuration && stringValue(options.configuration['baseUrl']))
-			|| (this.spec.baseSetting ? config.get<string>(this.spec.baseSetting) : undefined)
-			|| this.spec.defaultBaseUrl;
-		const modelId = config.get<string>(this.spec.modelSetting) || this.spec.defaultModel;
+		const label = this.spec.models.find(model => model.id === credentials.model)?.label ?? credentials.model;
 		const model: vscode.LanguageModelChatInformation = {
-			id: modelId,
-			name: modelId,
-			family: this.spec.vendor,
+			id: credentials.model,
+			name: label,
+			family: this.spec.label,
 			version: '1',
-			tooltip: `${this.spec.label} via SI Code`,
-			detail: 'Bring your own key',
-			maxInputTokens: this.spec.maxInputTokens ?? 128_000,
+			tooltip: `${this.spec.label} · ${credentials.baseUrl}`,
+			maxInputTokens: credentials.maxInputTokens,
 			maxOutputTokens: 4096,
 			capabilities: { toolCalling: true },
 			isDefault: this.spec.vendor === 'sicode-openai',
 			isUserSelectable: true,
 			isBYOK: true,
 		};
-		Object.defineProperty(model, credKey, {
-			value: {
-				apiKey,
-				baseUrl: baseUrl.replace(/\/$/, ''),
-				kind: this.spec.kind,
-				extraHeaders: this.spec.extraHeaders,
-				model: modelId,
-				subscriptionKeyHeader: this.spec.subscriptionKeyHeader,
-			} satisfies Credentials,
-		});
+		Object.defineProperty(model, credKey, { value: credentials });
 		return [model];
 	}
 
@@ -80,9 +63,9 @@ export class SicodeProvider implements vscode.LanguageModelChatProvider {
 		progress: vscode.Progress<vscode.LanguageModelResponsePart>,
 		token: vscode.CancellationToken,
 	): Promise<void> {
-		const credentials = (model as { [credKey]?: Credentials })[credKey];
+		const credentials = (model as { [credKey]?: ReturnType<typeof resolveCredentials> })[credKey];
 		if (!credentials) {
-			throw new Error('SI Code could not find the API key for this model. Run SI Code: Configure AI and try again.');
+			throw new Error('SI Code could not find the API key for this model. Add the model again from SI Code: Get Free API Keys.');
 		}
 		const tools = (options as { tools?: vscode.LanguageModelChatTool[] }).tools ?? [];
 		const abort = new AbortController();
@@ -92,6 +75,8 @@ export class SicodeProvider implements vscode.LanguageModelChatProvider {
 				await this.completeAnthropic(credentials, messages, tools, progress, abort.signal);
 			} else if (credentials.kind === 'gemini') {
 				await this.completeGemini(credentials, messages, tools, progress, abort.signal);
+			} else if (credentials.kind === 'bedrock') {
+				await this.completeBedrock(credentials, messages, tools, progress, abort.signal);
 			} else {
 				await this.completeOpenAI(credentials, messages, tools, progress, abort.signal);
 			}
@@ -110,49 +95,25 @@ export class SicodeProvider implements vscode.LanguageModelChatProvider {
 		return Promise.resolve(Math.max(1, Math.ceil(value.length / 4)));
 	}
 
-	private async completeOpenAI(credentials: Credentials, messages: readonly RequestMessage[], tools: readonly vscode.LanguageModelChatTool[], progress: vscode.Progress<vscode.LanguageModelResponsePart>, signal: AbortSignal): Promise<void> {
+	private async completeOpenAI(credentials: NonNullable<ReturnType<typeof resolveCredentials>>, messages: readonly RequestMessage[], tools: readonly vscode.LanguageModelChatTool[], progress: vscode.Progress<vscode.LanguageModelResponsePart>, signal: AbortSignal): Promise<void> {
 		const pending = new Map<number, ToolCallState>();
-		const headers: Record<string, string> = {
-			Authorization: `Bearer ${credentials.apiKey}`,
-			...credentials.extraHeaders,
-		};
-		if (credentials.subscriptionKeyHeader) {
-			headers['api-subscription-key'] = credentials.apiKey;
-		}
-		const response = await postJson(`${credentials.baseUrl}/chat/completions`, headers, {
+		const response = await postJson(`${credentials.baseUrl}/chat/completions`, authHeaders(credentials.auth === 'bedrock' ? 'bearer' : credentials.auth, credentials.apiKey, credentials.extraHeaders), {
 			model: credentials.model,
 			messages: toOpenAIMessages(messages),
 			stream: true,
 			...(tools.length ? { tools: tools.map(tool => ({ type: 'function', function: { name: tool.name, description: tool.description, parameters: tool.inputSchema ?? { type: 'object', properties: {} } } })) } : {}),
 		}, signal);
 		await readSse(response, data => {
-			const parsed = parseJson(data) as { choices?: { delta?: { content?: string; tool_calls?: { index?: number; id?: string; function?: { name?: string; arguments?: string } }[] } }[] } | undefined;
-			const delta = parsed?.choices?.[0]?.delta;
-			if (!delta) {
-				return;
-			}
-			if (delta.content) {
-				progress.report(new vscode.LanguageModelTextPart(delta.content));
-			}
-			for (const call of delta.tool_calls ?? []) {
-				const index = call.index ?? 0;
-				const current = pending.get(index) ?? { id: '', name: '', args: '' };
-				if (call.id) {
-					current.id = call.id;
-				}
-				if (call.function?.name) {
-					current.name += call.function.name;
-				}
-				if (call.function?.arguments) {
-					current.args += call.function.arguments;
-				}
-				pending.set(index, current);
+			const parsed = parseJson(data) as { choices?: { delta?: Parameters<typeof noteOpenAIDelta>[1] }[] } | undefined;
+			const text = noteOpenAIDelta(pending, parsed?.choices?.[0]?.delta);
+			if (text) {
+				progress.report(new vscode.LanguageModelTextPart(text));
 			}
 		});
 		reportToolCalls(progress, [...pending.values()]);
 	}
 
-	private async completeAnthropic(credentials: Credentials, messages: readonly RequestMessage[], tools: readonly vscode.LanguageModelChatTool[], progress: vscode.Progress<vscode.LanguageModelResponsePart>, signal: AbortSignal): Promise<void> {
+	private async completeAnthropic(credentials: NonNullable<ReturnType<typeof resolveCredentials>>, messages: readonly RequestMessage[], tools: readonly vscode.LanguageModelChatTool[], progress: vscode.Progress<vscode.LanguageModelResponsePart>, signal: AbortSignal): Promise<void> {
 		const converted = toAnthropicMessages(messages);
 		const blocks = new Map<number, { type: string; id: string; name: string; args: string }>();
 		const response = await postJson(`${credentials.baseUrl}/v1/messages`, {
@@ -197,11 +158,11 @@ export class SicodeProvider implements vscode.LanguageModelChatProvider {
 		reportToolCalls(progress, [...blocks.values()].filter(block => block.type === 'tool_use').map(block => ({ id: block.id, name: block.name, args: block.args })));
 	}
 
-	private async completeGemini(credentials: Credentials, messages: readonly RequestMessage[], tools: readonly vscode.LanguageModelChatTool[], progress: vscode.Progress<vscode.LanguageModelResponsePart>, signal: AbortSignal): Promise<void> {
+	private async completeGemini(credentials: NonNullable<ReturnType<typeof resolveCredentials>>, messages: readonly RequestMessage[], tools: readonly vscode.LanguageModelChatTool[], progress: vscode.Progress<vscode.LanguageModelResponsePart>, signal: AbortSignal): Promise<void> {
 		const converted = toGeminiContents(messages);
 		const model = credentials.model.replace(/^models\//, '');
-		const url = `${credentials.baseUrl}/models/${encodeURIComponent(model)}:streamGenerateContent?alt=sse&key=${encodeURIComponent(credentials.apiKey)}`;
-		const response = await postJson(url, {}, {
+		const url = `${credentials.baseUrl}/models/${encodeURIComponent(model)}:streamGenerateContent?alt=sse`;
+		const response = await postJson(url, { 'x-goog-api-key': credentials.apiKey }, {
 			...(converted.system ? { systemInstruction: { parts: [{ text: converted.system }] } } : {}),
 			contents: converted.contents,
 			...(tools.length ? { tools: [{ functionDeclarations: tools.map(tool => ({ name: tool.name, description: tool.description, parameters: tool.inputSchema ?? { type: 'object', properties: {} } })) }] } : {}),
@@ -218,6 +179,61 @@ export class SicodeProvider implements vscode.LanguageModelChatProvider {
 			}
 		});
 	}
+
+	private async completeBedrock(credentials: NonNullable<ReturnType<typeof resolveCredentials>>, messages: readonly RequestMessage[], tools: readonly vscode.LanguageModelChatTool[], progress: vscode.Progress<vscode.LanguageModelResponsePart>, signal: AbortSignal): Promise<void> {
+		if (!credentials.accessKey || !credentials.secretKey || !credentials.region) {
+			throw new Error('Amazon Bedrock needs an access key, secret key, and region.');
+		}
+		const body = converseBody(toWire(messages), tools.map(tool => ({
+			name: tool.name,
+			description: tool.description ?? '',
+			inputSchema: tool.inputSchema,
+		})));
+		const signed = await signBedrock({
+			accessKey: credentials.accessKey,
+			secretKey: credentials.secretKey,
+			sessionToken: credentials.sessionToken,
+			region: credentials.region,
+			model: credentials.model,
+			body,
+		});
+		const response = await fetch(signed.url, {
+			method: 'POST',
+			headers: signed.headers,
+			body,
+			signal,
+		});
+		if (!response.ok) {
+			const detail = await response.text();
+			throw new Error(`HTTP ${response.status}: ${detail.slice(0, 500)}`);
+		}
+		const reader = response.body?.getReader();
+		if (!reader) {
+			throw new Error('The model response was empty.');
+		}
+		const events = new BedrockEventDecoder();
+		const toolsSeen: ToolCallState[] = [];
+		try {
+			while (true) {
+				const { done, value } = await reader.read();
+				if (done) {
+					break;
+				}
+				if (!value) {
+					continue;
+				}
+				const parsed = events.push(value);
+				if (parsed.text) {
+					progress.report(new vscode.LanguageModelTextPart(parsed.text));
+				}
+				toolsSeen.push(...parsed.tools);
+			}
+		} finally {
+			await reader.cancel().catch(() => undefined);
+		}
+		toolsSeen.push(...events.flush());
+		reportToolCalls(progress, toolsSeen);
+	}
 }
 
 function reportToolCalls(progress: vscode.Progress<vscode.LanguageModelResponsePart>, calls: readonly ToolCallState[]): void {
@@ -227,6 +243,10 @@ function reportToolCalls(progress: vscode.Progress<vscode.LanguageModelResponseP
 		}
 		progress.report(new vscode.LanguageModelToolCallPart(call.id || newId(), call.name, parseObject(call.args)));
 	}
+}
+
+function toWire(messages: readonly RequestMessage[]): WireMessage[] {
+	return messages.map(message => ({ role: roleName(message.role), parts: readParts(message) }));
 }
 
 function toOpenAIMessages(messages: readonly RequestMessage[]): object[] {
@@ -373,10 +393,6 @@ function parseJson(data: string): unknown {
 	} catch {
 		return undefined;
 	}
-}
-
-function stringValue(value: unknown): string | undefined {
-	return typeof value === 'string' && value.trim() ? value.trim() : undefined;
 }
 
 function newId(): string {

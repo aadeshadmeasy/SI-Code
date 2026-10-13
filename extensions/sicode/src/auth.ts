@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { createClient, Session } from '@supabase/supabase-js';
+import { createClient, type Session } from '@supabase/supabase-js';
 import * as vscode from 'vscode';
 
 const SUPABASE_URL = 'https://abtmqyqptjcmrplkkpii.supabase.co';

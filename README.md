@@ -61,13 +61,16 @@ Sarvam's chat completions API is OpenAI-compatible. SI Code sends the key as `Au
 - **Chat.** Open the Chat view. It sees the active file and selection.
 - **Inline edit.** Select code and run **SI Code: Inline Edit**, or press `Ctrl+I` (`Cmd+I` on macOS). Accept or reject the diff in the editor.
 - **Completions.** With `sicode.completions.enabled` on, the first configured model can suggest text at the cursor.
-- **Agent.** In agent mode the model reads and edits files, checks diagnostics, and runs builds, tests, and linters. Terminal commands ask you to approve them before they run.
+- **Agent.** In agent mode the model reads and edits files, checks diagnostics, and runs builds, tests, and linters. Terminal commands ask you to approve them before they run. After the edits, SI Code runs the project test or build, sends failures back to the model, and then shows a diff with **Keep** and **Revert**.
+- **Routing.** Short questions use a cheap model. Agent edits and refactors use a strong model. Asking for Ollama, or turning on `sicode.routing.preferLocal`, uses a local model. Each reply shows a token and cost line for that chat and a workspace total.
+- **Project memory.** Put instructions in `.sicode/rules.md`. The agent follows that file. "Where is …" questions use a local index of the open folder.
+- **Ship.** **SI Code: Ship to Vercel** and **SI Code: Ship to AWS** run the Vercel or AWS CLI in the open folder and surface the preview link. Sign in with those CLIs first. A CDK app needs `cdk.json`. A SAM app needs `template.yaml`.
 
 You can also add a model from the chat model picker with **Manage Models**. That prompt asks for the endpoint, the key, and the model id. Keys are stored by the editor as language-model secrets.
 
 ## MCP servers
 
-The SI Code activity-bar view adds a server, browses the gallery, opens installed servers, and connects them. Connecting a server that needs a sign-in uses the editor's MCP authentication screen.
+The SI Code activity-bar view adds a server, browses the gallery, opens installed servers, and connects them. One-click presets for Supabase, GitHub, Figma, AWS, and Postgres ask for a token once and keep it in secret storage. Connecting a server that needs a sign-in uses the editor's MCP authentication screen.
 
 User config is still a plain `mcp.json`. Workspace config can live in `.vscode/mcp.json` or, when `chat.mcp.workspaceRootConfig.enabled` is on, in `.mcp.json` at the workspace root.
 

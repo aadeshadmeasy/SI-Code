@@ -23,7 +23,10 @@
 		"onCommand:sicode.runPython",
 		"onCommand:sicode.mcp.add",
 		"onCommand:sicode.signIn",
-		"onCommand:sicode.signOut"
+		"onCommand:sicode.signOut",
+		"onCommand:sicode.ship.vercel",
+		"onCommand:sicode.ship.aws",
+		"onCommand:sicode.mcp.preset"
 	],
 	"main": "./out/extension",
 	"capabilities": {
@@ -87,6 +90,31 @@
 			{
 				"command": "sicode.signOut",
 				"title": "Sign out",
+				"category": "SI Code"
+			},
+			{
+				"command": "sicode.ship.vercel",
+				"title": "Ship to Vercel",
+				"category": "SI Code"
+			},
+			{
+				"command": "sicode.ship.aws",
+				"title": "Ship to AWS",
+				"category": "SI Code"
+			},
+			{
+				"command": "sicode.mcp.preset",
+				"title": "Add MCP Preset",
+				"category": "SI Code"
+			},
+			{
+				"command": "sicode.review.keep",
+				"title": "Keep Agent Edits",
+				"category": "SI Code"
+			},
+			{
+				"command": "sicode.review.revert",
+				"title": "Revert Agent Edits",
 				"category": "SI Code"
 			}
 		],
@@ -171,6 +199,26 @@
 					"type": "boolean",
 					"default": true,
 					"description": "Offer inline completions from the first configured SI Code model."
+				},
+				"sicode.routing.cheapModel": {
+					"type": "string",
+					"default": "",
+					"description": "Model used for short questions, formatted as vendor/id (for example sicode-openai/gpt-4o-mini). Empty picks a cheap model that is already signed in."
+				},
+				"sicode.routing.strongModel": {
+					"type": "string",
+					"default": "",
+					"description": "Model used for agent edits and refactors, formatted as vendor/id. Empty picks a strong model that is already signed in."
+				},
+				"sicode.routing.localModel": {
+					"type": "string",
+					"default": "",
+					"description": "Local model used when a task asks for Ollama or local, formatted as vendor/id. Empty uses the signed-in Ollama or LM Studio model."
+				},
+				"sicode.routing.preferLocal": {
+					"type": "boolean",
+					"default": false,
+					"description": "Send every task to the local Ollama or LM Studio model."
 				}
 			}
 		},
@@ -1163,6 +1211,12 @@
 				]
 			}
 		],
+		"mcpServerDefinitionProviders": [
+			{
+				"id": "sicode.presets",
+				"label": "SI Code presets"
+			}
+		],
 		"languageModelTools": [
 			{
 				"name": "sicode_readFile",
@@ -1201,6 +1255,27 @@
 							"description": "Workspace-relative or absolute directory."
 						}
 					}
+				}
+			},
+			{
+				"name": "sicode_whereIs",
+				"displayName": "Where Is",
+				"toolReferenceName": "whereIs",
+				"canBeReferencedInPrompt": true,
+				"icon": "$(search)",
+				"modelDescription": "Search the local codebase index for a file or symbol.",
+				"userDescription": "Search the project",
+				"inputSchema": {
+					"type": "object",
+					"properties": {
+						"query": {
+							"type": "string",
+							"description": "What to look for."
+						}
+					},
+					"required": [
+						"query"
+					]
 				}
 			},
 			{

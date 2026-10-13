@@ -65,6 +65,10 @@ Sarvam's chat completions API is OpenAI-compatible. SI Code sends the key as `Au
 - **Routing.** Short questions use a cheap model. Agent edits and refactors use a strong model. Asking for Ollama, or turning on `sicode.routing.preferLocal`, uses a local model. Each reply shows a token and cost line for that chat and a workspace total.
 - **Project memory.** Put instructions in `.sicode/rules.md`. The agent follows that file. "Where is …" questions use a local index of the open folder.
 - **Ship.** **SI Code: Ship to Vercel** and **SI Code: Ship to AWS** run the Vercel or AWS CLI in the open folder and surface the preview link. Sign in with those CLIs first. A CDK app needs `cdk.json`. A SAM app needs `template.yaml`.
+- **Describe your app.** **SI Code: Describe your app** writes a small project and opens a local preview. **New Website**, **New Landing Page**, **New WhatsApp Bot**, and **New Data Dashboard** start from those templates.
+- **Plain errors.** **SI Code: Explain the Error** says what went wrong. **Fix it** sends that error to the agent.
+- **Simple view.** **SI Code: Simple View** hides the terminal, the git view, and the advanced side bar. The status bar switches it back to the full editor.
+- **First run.** When no model key is saved yet, the first launch opens **Get Free API Keys**.
 
 You can also add a model from the chat model picker with **Manage Models**. That prompt asks for the endpoint, the key, and the model id. Keys are stored by the editor as language-model secrets.
 
